@@ -1,0 +1,90 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:layout_width="180dp">
+            <TextView android:text="@string/time"
+                android:id="@+id/timeView"
+                style="@style/labelFont"/>
+
+            <TextView android:text="@string/money"
+                android:id="@+id/moneyView"
+                style="@style/labelFont"/>
+
+            <TextView android:text="@string/category"
+                android:id="@+id/categoryView"
+                style="@style/labelFont"/>
+
+            <TextView android:text="@string/location"
+                android:id="@+id/locationView"
+                style="@style/labelFont"/>
+
+            <TextView android:text="@string/receipt"
+                android:id="@+id/receiptView"
+                style="@style/labelFont"/>
+
+            <TextView android:text="@string/comments"
+                android:id="@+id/commentsView"
+                style="@style/labelFont"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:inputType="time|date"
+                android:id="@+id/editTime"
+                style="@style/editStyle1" />
+
+            <EditText
+                android:inputType="numberDecimal"
+                android:id="@+id/editMoney"
+                style="@style/editStyle1"/>
+
+            <Spinner
+                android:text="@string/category"
+                android:layout_width="match_parent"
+                android:id="@+id/spinnerCategory"
+                style="@style/editStyle1"/>
+
+            <EditText
+                android:inputType="numberDecimal"
+                android:id="@+id/editLocation"
+                style="@style/editStyle1"/>
+
+            <Button
+                android:text="@string/camera"
+                android:id="@+id/cameraButton"
+                style="@style/editStyle1"/>
+
+            <EditText
+                android:inputType="textMultiLine"
+                android:id="@+id/editComment"
+                style="@style/editStyle1"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:text="@string/saveLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/saveButton" />
+
+</LinearLayout>

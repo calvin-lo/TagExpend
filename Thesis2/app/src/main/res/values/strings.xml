@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Thesis2</string>
+    <string name="wallet">Wallet</string>
+    <string name="visual">Visual</string>
+    <string name="tagInstruction">#tags $amount @place</string>
+    <string name="tag">Tags</string>
+</resources>
