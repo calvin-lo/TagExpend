@@ -57,7 +57,7 @@
         <MultiAutoCompleteTextView
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:id="@+id/multiAutoCompleteTextView"
+            android:id="@+id/tagInput"
             android:layout_above="@+id/formImage"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="81dp" />

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.MultiAutoCompleteTextView;
 
 public class FormActivity extends AppCompatActivity {
 
@@ -24,6 +25,11 @@ public class FormActivity extends AppCompatActivity {
     }
 
     public void clickSave(View v) {
+        Intent returnIntent = new Intent();
+        MultiAutoCompleteTextView input = (MultiAutoCompleteTextView) findViewById(R.id.tagInput);
+        String result = input.getText().toString();
+        returnIntent.putExtra("result",result);
+        setResult(RESULT_OK,returnIntent);
         finish();
     }
 
@@ -43,6 +49,7 @@ public class FormActivity extends AppCompatActivity {
             viewer.setVisibility(View.VISIBLE);
             viewer.setImageBitmap(imageBitmap);
         }
+
     }
 
 
