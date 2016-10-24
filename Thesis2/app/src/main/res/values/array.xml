@@ -15,4 +15,10 @@
         <item>Travel</item>
     </string-array>
 
+    <string-array name="update_menu">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+
+
 </resources>

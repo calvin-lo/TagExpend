@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.widget.CursorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COMMA_SEP = ",";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_TRANSACTIONS + " (" +
-                    KEY_ID + " INTEGER PRIMARY KEY," +
+                    KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     KEY_TAG + TEXT_TYPE+ " )";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -43,35 +44,42 @@ public class DBHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void addTransactions(String tag) {
+    public boolean addTransactions(Tag tag) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_TAG, tag); // Contact Name
+        //values.put(KEY_ID,tag.getId());
+        values.put(KEY_TAG, tag.getTag());
 
         // Inserting Row
         db.insert(TABLE_TRANSACTIONS, null, values);
-        db.close(); // Closing database connection
+        db.close();
+        return true;
     }
 
-    // Getting All Contacts
-    public List<String> getAllData() {
-        List<String> tagList = new ArrayList<String>();
-        // Select All Query
+    public void deleteTransactions(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_TRANSACTIONS, KEY_ID + " = " + id, null);
+        db.close();
+    }
+
+    // Getting All Data
+    public List<Tag> getAllData() {
+        List<Tag> tagList = new ArrayList<Tag>();
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTIONS;
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                // Adding contact to list
-                tagList.add(cursor.getString(1));
-            } while (cursor.moveToNext());
+        while(!cursor.isAfterLast()){
+            Tag tag = new Tag();
+            tag.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
+            tag.setTag(cursor.getString(cursor.getColumnIndex(KEY_TAG)));
+            tagList.add(tag);
+            cursor.moveToNext();
         }
 
-        // return contact list
         return tagList;
     }
 

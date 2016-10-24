@@ -24,6 +24,15 @@
         android:id="@+id/transactionList"
         android:layout_marginTop="14dp" />
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/walletView"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/transactionListID"
+        android:visibility="gone"
+        android:layout_marginTop="14dp" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab1"
         android:layout_width="wrap_content"
