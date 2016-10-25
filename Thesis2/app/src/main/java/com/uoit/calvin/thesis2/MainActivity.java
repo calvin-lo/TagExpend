@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
          *Setup
          */
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mPlanetTitles = getResources().getStringArray(R.array.tags);
+        mPlanetTitles = new String[1];
+        mPlanetTitles[0] = "Tag1";
 
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_tags, mPlanetTitles));

@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="tags">
-        <item>Entertainment</item>
-        <item>Food</item>
-        <item>Transport</item>
-        <item>Shopping</item>
-        <item>Utilities</item>
-        <item>Personal Care</item>
-        <item>Health and Fitness</item>
-        <item>Educations</item>
-        <item>Gifts</item>
-        <item>Donations</item>
-        <item>Travel</item>
-    </string-array>
-
     <string-array name="update_menu">
         <item>Edit</item>
         <item>Delete</item>
