@@ -1,7 +1,12 @@
 <resources>
-    <string name="app_name">Thesis2</string>
+    <string name="app_name">Thesis</string>
     <string name="wallet">Wallet</string>
     <string name="visual">Visual</string>
-    <string name="tagInstruction">#tags $amount @place</string>
-    <string name="tag">Tags</string>
+    <string name="tagInstruction">#Tags $amount @place</string>
+    <string name="formTitle"># $ @</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="setting">Setting</string>
+    <string name="transDB">transDB</string>
+    <string name="tagDB">tagCloudDB</string>
 </resources>

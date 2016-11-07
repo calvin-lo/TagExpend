@@ -1,32 +1,23 @@
 package com.uoit.calvin.thesis2;
 
-public class Tag {
+class Tag {
 
-    private long id;
-    private String tag;
+    private String name;
 
-    public void setId(long id) {
-
-        this.id = id;
+    Tag(String name) {
+        this.name = name;
     }
 
-    public long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return tag;
+        return this.name;
     }
-
-
-
 }

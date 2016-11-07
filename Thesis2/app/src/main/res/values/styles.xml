@@ -4,7 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/LightGray</item>
-        <item name="colorPrimaryDark">@color/DarkGray</item>
+        <item name="colorPrimaryDark">@color/notificationBarColor</item>
         <item name="colorAccent">@color/orange</item>
     </style>
 

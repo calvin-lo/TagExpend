@@ -1,15 +1,9 @@
 package com.uoit.calvin.thesis2;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,25 +17,20 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by calvin on 05/10/16.
- */
-
 public class PrimaryFragment extends Fragment {
 
-    DBHelper mydb;
-    ListView transList;
-    ListView idList;
-    View x;
+    static final int UPDATE = 2;
     static final int SAVING_DATA = 1;
-    List<String> tags;
-    List<Long> tagIds;
+    final int RESULT_OK = 1;
 
+    TransactionDBHelper transDB;
+    TagDBHelper tagDB;
+    View x;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        x = inflater.inflate(R.layout.primary_layout,null);
+        x = inflater.inflate(R.layout.primary_layout, container, false);
         FloatingActionButton btnFab = (FloatingActionButton) x.findViewById(R.id.fab1);
         btnFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,61 +40,73 @@ public class PrimaryFragment extends Fragment {
             }
         });
 
-        //SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(getContext(),);
-
         /**
          * Databases
          */
-        displayTagList();
+        displayTransList();
 
         return x;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Tag tag = new Tag();
-        mydb = new DBHelper(getContext());
-        if(requestCode == 1 && resultCode == getActivity().RESULT_OK) {
-            tag.setTag(data.getExtras().getString("result"));
-            mydb.addTransactions(tag);
-        }
-        mydb.close();
 
-        displayTagList();
+        if (resultCode == this.RESULT_OK) {
+            switch (requestCode) {
+                case SAVING_DATA:
+                    // add the transaction
+                    transDB = new TransactionDBHelper(getContext().getApplicationContext());
+                    Helper helper = new Helper();
+                    List<Tag> tags = helper.parseTag(data.getStringExtra("trans"));
+                    Transaction trans = new Transaction(tags);
+                    transDB.addTransactions(trans);
+
+                    // add the tag to tag cloud
+                    tagDB = new TagDBHelper(getContext().getApplicationContext());
+                    for (Tag t : tags) {
+                        tagDB.addTag(t);
+                    }
+
+                    transDB.close();
+                    tagDB.close();
+                    break;
+                case UPDATE:
+                    break;
+
+            }
+        }
+        ((MainActivity)getActivity()).updateDrawer();
+        displayTransList();
     }
 
-    public void displayTagList() {
-        mydb = new DBHelper(getContext());
+    public void displayTransList() {
+        transDB = new TransactionDBHelper(getContext().getApplicationContext());
 
-        List<Tag> tag = mydb.getAllData();
-        tags = new ArrayList<>();
-        tagIds = new ArrayList<>();
-        for (Tag t : tag) {
-            tags.add(t.getTag());
+        List<Transaction> transList = transDB.getAllData();
+        List<Long> transIds = new ArrayList<>();
+        for (Transaction t : transList) {
+            transIds.add(t.getId());
         }
-        for (Tag t : tag) {
-            tagIds.add(t.getId());
-        }
-        // Set the tag
-        ArrayAdapter arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.activity_listview, tag);
-        transList = (ListView) x.findViewById(R.id.transactionList);
-        transList.setAdapter(arrayAdapter);
-        registerForContextMenu(transList);
+        // Set the transaction
+        ArrayAdapter arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.activity_listview, transList);
+        ListView transListView = (ListView) x.findViewById(R.id.transactionList);
+        transListView.setAdapter(arrayAdapter);
+        registerForContextMenu(transListView);
 
         // Set the ID
-        ArrayAdapter arrayAdapterID = new ArrayAdapter<>(getContext(), R.layout.activity_listview,tagIds);
-        idList = (ListView) x.findViewById(R.id.transactionListID);
+        ArrayAdapter arrayAdapterID = new ArrayAdapter<>(getContext(), R.layout.activity_listview, transIds);
+        ListView idList = (ListView) x.findViewById(R.id.transactionListID);
         idList.setAdapter(arrayAdapterID);
         registerForContextMenu(idList);
 
-        mydb.close();
+        transDB.close();
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         if (v.getId() == R.id.transactionList) {
             String[] menuItems = getResources().getStringArray(R.array.update_menu);
-            for (int i = 0; i<menuItems.length; i++) {
+            for (int i = 0; i < menuItems.length; i++) {
                 menu.add(Menu.NONE, i, i, menuItems[i]);
             }
         }
@@ -119,13 +120,25 @@ public class PrimaryFragment extends Fragment {
         int menuItemIndex = item.getItemId();
         String[] menuItems = getResources().getStringArray(R.array.update_menu);
         String menuItemName = menuItems[menuItemIndex];
-        if (menuItemName.equals("Delete")) {
-            ListView l = (ListView) x.findViewById(R.id.transactionListID);
-            String ID = l.getItemAtPosition(info.position).toString();
-            mydb = new DBHelper(getContext());
-            mydb.deleteTransactions((Long.parseLong(ID)));
-            displayTagList();
+        // Delete
+        switch (menuItemName) {
+            case "Delete":
+                ListView l = (ListView) x.findViewById(R.id.transactionListID);
+                String ID = l.getItemAtPosition(info.position).toString();
+                transDB = new TransactionDBHelper(getContext().getApplicationContext());
+                transDB.deleteTransactions((Long.parseLong(ID)));
+                displayTransList();
+                break;
+            case "Edit":
+                Intent editIntent = new Intent(getContext(), FormActivity.class);
+                startActivityForResult(editIntent, UPDATE);
+                break;
+            case "Details":
+                Intent detailsIntent = new Intent(getContext(), DetailsActivity.class);
+                startActivityForResult(detailsIntent, UPDATE);
+                break;
         }
+
 
         return true;
     }

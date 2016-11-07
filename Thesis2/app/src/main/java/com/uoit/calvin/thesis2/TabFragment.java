@@ -11,14 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Created by calvin on 05/10/16.
- */
-
 public class TabFragment extends Fragment {
 
-    public static TabLayout tabLayout;
-    public static ViewPager viewPager;
+    TabLayout tabLayout;
+    ViewPager viewPager;
     public static int int_items = 2 ;
 
     @Nullable
@@ -27,7 +23,7 @@ public class TabFragment extends Fragment {
         /**
          *Inflate tab_layout and setup Views.
          */
-            View x =  inflater.inflate(R.layout.tab_layout,null);
+            View x =  inflater.inflate(R.layout.tab_layout, container, false);
             tabLayout = (TabLayout) x.findViewById(R.id.tabs);
             viewPager = (ViewPager) x.findViewById(R.id.viewpager);
 
@@ -53,7 +49,7 @@ public class TabFragment extends Fragment {
 
     class MyAdapter extends FragmentPagerAdapter {
 
-        public MyAdapter(FragmentManager fm) {
+        MyAdapter(FragmentManager fm) {
             super(fm);
         }
 

@@ -13,15 +13,12 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 
-/**
- * Created by calvin on 05/10/16.
- */
 
 public class SecondFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.second_layout,null);
+        View v = inflater.inflate(R.layout.second_layout, container, false);
 
         PieChart chart = (PieChart) v.findViewById(R.id.chart);
 

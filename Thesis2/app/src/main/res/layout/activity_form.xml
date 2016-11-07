@@ -1,78 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:orientation="vertical"
+    <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:id="@+id/formToolbar"
+        android:background="@color/actionBarColor"
+        app:title="@string/formTitle"/>
 
-        <android.support.v7.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/toolbar"
-            android:background="@color/LightGray"
-            app:title="Enter your data..."/>
+    <MultiAutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tagInput"
+        android:layout_marginTop="57dp" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/cameraButton"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="129dp"
-            android:id="@+id/formImage" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <ImageButton
+            android:contentDescription="@string/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/ic_menu_camera"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="95dp"
-            android:id="@+id/cameraButton"
-            android:onClick="clickCamera"
-            android:background="@android:color/transparent"
-            style="?attr/imageButtonStyle" />
-
-        <ImageButton
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             app:srcCompat="@android:drawable/ic_menu_save"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="25dp"
             android:id="@+id/saveButton"
             android:onClick="clickSave"
             android:background="@android:color/transparent"
-            android:elevation="0dp"
-            android:scaleType="fitEnd" />
+            android:layout_weight="1" />
 
-        <MultiAutoCompleteTextView
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/tagInput"
-            android:layout_above="@+id/formImage"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="81dp" />
-
-        <TextView
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView2"
-            android:text="@string/tagInstruction"
-            android:layout_centerInParent="false"
-            android:textSize="25sp"
-            android:layout_below="@+id/toolbar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="28dp" />
+            android:layout_gravity="center"
+            app:srcCompat="@android:drawable/ic_menu_camera"
+            android:id="@+id/cameraButton"
+            android:onClick="clickCamera"
+            android:background="@android:color/transparent"
+            android:layout_weight="1" />
+    </LinearLayout>
 
-    </RelativeLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="129dp"
+        android:id="@+id/formImage"
+        android:layout_weight="0.75" />
 
 </LinearLayout>
