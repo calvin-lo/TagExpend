@@ -27,14 +27,15 @@ public class SettingActivity extends AppCompatActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        List<String> settingList = new ArrayList<>();
-        settingList.add("Reset Transaction Database");
-        settingList.add("Reset Tag Database");
-;
-        ArrayAdapter arrayAdapter = new ArrayAdapter<>(this, R.layout.activity_listview, settingList);
+
+        String[] settingList = getResources().getStringArray(R.array.setting_list);
+        int[] drawableIds = {R.drawable.ic_delete_forever_black_24dp, R.drawable.ic_delete_forever_black_24dp};
+
+
+        CustomAdapter adapter = new CustomAdapter(this,  settingList, drawableIds);
         ListView settingListView = (ListView) findViewById(R.id.settingList);
         if (settingListView != null) {
-            settingListView.setAdapter(arrayAdapter);
+            settingListView.setAdapter(adapter);
             registerForContextMenu(settingListView);
 
             settingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -42,11 +43,11 @@ public class SettingActivity extends AppCompatActivity {
                     switch (position) {
                         // Reset Transaction Database
                         case 0:
-                            deleteDatabase("transDB");
+                            deleteDatabase(getResources().getString(R.string.transDB));
                             break;
                         //Reset Tag Database
                         case 1:
-                            deleteDatabase("tagCloudDB");
+                            deleteDatabase(getResources().getString(R.string.tagDB));
                             break;
                     }
 

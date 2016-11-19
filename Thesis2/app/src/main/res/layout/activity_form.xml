@@ -19,6 +19,11 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/tagInput"
         android:layout_marginTop="57dp" />
 
+    <AutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/inputTextView" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -29,17 +34,18 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:srcCompat="@android:drawable/ic_menu_save"
+            app:srcCompat="@drawable/ic_done_black_24dp"
             android:id="@+id/saveButton"
             android:onClick="clickSave"
             android:background="@android:color/transparent"
             android:layout_weight="1" />
 
         <ImageButton
+            android:contentDescription="@string/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:srcCompat="@android:drawable/ic_menu_camera"
+            app:srcCompat="@drawable/ic_add_a_photo_black_24dp"
             android:id="@+id/cameraButton"
             android:onClick="clickCamera"
             android:background="@android:color/transparent"

@@ -41,7 +41,10 @@ public class Transaction {
     public String toString() {
         String s = getDate() + " ";
         for (Tag tag : tagsList) {
-            s = s + tag.toString();
+            s = s + tag.toString() + " ";
+        }
+        if (tagsList.size() >= 1) {
+            s = s + "$"  + tagsList.get(0).getAmount();
         }
         return s;
     }

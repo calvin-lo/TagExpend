@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -31,7 +32,6 @@ public class TagActivity extends AppCompatActivity {
         }
 
         // set the title
-
         TransactionDBHelper transDB = new TransactionDBHelper(this);
         List<Transaction> transList = transDB.getTransByTag(tag);
 
@@ -42,6 +42,17 @@ public class TagActivity extends AppCompatActivity {
             registerForContextMenu(transListView);
         }
 
+        TextView textViewTotal = (TextView) findViewById(R.id.textViewTotal);
+        TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
+        List<Tag> tagList = tagDBHelper.getTagsList("*");
+        for (Tag t : tagList) {
+            if (t.toString().equals(tag)) {
+                String text = "$" + t.getAmount();
+                if (textViewTotal != null) {
+                    textViewTotal.setText(text);
+                }
+            }
+        }
     }
 
     public void clickDelete(View v) {

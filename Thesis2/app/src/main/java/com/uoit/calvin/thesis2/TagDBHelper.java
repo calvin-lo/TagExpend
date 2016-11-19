@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +19,15 @@ class TagDBHelper extends SQLiteOpenHelper{
 
     private static  final String KEY_ID = "id";
     private static final String KEY_TAG = "tag";
+    private static final String KEY_AMOUNT = "amount";
+    private static final String KEY_TYPE = "type";
 
-    private static final String TEXT_TYPE = " TEXT";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    KEY_TAG + TEXT_TYPE + "UNIQUE" + " )";
+                    KEY_TAG + " TEXT" + "UNIQUE," +
+                    KEY_AMOUNT + " REAL," +
+                    KEY_TYPE + " TEXT" + " )";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -44,46 +49,85 @@ class TagDBHelper extends SQLiteOpenHelper{
 
     boolean addTag(Tag tag) {
 
-        if (!checkDuplicate(tag)) {
-            SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
-            ContentValues values = new ContentValues();
-            values.put(KEY_TAG, tag.toString());
+        if (!checkDuplicate(tag)) {
+            values.put(KEY_TAG, tag.getName());
+            values.put(KEY_AMOUNT, tag.getAmount());
+            values.put(KEY_TYPE, tag.getType());
 
             // Inserting Row
             db.insert(TABLE_NAME, null, values);
-            db.close();
+
+        } else {
+            float amount = getAmount(tag.getName()) + tag.getAmount();
+            values.put(KEY_AMOUNT, amount);
+            db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getName()});
         }
+        db.close();
         return true;
     }
 
+    private float getAmount(String tag) {
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        String query = "SELECT " + KEY_AMOUNT +" FROM " + TABLE_NAME + " WHERE " + KEY_TAG + "='" + tag + "'";
+        Cursor cursor = database.rawQuery(query,null);
+
+        if (cursor !=null)  {
+            cursor.moveToFirst();
+        }
+        float output = cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT));
+
+        cursor.close();
+        return output;
+    }
+
     private boolean checkDuplicate(Tag tag) {
+
+        /*for (Tag t : getTagsList("*")) {
+            if (t.toString().equals(tag.toString())) {
+                return false;
+            }
+        }
+        return true;*/
+
         return (new ArrayList<>(Arrays.asList(getTagsStringList()))).contains(tag.toString());
     }
 
     boolean deleteTag(String tag) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAME, KEY_TAG + " = ?", new String[] {tag});
+        String type = String.valueOf(tag.charAt(0));
+        tag = tag.substring(1,tag.length());
+        db.delete(TABLE_NAME, KEY_TAG + " = ? AND " + KEY_TYPE + " = ? ", new String[] {tag, type});
         db.close();
         return true;
     }
 
 
-    Tag[] getTagsList() {
+    List<Tag> getTagsList(String type) {
         List<Tag> tagList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        String selectQuery;
+
+        if (type.equals("*")) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_TYPE + "='" + type + "'";
+        }
+
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)));
+            Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
             tagList.add(tag);
             cursor.moveToNext();
         }
         cursor.close();
-        return tagList.toArray(new Tag[tagList.size()]);
+        return tagList;
     }
 
     String[] getTagsStringList() {
@@ -95,7 +139,7 @@ class TagDBHelper extends SQLiteOpenHelper{
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            String tag = cursor.getString(cursor.getColumnIndex(KEY_TAG));
+            String tag = cursor.getString(cursor.getColumnIndex(KEY_TYPE)) + cursor.getString(cursor.getColumnIndex(KEY_TAG));
             tagList.add(tag);
             cursor.moveToNext();
         }

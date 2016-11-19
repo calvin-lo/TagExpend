@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,9 +20,10 @@ import java.util.List;
 
 public class PrimaryFragment extends Fragment {
 
-    static final int UPDATE = 2;
-    static final int SAVING_DATA = 1;
-    final int RESULT_OK = 1;
+    private static final int DETAILS = 3;
+    private static final int UPDATE = 2;
+    private static final int SAVING_DATA = 1;
+    private static final int RESULT_OK = 1;
 
     TransactionDBHelper transDB;
     TagDBHelper tagDB;
@@ -58,6 +60,7 @@ public class PrimaryFragment extends Fragment {
                     transDB = new TransactionDBHelper(getContext().getApplicationContext());
                     Helper helper = new Helper();
                     List<Tag> tags = helper.parseTag(data.getStringExtra("trans"));
+
                     Transaction trans = new Transaction(tags);
                     transDB.addTransactions(trans);
 
@@ -135,7 +138,7 @@ public class PrimaryFragment extends Fragment {
                 break;
             case "Details":
                 Intent detailsIntent = new Intent(getContext(), DetailsActivity.class);
-                startActivityForResult(detailsIntent, UPDATE);
+                startActivityForResult(detailsIntent, DETAILS);
                 break;
         }
 

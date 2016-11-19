@@ -9,4 +9,12 @@
     <string name="setting">Setting</string>
     <string name="transDB">transDB</string>
     <string name="tagDB">tagCloudDB</string>
+    <string name="fragOne">List</string>
+    <string name="fragTwo">Chart</string>
+    <string name="errorFormat">Incorrect Format!</string>
+    <string name="simple_ime">Simple IME</string>
+    <string name="subtype_en_US">English (US)</string>
+    <string name="total">Total</string>
+    <string name="byDash">By #</string>
+    <string name="byAt">By @</string>
 </resources>
