@@ -21,7 +21,6 @@ public class FormActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     final int RESULT_OK = 1;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

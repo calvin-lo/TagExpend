@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/formLayout">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/formToolbar"
+        android:background="@color/actionBarColor"
+        app:title="@string/formTitle"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tagInput"
+        android:onClick="clickInput"
+        android:layout_marginTop="57dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:contentDescription="@string/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_done_black_24dp"
+            android:id="@+id/saveButton"
+            android:onClick="clickSave"
+            android:background="@android:color/transparent"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:contentDescription="@string/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_add_a_photo_black_24dp"
+            android:id="@+id/cameraButton"
+            android:onClick="clickCamera"
+            android:background="@android:color/transparent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:id="@+id/buttonLayout"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:contentDescription="@string/hashtag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/hashtag"
+            android:id="@+id/hashtagButton"
+            android:onClick="clickHashtag"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            />
+        <ImageButton
+            android:contentDescription="@string/at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/at"
+            android:id="@+id/atButton"
+            android:onClick="clickAt"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            />
+        <ImageButton
+            android:contentDescription="@string/dollar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/dollar"
+            android:id="@+id/dollarButton"
+            android:onClick="clickDollar"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            />
+        <ImageButton
+            android:contentDescription="@string/twitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/twitter"
+            android:id="@+id/twitterButton"
+            android:onClick="clickTwitter"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="129dp"
+        android:id="@+id/formImage"
+        android:layout_weight="0.75" />
+
+</LinearLayout>
