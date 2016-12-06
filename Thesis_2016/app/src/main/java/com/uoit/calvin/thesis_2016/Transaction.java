@@ -1,5 +1,7 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.util.Log;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,43 +11,62 @@ import java.util.Locale;
 public class Transaction {
 
     private static DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
-    private List<Tag> tagsList;
-    private Date date;
+    private List<Tag> tagList;
     private long id;
+    private String timestamp;
+    private String tagStr;
+    private float amount;
 
-    Transaction(List<Tag> tagsList) {
-        setDate();
-        setTags(tagsList);
+
+
+    Transaction() {
     }
 
     public void setId(long id) {
         this.id = id;
     }
+
     public long getId() {
         return id;
     }
 
-    private void setTags(List<Tag> tagsList) {
-        this.tagsList = tagsList;
+    public void setAmout(float amount) {
+        this.amount = amount;
     }
 
-    private void setDate() {
-        date = new Date();
+    public float getAmount() {
+        return this.amount;
     }
 
-    private String getDate() {
-        return dateFormat.format(date);
+    public void setTags(List<Tag> tagList) {
+        tagStr = new Helper().convertTagListToString(tagList);
+        Log.i("MYTAGSTR", tagStr);
+        this.tagList = tagList;
+    }
+
+    public List<Tag> getTagsList() {
+        return this.tagList;
+    }
+
+    public String getTagsStr() {
+        return this.tagStr;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 
     @Override
     public String toString() {
-        String s = getDate() + " ";
-        for (Tag tag : tagsList) {
+        String s = getTimestamp() + " ";
+        for (Tag tag : tagList) {
             s = s + tag.toString() + " ";
         }
-        if (tagsList.size() >= 1) {
-            s = s + "$"  + tagsList.get(0).getAmount();
-        }
+        s = s + "$"  + amount;
         return s;
     }
 }

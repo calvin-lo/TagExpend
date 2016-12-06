@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +16,17 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "transDB";
     private static final String TABLE_NAME = "transactions";
 
-    private static  final String KEY_ID = "id";
+    private static final String KEY_ID = "id";
     private static final String KEY_TRANS = "trans";
+    private static final String KEY_TIMESTAMPS = "timestamps";
+    private static final String KEY_AMOUNT = "amount";
 
-    private static final String TEXT_TYPE = " TEXT";
-    private static final String COMMA_SEP = ",";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME+ " (" +
                     KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    KEY_TRANS+ TEXT_TYPE+ " )";
+                    KEY_TRANS+ " TEXT," +
+                    KEY_AMOUNT + " REAL," +
+                    KEY_TIMESTAMPS+ " TEXT" + " )";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -47,7 +50,9 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_TRANS, trans.toString());
+        values.put(KEY_TRANS, trans.getTagsStr());
+        values.put(KEY_TIMESTAMPS, trans.getTimestamp());
+        values.put(KEY_AMOUNT, trans.getAmount());
 
         // Inserting Row
         db.insert(TABLE_NAME, null, values);
@@ -71,10 +76,14 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            String s = cursor.getString(cursor.getColumnIndex(KEY_TRANS));
             Helper helper = new Helper();
-            Transaction trans = new Transaction(helper.parseTag(s));
+            Transaction trans = new Transaction();
+
             trans.setId(cursor.getLong((cursor.getColumnIndex(KEY_ID))));
+            trans.setTags(helper.parseTagUnicode(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
+            trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
+            trans.setAmout(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+
             transList.add(trans);
             cursor.moveToNext();
         }
@@ -84,6 +93,27 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         return transList;
     }
 
+    Transaction getTransByID(long id) {
+        Transaction trans = new Transaction();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_ID + "='" + id + "'";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+
+        while(!cursor.isAfterLast()){
+
+            Helper helper = new Helper();
+            trans.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
+            trans.setTags(helper.parseTag(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
+            trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
+            trans.setAmout(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return trans;
+    }
+
     List<Transaction> getTransByTag(String tag) {
         List<Transaction> transList = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + TABLE_NAME;
@@ -91,21 +121,24 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         cursor.moveToFirst();
-
         while(!cursor.isAfterLast()){
             String s = cursor.getString(cursor.getColumnIndex(KEY_TRANS));
             Helper helper = new Helper();
-            List<Tag> tagList = helper.parseTag(s);
-            List<String> tagStrList = helper.tagListToString(helper.parseTag(s));
+            List<String> tagStrList = (helper.tagListToString(helper.parseTagUnicode(s)));
             if (tagStrList.contains(tag)) {
-                Transaction trans = new Transaction(tagList);
-                trans.setId(cursor.getLong((cursor.getColumnIndex(KEY_ID))));
+                Transaction trans = new Transaction();
+                trans.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
+                trans.setTags(helper.parseTagUnicode(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
+                trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
+                trans.setAmout(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+
                 transList.add(trans);
             }
             cursor.moveToNext();
         }
 
         cursor.close();
+        db.close();
         return transList;
     }
 

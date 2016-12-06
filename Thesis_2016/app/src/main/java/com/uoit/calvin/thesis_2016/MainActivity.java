@@ -8,6 +8,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //deleteDatabase("transDB");
         //deleteDatabase("tagCloudDB");
 
         // Set up the action bar
@@ -45,12 +47,46 @@ public class MainActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String tag = ((TextView)view).getText().toString();
                     Intent intent = new Intent( view.getContext(), TagActivity.class);
-                    intent.putExtra("tag", tag );
+                    // symbol ☆
+                    intent.putExtra("tag", tag);
                     startActivity(intent);
                 }
             });
         }
 
+        setupTabLayout();
+
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        updateDrawer();
+        setupTabLayout();
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        updateDrawer();
+        setupTabLayout();
+        adapter.notifyDataSetChanged();
+    }
+
+
+    /*
+        Tab Layout
+     */
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new PrimaryFragment(), getResources().getString(R.string.fragOne));
+        adapter.addFragment(new SecondFragment(), getResources().getString((R.string.fragTwo)));
+        viewPager.setAdapter(adapter);
+    }
+
+    public void setupTabLayout() {
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
@@ -74,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                             }
                         }
+
                         @Override
                         public void onTabUnselected(TabLayout.Tab tab) {
                             super.onTabUnselected(tab);
@@ -86,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                             }
                         }
+
                         @Override
                         public void onTabReselected(TabLayout.Tab tab) {
                             super.onTabReselected(tab);
@@ -93,32 +131,9 @@ public class MainActivity extends AppCompatActivity {
                     }
             );
         }
+
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        updateDrawer();
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        updateDrawer();
-        adapter.notifyDataSetChanged();
-    }
-
-    /*
-        Tab Layout
-     */
-
-    private void setupViewPager(ViewPager viewPager) {
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PrimaryFragment(), getResources().getString(R.string.fragOne));
-        adapter.addFragment(new SecondFragment(), getResources().getString((R.string.fragTwo)));
-        viewPager.setAdapter(adapter);
-    }
 
     /*
         Drawer

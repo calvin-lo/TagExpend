@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +39,7 @@ public class PrimaryFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), FormActivity.class);
                 startActivityForResult(intent,SAVING_DATA);
+                ((MainActivity)getActivity()).setupTabLayout();
             }
         });
 
@@ -58,14 +60,20 @@ public class PrimaryFragment extends Fragment {
                     // add the transaction
                     transDB = new TransactionDBHelper(getContext().getApplicationContext());
                     Helper helper = new Helper();
-                    List<Tag> tags = helper.parseTag(data.getStringExtra("trans"));
 
-                    Transaction trans = new Transaction(tags);
+                    String input = data.getStringExtra("trans");
+                    List<Tag> tagList = helper.parseTag(input);
+
+                    Transaction trans = new Transaction();
+                    trans.setTags(tagList);
+                    trans.setTimestamp(helper.getCurrentTime());
+                    trans.setAmout(helper.getAmount(input));
                     transDB.addTransactions(trans);
 
                     // add the tag to tag cloud
                     tagDB = new TagDBHelper(getContext().getApplicationContext());
-                    for (Tag t : tags) {
+                    for (Tag t : tagList) {
+                        Log.i("MYTAGTYPE", t.getType());
                         tagDB.addTag(t);
                     }
 
@@ -127,8 +135,22 @@ public class PrimaryFragment extends Fragment {
             case "Delete":
                 ListView l = (ListView) x.findViewById(R.id.transactionListID);
                 String ID = l.getItemAtPosition(info.position).toString();
+                Long id = Long.parseLong(ID);
                 transDB = new TransactionDBHelper(getContext().getApplicationContext());
-                transDB.deleteTransactions((Long.parseLong(ID)));
+
+                Helper helper = new Helper();
+                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id).toString());
+
+                transDB.deleteTransactions(id);
+
+                // update tag cloud
+
+                tagDB = new TagDBHelper(getContext().getApplicationContext());
+                for (Tag t : tagList) {
+                    tagDB.updateTag(t);
+                }
+
+
                 displayTransList();
                 break;
             case "Edit":

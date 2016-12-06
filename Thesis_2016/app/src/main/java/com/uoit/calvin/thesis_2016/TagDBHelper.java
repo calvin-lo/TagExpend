@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,15 +84,17 @@ class TagDBHelper extends SQLiteOpenHelper {
         return output;
     }
 
+    public void updateTag(Tag tag) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        float amount = getAmount(tag.getName()) - tag.getAmount();
+        values.put(KEY_AMOUNT, amount);
+        db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getName()});
+        db.close();
+    }
+
     private boolean checkDuplicate(Tag tag) {
-
-        /*for (Tag t : getTagsList("*")) {
-            if (t.toString().equals(tag.toString())) {
-                return false;
-            }
-        }
-        return true;*/
-
         return (new ArrayList<>(Arrays.asList(getTagsStringList()))).contains(tag.toString());
     }
 
@@ -123,6 +126,7 @@ class TagDBHelper extends SQLiteOpenHelper {
         while(!cursor.isAfterLast()){
             Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
             tagList.add(tag);
+            Log.i("MYHERE", "HERE");
             cursor.moveToNext();
         }
         cursor.close();
@@ -138,7 +142,9 @@ class TagDBHelper extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            String tag = cursor.getString(cursor.getColumnIndex(KEY_TYPE)) + cursor.getString(cursor.getColumnIndex(KEY_TAG));
+            String tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)),
+                                    cursor.getString(cursor.getColumnIndex(KEY_TYPE)),
+                                    cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT))).toString();
             tagList.add(tag);
             cursor.moveToNext();
         }

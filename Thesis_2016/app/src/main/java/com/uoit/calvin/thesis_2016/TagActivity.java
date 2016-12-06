@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -14,6 +15,7 @@ import java.util.List;
 public class TagActivity extends AppCompatActivity {
 
     public String tag;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public class TagActivity extends AppCompatActivity {
         List<Tag> tagList = tagDBHelper.getTagsList("*");
         for (Tag t : tagList) {
             if (t.toString().equals(tag)) {
-                String text = "$" + t.getAmount();
+                String text = getResources().getString(R.string.dollarIcon) + t.getAmount();
                 if (textViewTotal != null) {
                     textViewTotal.setText(text);
                 }

@@ -2,6 +2,7 @@ package com.uoit.calvin.thesis_2016;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import java.util.List;
 public class SecondFragment extends Fragment {
 
     private static final int MARGIN = 1070;
+    private static final String STAR_ICON = "☆";
+    private static final String AT_ICON = "➴";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,11 +43,16 @@ public class SecondFragment extends Fragment {
         TagDBHelper tagDBHelper = new TagDBHelper(getContext().getApplicationContext());
 
         PieChart chart = new PieChart(getContext());
-        List<Tag> dashList = tagDBHelper.getTagsList("#");
+        List<Tag> dashList = tagDBHelper.getTagsList(STAR_ICON);
+        for (Tag t : dashList) {
+            Log.i("MYTAG", t.getType());
+        }
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         for (Tag t : dashList) {
-            entries.add(new PieEntry(t.getAmount(), t.getName()));
+            if (t.getAmount() > 0) {
+                entries.add(new PieEntry(t.getAmount(), t.getName()));
+            }
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "");
@@ -61,11 +69,13 @@ public class SecondFragment extends Fragment {
         // chart 2
 
         PieChart chart2 = new PieChart(getContext());
-        List<Tag> atList = tagDBHelper.getTagsList("@");
+        List<Tag> atList = tagDBHelper.getTagsList(AT_ICON);
         ArrayList<PieEntry> entries2 = new ArrayList<>();
 
         for (Tag t : atList) {
-            entries2.add(new PieEntry(t.getAmount(), t.getName()));
+            if (t.getAmount() > 0) {
+                entries2.add(new PieEntry(t.getAmount(), t.getName()));
+            }
         }
 
         PieDataSet dataSet2 = new PieDataSet(entries2, "");

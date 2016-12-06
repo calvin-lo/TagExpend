@@ -21,4 +21,9 @@
     <string name="dollar">dollar</string>
     <string name="hashtag">hashtag</string>
     <string name="twitter">twitter</string>
+    <string name="detail"><b>. . .</b></string>
+    <string name="atIcon">\u27B4</string>
+    <string name="tagIcon">\u2606</string>
+    <string name="dollarIcon">\u00A4</string>
+
 </resources>
