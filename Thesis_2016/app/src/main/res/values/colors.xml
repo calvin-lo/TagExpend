@@ -2,10 +2,11 @@
 <resources>
     <color name="black">#000</color>
     <color name="orange">#FA0</color>
-    <color name="actionBarColor">#417399</color>
+    <color name="actionBarColor">#0097A7</color>
     <color name="notificationBarColor">#192c3a</color>
     <color name="white">#FFF</color>>
     <color name="DarkGray">#303030</color>
     <color name="LightGray">#444444</color>
+    <color name="background">#BDBDBD</color>
 
 </resources>

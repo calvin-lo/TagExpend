@@ -15,6 +15,7 @@
     <string-array name="setting_list">
         <item>"Reset Transaction Database"</item>
         <item>"Reset Tag Database"</item>
+        <item>"Twitter"</item>
     </string-array>
 
 

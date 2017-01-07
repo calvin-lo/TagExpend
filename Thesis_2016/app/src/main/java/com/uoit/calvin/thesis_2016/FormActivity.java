@@ -103,10 +103,18 @@ public class FormActivity extends AppCompatActivity{
             String trans = Html.toHtml(input.getEditableText());
             trans = helper.HTMLReplaceNewLine(trans);
             trans = helper.HTMLParsing(trans);
-            if (
-                    trans.substring(0,6).equals(CURRENCY_SIGN)
-                    ||trans.substring(0,7).equals(STAR_SIGN)
-                    || trans.substring(0,8).equals(LOCATION_SIGN)) {
+            boolean format = false;
+            if (trans.length() >= 6) {
+                format = trans.substring(0,6).equals(CURRENCY_SIGN);
+            }
+            if (trans.length() >= 7 && !format) {
+                format = trans.substring(0,7).equals(STAR_SIGN);
+            }
+            if (trans.length() >= 8 && !format) {
+                format = trans.substring(0,8).equals(LOCATION_SIGN);
+            }
+
+            if (format) {
                 returnIntent.putExtra("trans", trans );
                 setResult(this.RESULT_OK, returnIntent);
                 finish();

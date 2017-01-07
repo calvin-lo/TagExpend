@@ -25,5 +25,10 @@
     <string name="atIcon">\u27B4</string>
     <string name="tagIcon">\u2606</string>
     <string name="dollarIcon">\u00A4</string>
+    <string name="tags">Tags</string>
+    <string name="edit">Edit</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 </resources>
