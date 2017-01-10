@@ -19,6 +19,9 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     private static final String KEY_TRANS = "trans";
     private static final String KEY_TIMESTAMPS = "timestamps";
+    private static final String KEY_YEAR = "year";
+    private static final String KEY_MONTH = "month";
+    private static final String KEY_DAY = "day";
     private static final String KEY_AMOUNT = "amount";
 
     private static final String SQL_CREATE_ENTRIES =
@@ -26,7 +29,10 @@ class TransactionDBHelper extends SQLiteOpenHelper {
                     KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     KEY_TRANS+ " TEXT," +
                     KEY_AMOUNT + " REAL," +
-                    KEY_TIMESTAMPS+ " TEXT" + " )";
+                    KEY_TIMESTAMPS+ " TEXT," +
+                    KEY_YEAR + " REAL," +
+                    KEY_MONTH + " REAL," +
+                    KEY_DAY + " REAL" + " )";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -53,11 +59,28 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_TRANS, trans.getTagsStr());
         values.put(KEY_TIMESTAMPS, trans.getTimestamp());
         values.put(KEY_AMOUNT, trans.getAmount());
+        values.put(KEY_YEAR, trans.getMyDate().getYear());
+        values.put(KEY_MONTH, trans.getMyDate().getMonth());
+        values.put(KEY_DAY, trans.getMyDate().getDay());
 
         // Inserting Row
         db.insert(TABLE_NAME, null, values);
         db.close();
         return true;
+    }
+
+    public void updateTransaction(Transaction trans) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_TRANS, trans.getTagsStr());
+        values.put(KEY_TIMESTAMPS, trans.getTimestamp());
+        values.put(KEY_AMOUNT, trans.getAmount());
+        values.put(KEY_YEAR, trans.getMyDate().getYear());
+        values.put(KEY_MONTH, trans.getMyDate().getMonth());
+        values.put(KEY_DAY, trans.getMyDate().getDay());
+
+        db.update(TABLE_NAME, values,  KEY_ID+"="+ trans.getId(), null);
     }
 
 
@@ -104,7 +127,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
 
             Helper helper = new Helper();
             trans.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-            trans.setTags(helper.parseTag(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
+            trans.setTags(helper.parseTagUnicode(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
             trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
             trans.setAmout(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
 

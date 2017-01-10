@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="swipe1">Details</string>
+    <color name="swipe1">#03A9F4</color>
+
+    <string name="swipe2">Delete</string>
+    <color name="swipe2">#0288D1</color>
+
+</resources>

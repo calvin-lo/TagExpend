@@ -1,14 +1,17 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.location.LocationManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class Transaction {
+public class Transaction implements Comparable<Transaction>{
 
     private static DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
     private List<Tag> tagList;
@@ -17,6 +20,12 @@ public class Transaction {
     private String tagStr;
     private float amount;
 
+    private MyDate myDate;
+    private Date date;
+
+    private static final String STAR_ICON = "\u2606";
+    private static final String LOCATION_ICON = "\u27B4";
+    private static final String DOLLAR_ICON = "\u00A4";
 
 
     Transaction() {
@@ -44,6 +53,30 @@ public class Transaction {
         this.tagList = tagList;
     }
 
+    public List<Tag> getStarTagsList() {
+        List<Tag> result = new ArrayList<>();
+
+        for (Tag t : this.tagList) {
+            Log.i("MYTEST", t.getType());
+            Log.i("MYTEST", STAR_ICON);
+            if (t.getType().equals(STAR_ICON)) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
+
+    public List<Tag> getLocationTagsList() {
+        List<Tag> result = new ArrayList<>();
+
+        for (Tag t : this.tagList) {
+            if (t.getType().equals(LOCATION_ICON)) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
+
     public List<Tag> getTagsList() {
         return this.tagList;
     }
@@ -54,10 +87,28 @@ public class Transaction {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+        myDate = new Helper().timeToMyDate(timestamp);
+        date = new Helper().timeToDate(timestamp);
     }
 
     public String getTimestamp() {
         return timestamp;
+    }
+
+    public MyDate getMyDate() {
+        return this.myDate;
+    }
+
+    public void setMyDate(MyDate myDate) {
+        this.myDate = myDate;
+    }
+
+    public Date getDate() {
+        return this.date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override
@@ -68,5 +119,10 @@ public class Transaction {
         }
         s = s + "$"  + amount;
         return s;
+    }
+
+    @Override
+    public int compareTo(Transaction t) {
+        return getDate().compareTo(t.getDate());
     }
 }

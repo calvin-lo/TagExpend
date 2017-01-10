@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TagActivity extends AppCompatActivity {
@@ -37,7 +38,7 @@ public class TagActivity extends AppCompatActivity {
         TransactionDBHelper transDB = new TransactionDBHelper(this);
         List<Transaction> transList = transDB.getTransByTag(tag);
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter<>(this, R.layout.activity_listview, transList);
+        ListViewAdapter arrayAdapter = new ListViewAdapter(this, new ArrayList<>(transList));
         ListView transListView = (ListView) findViewById(R.id.transListView);
         if (transListView != null) {
             transListView.setAdapter(arrayAdapter);

@@ -10,12 +10,12 @@ import android.widget.TextView;
 
 class CustomAdapter extends BaseAdapter {
 
-    private Context mContext;
+    private Context context;
     private String[]  title;
     private int[] icon;
 
     CustomAdapter(Context context, String[] text1, int[] imageIds) {
-        mContext = context;
+        this.context = context;
         title = text1;
         icon = imageIds;
 
@@ -35,7 +35,7 @@ class CustomAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             if (convertView == null) {
                 View row;
                 row = inflater.inflate(R.layout.row, parent, false);

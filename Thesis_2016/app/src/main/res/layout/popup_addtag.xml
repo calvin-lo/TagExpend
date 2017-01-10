@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tagInput"
+            android:textStyle="bold"
+            android:inputType="text"
+            android:layout_weight="0.9" />
+
+        <ImageButton
+            android:contentDescription="@string/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_done_black_24dp"
+            android:id="@+id/saveButton"
+            android:layout_weight="0.1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|bottom"
+        android:id="@+id/buttonLayout">
+
+        <Button
+            android:text="@string/tagIcon"
+            android:textSize="30sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/hashtagButton"
+            android:background="@android:color/transparent"
+            />
+        <Button
+            android:text="@string/atIcon"
+            android:textSize="30sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/atButton"
+            android:background="@android:color/transparent"
+            />
+        <Button
+            android:text="@string/dollarIcon"
+            android:textSize="30sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/dollarButton"
+            android:background="@android:color/transparent"
+            />
+        <ImageButton
+            android:contentDescription="@string/twitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/twitter"
+            android:id="@+id/twitterButton"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

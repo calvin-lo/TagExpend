@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView android:id="@+id/dateTV"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:textColor="@color/primaryText"
+        android:textStyle="bold"
+        android:textSize="35sp"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transactionList"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <TextView android:id="@+id/addTV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="@color/primaryText"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:drawableStart="@drawable/ic_add_black_36dp"
+        android:drawableLeft="@drawable/ic_add_black_36dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:text="@string/addLabel"
+        android:visibility="gone"
+        />
+</LinearLayout>

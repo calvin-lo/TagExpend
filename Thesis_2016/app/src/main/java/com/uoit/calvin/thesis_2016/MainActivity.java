@@ -1,39 +1,26 @@
 package com.uoit.calvin.thesis_2016;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
-import com.daimajia.swipe.util.Attributes;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
@@ -45,10 +32,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TWITTER_KEY = "PvpXWnRXyy9ggCnhsh26aGOLc";
     private static final String TWITTER_SECRET = "VX0q8UBgeIiT4UT5fzygdfq49xiwWzTOoL0wKxZaGs0sg7Qjfy";
 
-    ViewPagerAdapter adapter;
-
-    ListViewAdapter arrayAdapter;
-
     // List Layout
     private static final int DETAILS = 3;
     private static final int UPDATE = 2;
@@ -57,12 +40,6 @@ public class MainActivity extends AppCompatActivity
 
     TransactionDBHelper transDB;
     TagDBHelper tagDB;
-
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +57,19 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // Set up the drawer
-        updateDrawer();
-        //setupTabLayout();
+        //updateDrawer();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        if (drawer != null) {
+            drawer.addDrawerListener(toggle);
+        }
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+        }
 
         /**
          * Databases
@@ -95,28 +83,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onRestart() {
         super.onRestart();
-        //setupTabLayout();
-        updateDrawer();
-        arrayAdapter.notifyDataSetChanged();
+        //updateDrawer();
     }
 
     @Override
     public void onBackPressed() {
-        //setupTabLayout();
-        updateDrawer();
-        arrayAdapter.notifyDataSetChanged();
+        //updateDrawer();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        if (drawer != null) {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        arrayAdapter.notifyDataSetChanged();
         displayTransList();
     }
 
@@ -125,102 +110,35 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intent, SAVING_DATA);
     }
 
-    /*
-        Tab Layout
-     */
-    private void setupViewPager(ViewPager viewPager) {
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PrimaryFragment(), getResources().getString(R.string.fragOne));
-        //adapter.addFragment(new SecondFragment(), getResources().getString((R.string.fragTwo)));
-        viewPager.setAdapter(adapter);
+    public void create() {
+        Intent intent = new Intent(getApplicationContext(), FormActivity.class);
+        startActivityForResult(intent, SAVING_DATA);
     }
 
-    public void setupTabLayout() {
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-/*
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        if (tabLayout != null) {
-            tabLayout.setupWithViewPager(viewPager);
-            tabLayout.getTabAt(0).setIcon(R.drawable.ic_dns_white_24dp);
-            tabLayout.getTabAt(1).setIcon(R.drawable.ic_donut_small_black_24dp);
-
-            tabLayout.setOnTabSelectedListener(
-                    new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-                        @Override
-                        public void onTabSelected(TabLayout.Tab tab) {
-                            super.onTabSelected(tab);
-                            switch (tab.getPosition()) {
-                                case 0:
-                                    tab.setIcon(R.drawable.ic_dns_white_24dp);
-                                    break;
-                                case 1:
-                                    tab.setIcon(R.drawable.ic_donut_small_white_24dp);
-                                    break;
-                            }
-                        }
-
-                        @Override
-                        public void onTabUnselected(TabLayout.Tab tab) {
-                            super.onTabUnselected(tab);
-                            switch (tab.getPosition()) {
-                                case 0:
-                                    tab.setIcon(R.drawable.ic_dns_black_24dp);
-                                    break;
-                                case 1:
-                                    tab.setIcon(R.drawable.ic_donut_small_black_24dp);
-                                    break;
-                            }
-                        }
-
-                        @Override
-                        public void onTabReselected(TabLayout.Tab tab) {
-                            super.onTabReselected(tab);
-                        }
-                    }
-            );
-        }
-*/
-    }
     /*
         Drawer
      */
-    public void updateDrawer() {
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        if (drawer != null) {
-            drawer.addDrawerListener(toggle);
-        }
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
-            Menu menu = navigationView.getMenu();
-            menu.clear();
-            for (String s : new TagDBHelper(this).getTagsStringList()) {
-                menu.add(s);
-            }
-        }
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
 
-        String tag = item.getTitle().toString();
-        Intent intent = new Intent(this, TagActivity.class);
-        // symbol ☆
-        intent.putExtra("tag", tag);
-        startActivity(intent);
+        int id = item.getItemId();
+        if (id == R.id.nav_tag) {
+            Intent intent = new Intent(this, TagCloudActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_chart) {
+            Intent intent = new Intent(this, ChartActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_setting) {
+            Intent intent = new Intent(this, SettingActivity.class);
+            startActivity(intent);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 
@@ -240,7 +158,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.setting:
                 Intent intent = new Intent(this, SettingActivity.class);
                 startActivity(intent);
-                adapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -248,7 +165,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     // List Layout
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -282,7 +198,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
-        updateDrawer();
         displayTransList();
     }
 
@@ -290,32 +205,83 @@ public class MainActivity extends AppCompatActivity
         transDB = new TransactionDBHelper(getApplicationContext());
 
         List<Transaction> transList = transDB.getAllData();
-        List<Long> transIds = new ArrayList<>();
+        List<List<Transaction>> myList = new ArrayList<>();
+
+        //List<MyDate> uniqueDate = new ArrayList<>();
+        List<Date> uniqueDate = new ArrayList<>();
+
+        int todayPosition = -1;
+        int index = 0;
+        Helper helper = new Helper();
+        //MyDate todayDate = helper.timeToMyDate(helper.getCurrentTime());
+        Date todayDate = helper.timeToDate(helper.getCurrentTime());
+
+
         for (Transaction t : transList) {
-            transIds.add(t.getId());
+            boolean dup = false;
+            for (Date date : uniqueDate) {
+                if (helper.getYear(t.getDate())== helper.getYear(date)
+                        && helper.getMonth(t.getDate()) == helper.getMonth(date)
+                        && helper.getDay(t.getDate()) == helper.getDay(date)) {
+                    dup = true;
+                }
+            }
+            if (!dup) {
+                uniqueDate.add(t.getDate());
+            }
         }
 
-        ArrayList<Transaction> myDataset = new ArrayList<>(transList);
+        boolean haveToday = false;
+        for (Transaction t : transList) {
+            if (helper.getYear(t.getDate())== helper.getYear(todayDate)
+                    && helper.getMonth(t.getDate()) == helper.getMonth(todayDate)
+                    && helper.getDay(t.getDate()) == helper.getDay(todayDate)) {
+                haveToday = true;
+            }
+        }
+        if (!haveToday) {
+            uniqueDate.add(todayDate);
+        }
 
-        // Set the transaction
-        arrayAdapter = new ListViewAdapter(getApplicationContext(), myDataset);
-        ListView transListView = (ListView) findViewById(R.id.transactionList);
-        transListView.setAdapter(arrayAdapter);
-        registerForContextMenu(transListView);
 
-  /*      // Set the ID
-        ArrayAdapter arrayAdapterID = new ArrayAdapter<>(getApplicationContext(), R.layout.activity_listview, transIds);
-        ListView idList = (ListView) findViewById(R.id.transactionListID);
-        idList.setAdapter(arrayAdapterID);
-        registerForContextMenu(idList);
+        Collections.sort(transList);
+        Collections.reverse(transList);
+        Collections.sort(uniqueDate);
+        Collections.reverse(uniqueDate);
+        for (Date date : uniqueDate) {
+            List<Transaction> temp = new ArrayList<>();
+            for (Transaction t : transList) {
+                if (helper.getYear(t.getDate())== helper.getYear(date)
+                        && helper.getMonth(t.getDate()) == helper.getMonth(date)
+                        && helper.getDay(t.getDate()) == helper.getDay(date)) {
+                    temp.add(t);
+                }
+            }
+            myList.add(temp);
+        }
 
-       */
+        for (int i = 0; i < uniqueDate.size(); i++) {
+            if (helper.getYear(uniqueDate.get(i)) == helper.getYear(todayDate)
+                    && helper.getMonth(uniqueDate.get(i))  == helper.getMonth(todayDate)
+                    && helper.getDay(uniqueDate.get(i))  == helper.getDay(todayDate)) {
+                todayPosition = i;
+            }
+        }
+
+        if (myList.size() > 0) {
+            MainListViewAdapter mainAdapter = new MainListViewAdapter(getApplicationContext(), myList, uniqueDate, todayPosition);
+            ListView transListView = (ListView) findViewById(R.id.transactionList);
+            if (transListView != null) {
+                transListView.setAdapter(mainAdapter);
+                transListView.setSelectionFromTop(todayPosition,0);
+            }
+            registerForContextMenu(transListView);
+        }
 
         transDB.close();
     }
 
     // End of List Layout
-
 
 
 } // end of class

@@ -1,26 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/formLayout">
 
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/formToolbar"
-        android:background="@color/primary"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:title="@string/formTitle"/>
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tagInput"
-        android:onClick="clickInput"
         android:layout_marginTop="57dp"
         android:textStyle="bold"
         android:inputType="text"
@@ -42,7 +32,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_gravity="center"
             app:srcCompat="@drawable/ic_done_black_24dp"
             android:id="@+id/saveButton"
-            android:onClick="clickSave"
             android:background="@android:color/transparent"
             android:layout_weight="1" />
 
@@ -53,7 +42,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_gravity="center"
             app:srcCompat="@drawable/ic_add_a_photo_black_24dp"
             android:id="@+id/cameraButton"
-            android:onClick="clickCamera"
             android:background="@android:color/transparent"
             android:layout_weight="1" />
 
@@ -83,7 +71,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/hashtagButton"
-            android:onClick="clickHashtag"
             android:background="@android:color/transparent"
             />
         <Button
@@ -93,7 +80,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/atButton"
-            android:onClick="clickAt"
             android:background="@android:color/transparent"
             />
         <Button
@@ -103,7 +89,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/dollarButton"
-            android:onClick="clickDollar"
             android:background="@android:color/transparent"
             />
         <ImageButton
@@ -113,7 +98,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_gravity="center"
             app:srcCompat="@drawable/twitter"
             android:id="@+id/twitterButton"
-            android:onClick="clickTwitter"
             android:background="@android:color/transparent"
             />
 
