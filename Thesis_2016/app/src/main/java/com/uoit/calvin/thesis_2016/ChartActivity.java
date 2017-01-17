@@ -52,9 +52,6 @@ public class ChartActivity extends AppCompatActivity {
 
         PieChart chart = new PieChart(getApplicationContext());
         List<Tag> dashList = tagDBHelper.getTagsList(STAR_ICON);
-        for (Tag t : dashList) {
-            Log.i("MYTAG", t.getType());
-        }
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         for (Tag t : dashList) {
@@ -114,5 +111,7 @@ public class ChartActivity extends AppCompatActivity {
             linearLayout.addView(textViewByAt);
             linearLayout.addView(chart2, MARGIN, MARGIN);
         }
+
+        tagDBHelper.close();
     }
 }

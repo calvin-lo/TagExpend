@@ -80,6 +80,9 @@ class ListViewAdapter extends BaseSwipeAdapter {
                 notifyDataSetChanged();
                 mItemManger.closeAllItems();
 
+                transDB.close();
+                tagDB.close();
+
             }
         });
 

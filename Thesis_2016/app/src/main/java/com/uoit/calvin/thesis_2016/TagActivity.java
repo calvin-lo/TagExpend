@@ -56,6 +56,9 @@ public class TagActivity extends AppCompatActivity {
                 }
             }
         }
+
+        transDB.close();
+        tagDBHelper.close();
     }
 
     public void clickDelete(View v) {

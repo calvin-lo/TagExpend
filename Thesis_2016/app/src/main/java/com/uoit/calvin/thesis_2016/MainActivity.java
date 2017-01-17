@@ -198,7 +198,10 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
+
         displayTransList();
+        transDB.close();
+        tagDB.close();
     }
 
     public void displayTransList() {

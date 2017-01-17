@@ -70,7 +70,6 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
 
         long id = getIntent().getLongExtra("ID", 0);
         TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
-
         transaction = transactionDBHelper.getTransByID(id);
 
         // Amount
@@ -113,6 +112,7 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
         }
         registerForContextMenu(locationLV);
 
+        transactionDBHelper.close();
 
     }
 
