@@ -11,8 +11,6 @@
     <string name="setting">Setting</string>
     <string name="transDB">transDB</string>
     <string name="tagDB">tagCloudDB</string>
-    <string name="fragOne">List</string>
-    <string name="fragTwo">Chart</string>
     <string name="errorFormat">Incorrect Format!</string>
     <string name="total">Total</string>
     <string name="byDash">By #</string>
@@ -24,9 +22,14 @@
 
 
     <string name="atIcon">\u27B4</string>
-    <string name="tagIcon">\u2606</string>
+    <string name="starIcon">\u2606</string>
     <string name="dollarIcon">\u00A4</string>
+    <string name="categoryIcon">\u00A7</string>
     <string name="tags">Tags</string>
+
+    <!-- Form -->
+    <string name="defaultMsg">What\'s your transaction?</string>
+
 
 
     <!-- Tag Cloud -->
@@ -40,6 +43,7 @@
 
     <!-- Chart -->
     <string name="chartTitle">Chart</string>
+    <string name="trendTitle">Trend</string>
 
     <!-- Main List View -->
     <string name="addLabel">Click here to add a new transaction.</string>

@@ -2,6 +2,7 @@ package com.uoit.calvin.thesis_2016;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,12 +65,11 @@ class ListViewAdapter extends BaseSwipeAdapter {
                 TransactionDBHelper transDB = new TransactionDBHelper(context.getApplicationContext());
 
                 Helper helper = new Helper();
-                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id).toString());
+                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id).getMessage());
 
                 transDB.deleteTransactions(id);
 
                 // update tag cloud
-
                 TagDBHelper tagDB = new TagDBHelper(context.getApplicationContext());
                 for (Tag t : tagList) {
                     tagDB.updateTag(t);
@@ -88,7 +88,7 @@ class ListViewAdapter extends BaseSwipeAdapter {
 
         // Left
         TextView swipe3TV = (TextView) v.findViewById(R.id.swipe3);
-        String s = transactionsList.get(position).getTagsStr() + " $" + transactionsList.get(position).getAmount();
+        String s = transactionsList.get(position).getMessage() + " $" + transactionsList.get(position).getAmount();
         swipe3TV.setText(s);
         return v;
     }
@@ -96,7 +96,7 @@ class ListViewAdapter extends BaseSwipeAdapter {
     @Override
     public void fillValues(int position, View convertView) {
         TextView tagTv = (TextView)convertView.findViewById(R.id.tag);
-        String s = transactionsList.get(position).getTagsStr() + " $" + transactionsList.get(position).getAmount();
+        String s = transactionsList.get(position).getMessage();
         tagTv.setText(s);
         TextView timeTv = (TextView)convertView.findViewById(R.id.time);
         timeTv.setText(transactionsList.get(position).getTimestamp());

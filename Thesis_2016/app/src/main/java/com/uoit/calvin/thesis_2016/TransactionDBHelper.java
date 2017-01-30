@@ -17,19 +17,27 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "transactions";
 
     private static final String KEY_ID = "id";
-    private static final String KEY_TRANS = "trans";
+    private static final String KEY_MESSAGE = "message";
     private static final String KEY_TIMESTAMPS = "timestamps";
     private static final String KEY_YEAR = "year";
     private static final String KEY_MONTH = "month";
     private static final String KEY_DAY = "day";
     private static final String KEY_AMOUNT = "amount";
+    private static final String KEY_USER = "user";
+    private static final String KEY_CATEGORY = "category";
+    private static final String KEY_LOCATION = "location";
+    private static final String KEY_GENERAL = "general";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME+ " (" +
                     KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    KEY_TRANS+ " TEXT," +
-                    KEY_AMOUNT + " REAL," +
-                    KEY_TIMESTAMPS+ " TEXT," +
+                    KEY_MESSAGE + " TEXT," +
+                    KEY_TIMESTAMPS + " TEXT," +
+                    KEY_GENERAL + " TEXT," +
+                    KEY_LOCATION + " TEXT," +
+                    KEY_CATEGORY + " TEXT," +
+                    KEY_AMOUNT + " REAL, " +
+                    KEY_USER + " TEXT," +
                     KEY_YEAR + " REAL," +
                     KEY_MONTH + " REAL," +
                     KEY_DAY + " REAL" + " )";
@@ -55,13 +63,18 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     boolean addTransactions(Transaction trans) {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        Helper helper = new Helper();
+
         ContentValues values = new ContentValues();
-        values.put(KEY_TRANS, trans.getTagsStr());
+        values.put(KEY_MESSAGE, trans.getMessage());
         values.put(KEY_TIMESTAMPS, trans.getTimestamp());
         values.put(KEY_AMOUNT, trans.getAmount());
-        values.put(KEY_YEAR, trans.getMyDate().getYear());
-        values.put(KEY_MONTH, trans.getMyDate().getMonth());
-        values.put(KEY_DAY, trans.getMyDate().getDay());
+        values.put(KEY_GENERAL, trans.getGeneral());
+        values.put(KEY_LOCATION, trans.getLocation());
+        values.put(KEY_CATEGORY, trans.getCategory());
+        values.put(KEY_YEAR, helper.getYear(trans.getDate()));
+        values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
+        values.put(KEY_DAY, helper.getDay(trans.getDate()));
 
         // Inserting Row
         db.insert(TABLE_NAME, null, values);
@@ -72,14 +85,18 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     public void updateTransaction(Transaction trans) {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        Helper helper = new Helper();
+
         ContentValues values = new ContentValues();
-        values.put(KEY_TRANS, trans.getTagsStr());
+        values.put(KEY_MESSAGE, trans.getMessage());
         values.put(KEY_TIMESTAMPS, trans.getTimestamp());
         values.put(KEY_AMOUNT, trans.getAmount());
-        values.put(KEY_YEAR, trans.getMyDate().getYear());
-        values.put(KEY_MONTH, trans.getMyDate().getMonth());
-        values.put(KEY_DAY, trans.getMyDate().getDay());
-
+        values.put(KEY_GENERAL, trans.getGeneral());
+        values.put(KEY_LOCATION, trans.getLocation());
+        values.put(KEY_CATEGORY, trans.getCategory());
+        values.put(KEY_YEAR, helper.getYear(trans.getDate()));
+        values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
+        values.put(KEY_DAY, helper.getDay(trans.getDate()));
         db.update(TABLE_NAME, values,  KEY_ID+"="+ trans.getId(), null);
     }
 
@@ -99,14 +116,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            Helper helper = new Helper();
-            Transaction trans = new Transaction();
-
-            trans.setId(cursor.getLong((cursor.getColumnIndex(KEY_ID))));
-            trans.setTags(helper.parseTagUnicode(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
-            trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
-            trans.setAmout(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-
+            Transaction trans = getTransaction(cursor);
             transList.add(trans);
             cursor.moveToNext();
         }
@@ -125,12 +135,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
 
         while(!cursor.isAfterLast()){
 
-            Helper helper = new Helper();
-            trans.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-            trans.setTags(helper.parseTagUnicode(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
-            trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
-            trans.setAmout(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-
+            trans = getTransaction(cursor);
             cursor.moveToNext();
         }
         cursor.close();
@@ -145,16 +150,11 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
-            String s = cursor.getString(cursor.getColumnIndex(KEY_TRANS));
+            String s = cursor.getString(cursor.getColumnIndex(KEY_MESSAGE));
             Helper helper = new Helper();
-            List<String> tagStrList = (helper.tagListToString(helper.parseTagUnicode(s)));
+            List<String> tagStrList = (helper.tagListToString(helper.parseTag(s)));
             if (tagStrList.contains(tag)) {
-                Transaction trans = new Transaction();
-                trans.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-                trans.setTags(helper.parseTagUnicode(cursor.getString(cursor.getColumnIndex(KEY_TRANS))));
-                trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
-                trans.setAmout(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-
+                Transaction trans = getTransaction(cursor);
                 transList.add(trans);
             }
             cursor.moveToNext();
@@ -163,6 +163,21 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return transList;
+    }
+
+    private Transaction getTransaction(Cursor cursor) {
+        Transaction trans = new Transaction();
+
+        trans.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
+        trans.setMessage(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE)));
+        trans.setTags(new Helper().parseTag(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE))));
+        trans.setGeneral(cursor.getString(cursor.getColumnIndex(KEY_GENERAL)));
+        trans.setLocation(cursor.getString(cursor.getColumnIndex(KEY_LOCATION)));
+        trans.setCategory(cursor.getString(cursor.getColumnIndex(KEY_CATEGORY)));
+        trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
+        trans.setAmount(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+
+        return trans;
     }
 
 

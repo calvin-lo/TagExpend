@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,112 +11,105 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/formToolbar"
-        android:background="@color/primary"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:title="@string/formTitle"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tagInput"
-        android:onClick="clickInput"
-        android:layout_marginTop="57dp"
-        android:textStyle="bold"
-        android:inputType="text"
-        />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        app:title=" "/>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageButton
-            android:contentDescription="@string/save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_done_black_24dp"
-            android:id="@+id/saveButton"
-            android:onClick="clickSave"
-            android:background="@android:color/transparent"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:contentDescription="@string/save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_add_a_photo_black_24dp"
-            android:id="@+id/cameraButton"
-            android:onClick="clickCamera"
-            android:background="@android:color/transparent"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="80dp" />
-
-    <ImageView
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/formImage" />
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:gravity="center|bottom"
-        android:id="@+id/buttonLayout">
+        android:id="@+id/buttonLayout"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:weightSum="7"
+        android:elevation="5dp">
 
         <Button
-            android:text="@string/tagIcon"
+            android:text="@string/starIcon"
             android:textSize="30sp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:id="@+id/hashtagButton"
-            android:onClick="clickHashtag"
+            android:id="@+id/starButton"
+            android:onClick="clickStar"
             android:background="@android:color/transparent"
+            android:layout_weight="1"
             />
         <Button
             android:text="@string/atIcon"
             android:textSize="30sp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/atButton"
             android:onClick="clickAt"
             android:background="@android:color/transparent"
+            android:layout_weight="1"
             />
         <Button
             android:text="@string/dollarIcon"
             android:textSize="30sp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/dollarButton"
             android:onClick="clickDollar"
             android:background="@android:color/transparent"
+            android:layout_weight="1"
             />
+
+        <Button
+            android:text="@string/categoryIcon"
+            android:textSize="28sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/categoryButton"
+            android:onClick="clickCategory"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            />
+
         <ImageButton
             android:contentDescription="@string/twitter"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             app:srcCompat="@drawable/twitter"
             android:id="@+id/twitterButton"
             android:onClick="clickTwitter"
             android:background="@android:color/transparent"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:contentDescription="@string/save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_done_black_24dp"
+            android:id="@+id/saveButton"
+            android:onClick="clickSave"
+            android:background="@android:color/transparent"
+            android:layout_weight="2"
             />
+
 
     </LinearLayout>
 
-</LinearLayout>
+    <EditText
+        android:hint="@string/defaultMsg"
+        android:inputType="textMultiLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tagInput"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
+        android:background="@android:color/transparent"
+        android:layout_below="@+id/formToolbar"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

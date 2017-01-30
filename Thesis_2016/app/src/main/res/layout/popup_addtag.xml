@@ -36,7 +36,7 @@
         android:id="@+id/buttonLayout">
 
         <Button
-            android:text="@string/tagIcon"
+            android:text="@string/starIcon"
             android:textSize="30sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

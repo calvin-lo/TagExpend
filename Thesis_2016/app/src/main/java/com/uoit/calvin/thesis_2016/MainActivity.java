@@ -18,7 +18,6 @@ import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TWITTER_SECRET = "VX0q8UBgeIiT4UT5fzygdfq49xiwWzTOoL0wKxZaGs0sg7Qjfy";
 
     // List Layout
-    private static final int DETAILS = 3;
     private static final int UPDATE = 2;
     private static final int SAVING_DATA = 1;
     private static final int RESULT_OK = 1;
@@ -110,11 +108,6 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intent, SAVING_DATA);
     }
 
-    public void create() {
-        Intent intent = new Intent(getApplicationContext(), FormActivity.class);
-        startActivityForResult(intent, SAVING_DATA);
-    }
-
     /*
         Drawer
      */
@@ -130,7 +123,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_chart) {
             Intent intent = new Intent(this, ChartActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_setting) {
+        } else if (id == R.id.nav_trend) {
+
+        }
+        else if (id == R.id.nav_setting) {
             Intent intent = new Intent(this, SettingActivity.class);
             startActivity(intent);
         }
@@ -175,18 +171,21 @@ public class MainActivity extends AppCompatActivity
                     transDB = new TransactionDBHelper(getApplicationContext());
                     Helper helper = new Helper();
 
-                    String input = data.getStringExtra("trans");
-                    List<Tag> tagList = helper.parseTag(input);
+                    String message = data.getStringExtra("trans");
 
                     Transaction trans = new Transaction();
-                    trans.setTags(tagList);
+                    trans.setMessage(message);
+                    trans.setTags(helper.parseTag(message));
+                    trans.setGeneral(helper.parseGeneral(message));
+                    trans.setLocation(helper.parseLocation(message));
+                    trans.setCategory(helper.parseCategory(message));
                     trans.setTimestamp(helper.getCurrentTime());
-                    trans.setAmout(helper.getAmount(input));
+                    trans.setAmount(helper.getAmount(message));
                     transDB.addTransactions(trans);
 
                     // add the tag to tag cloud
                     tagDB = new TagDBHelper(getApplicationContext());
-                    for (Tag t : tagList) {
+                    for (Tag t : trans.getTagsList()) {
                         tagDB.addTag(t);
                     }
 
@@ -200,26 +199,21 @@ public class MainActivity extends AppCompatActivity
         }
 
         displayTransList();
-        transDB.close();
-        tagDB.close();
     }
 
     public void displayTransList() {
         transDB = new TransactionDBHelper(getApplicationContext());
 
-        List<Transaction> transList = transDB.getAllData();
+        List<Transaction> transList = transDB.getAllData();;
         List<List<Transaction>> myList = new ArrayList<>();
 
-        //List<MyDate> uniqueDate = new ArrayList<>();
         List<Date> uniqueDate = new ArrayList<>();
 
         int todayPosition = -1;
-        int index = 0;
         Helper helper = new Helper();
-        //MyDate todayDate = helper.timeToMyDate(helper.getCurrentTime());
         Date todayDate = helper.timeToDate(helper.getCurrentTime());
 
-
+        // Date Sorting
         for (Transaction t : transList) {
             boolean dup = false;
             for (Date date : uniqueDate) {
@@ -271,6 +265,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+
         if (myList.size() > 0) {
             MainListViewAdapter mainAdapter = new MainListViewAdapter(getApplicationContext(), myList, uniqueDate, todayPosition);
             ListView transListView = (ListView) findViewById(R.id.transactionList);
@@ -283,7 +278,6 @@ public class MainActivity extends AppCompatActivity
 
         transDB.close();
     }
-
     // End of List Layout
 
 

@@ -10,6 +10,9 @@
         <item android:id="@+id/nav_chart"
             android:icon="@drawable/ic_show_chart_white_36dp"
             android:title="@string/chartTitle"/>
+        <item android:id="@+id/nav_trend"
+            android:icon="@drawable/ic_trending_up_white_36dp"
+            android:title="@string/trendTitle"/>
     </group>
 
     <group android:checkableBehavior="single"

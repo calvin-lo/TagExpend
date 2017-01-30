@@ -22,8 +22,10 @@ import java.util.List;
 public class ChartActivity extends AppCompatActivity {
 
     private static final int MARGIN = 1080;
-    private static final String STAR_ICON = "☆";
-    private static final String AT_ICON = "➴";
+    private static final String STAR_ICON = "\u2606";
+    private static final String LOCATION_ICON = "\u27B4";
+    private static final String DOLLAR_ICON = "\u00A4";
+    private static final String CATEGORY_ICON = "\u00A7";
 
 
     @Override
@@ -74,7 +76,7 @@ public class ChartActivity extends AppCompatActivity {
         // chart 2
 
         PieChart chart2 = new PieChart(getApplicationContext());
-        List<Tag> atList = tagDBHelper.getTagsList(AT_ICON);
+        List<Tag> atList = tagDBHelper.getTagsList(LOCATION_ICON);
         ArrayList<PieEntry> entries2 = new ArrayList<>();
 
         for (Tag t : atList) {

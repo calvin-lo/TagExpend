@@ -39,8 +39,6 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
     private String time;
     private String date;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +76,6 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
             amountTV.setText(s);
         }
 
-
         // Date
         Date d = transaction.getDate();
 
@@ -94,23 +91,31 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
             timeTV.setText(time);
         }
 
-
         // Tags
-        ArrayAdapter starAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getStarTagsList());
-        ArrayAdapter locationAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getLocationTagsList());
+
+
+        ArrayAdapter starAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getGeneralList());
+        ArrayAdapter locationAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getLocationList());
+        ArrayAdapter categoryAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getCategoryList());
+
 
         ListView starLV = (ListView) findViewById(R.id.starListView);
-        ListView locationLV = (ListView) findViewById(R.id.locationListView);
-
         if (starLV != null) {
             starLV.setAdapter(starAdapter);
         }
         registerForContextMenu(starLV);
 
+        ListView locationLV = (ListView) findViewById(R.id.locationListView);
         if (locationLV != null) {
             locationLV.setAdapter(locationAdapter);
         }
         registerForContextMenu(locationLV);
+
+        ListView categoryLV = (ListView) findViewById(R.id.categoryListView);
+        if (categoryLV != null) {
+            categoryLV.setAdapter(categoryAdapter);
+        }
+        registerForContextMenu(categoryLV);
 
         transactionDBHelper.close();
 
