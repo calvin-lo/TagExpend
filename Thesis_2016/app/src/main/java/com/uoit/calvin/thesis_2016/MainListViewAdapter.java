@@ -56,7 +56,7 @@ class MainListViewAdapter extends BaseAdapter {
             String s = Integer.toString(new Helper().getDay(uniqueDate.get(position)));
             tv.setText(s);
             if (position == this.selectedPosition) {
-                tv.setTextColor(context.getResources().getColor(R.color.accent));
+                tv.setTextColor(context.getResources().getColor(R.color.highlight));
             }
 
             ListViewAdapter arrayAdapter = new ListViewAdapter(context.getApplicationContext(), new ArrayList<>(transactionList.get(position)));

@@ -39,7 +39,16 @@ public class TagActivity extends AppCompatActivity {
 
         Toolbar toolBar = (Toolbar) findViewById(R.id.tagToolbar);
         if (toolBar != null) {
-            toolBar.setTitle(tag);
+            TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
+            List<Tag> tagList = tagDBHelper.getTagsList("*");
+            for (Tag t : tagList) {
+                if (t.toString().equals(tag)) {
+                    String title= tag + " - Total: $" + t.getAmount();
+                    toolBar.setTitle(title);
+                    tagDBHelper.close();
+                }
+            }
+
         }
         setSupportActionBar(toolBar);
         ActionBar ab = getSupportActionBar();
@@ -58,21 +67,7 @@ public class TagActivity extends AppCompatActivity {
             registerForContextMenu(transListView);
         }
 
-        TextView textViewTotal = (TextView) findViewById(R.id.textViewTotal);
-        TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
-        List<Tag> tagList = tagDBHelper.getTagsList("*");
-        for (Tag t : tagList) {
-            if (t.toString().equals(tag)) {
-                String text = getResources().getString(R.string.dollarIcon) + t.getAmount();
-                if (textViewTotal != null) {
-                    textViewTotal.setText(text);
-                }
-            }
-        }
-
         transDB.close();
-        tagDBHelper.close();
-
         displayTrend();
     }
 
@@ -141,7 +136,7 @@ public class TagActivity extends AppCompatActivity {
         LineChart chart = (LineChart) findViewById(R.id.chart);
 
         ArrayList<Float> arrayList = calculateDateByYear(2017);
-        ArrayList<Entry> entries = new ArrayList<Entry>();
+        ArrayList<Entry> entries = new ArrayList<>();
 
 
         for (int i =0; i < 12; i++) {
@@ -155,7 +150,6 @@ public class TagActivity extends AppCompatActivity {
             chart.setData(data);
             chart.invalidate();
             chart.setDescription(description);
-            
         }
 
 

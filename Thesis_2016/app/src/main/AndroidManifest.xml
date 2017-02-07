@@ -27,10 +27,10 @@
         </activity>
         <activity
             android:name=".TagActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".TagCloudActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".TagCloudActivity" />
         </activity>
         <activity
             android:name=".SettingActivity"
