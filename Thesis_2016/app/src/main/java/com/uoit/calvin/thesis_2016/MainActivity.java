@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity
     public void create(View v) {
         Intent intent = new Intent(getApplicationContext(), FormActivity.class);
         startActivityForResult(intent, SAVING_DATA);
-        //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
     }
 
     /*

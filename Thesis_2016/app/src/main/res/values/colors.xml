@@ -3,18 +3,20 @@
     <color name="black">#000</color>
     <color name="orange">#FA0</color>
 
-    <color name="darkPrimary">#091323</color>
-    <color name="primary">#0c1a30</color>
+    <color name="darkPrimary">#757575</color>
+
+    <color name="primary">#f9f9f9</color>
+
     <color name="lightPrimary">#ffffff</color>
-    <color name="accent">#54fff9</color>
+    <color name="accent">#0c1a30</color>
     <color name="highlight">#3942ad</color>
     <color name="defaultPrimary">#0c1a30</color>
     <color name="text">#FFFFFF</color>
     <color name="primaryText">#212121</color>
     <color name="secondaryText">#757575</color>
 
-    <color name="actionBarColor">#0c1a30</color>
-    <color name="notificationBarColor">#091323</color>
+    <color name="actionBarColor">#f9f9f9</color>
+    <color name="notificationBarColor">#757575</color>
 
 
     <color name="white">#FFF</color>>

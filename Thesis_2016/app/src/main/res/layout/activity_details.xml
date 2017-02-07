@@ -12,8 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
+        android:theme="@style/MyActionBarTheme"
+        app:popupTheme="@style/MyActionBarTheme"
+        app:elevation="2dp"
         app:title="@string/detail"
         />
 
@@ -31,7 +32,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_attach_money_white_24dp"
+            app:srcCompat="@drawable/ic_attach_money_black_36dp"
             android:layout_gravity="center_vertical"
             android:id="@+id/imageView3"/>
 
@@ -40,7 +41,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:gravity="center"
-            android:textColor="@color/text"
+            android:textColor="@color/primaryText"
             android:textSize="24sp"
             android:id="@+id/amountTextView"
             android:text="@string/sampleAmount"
@@ -72,7 +73,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:gravity="center"
-            android:textColor="@color/text"
+            android:textColor="@color/primaryText"
             android:textSize="18sp"
             android:id="@+id/dateTextView"
             android:clickable="false"
@@ -86,7 +87,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:gravity="center"
-            android:textColor="@color/text"
+            android:textColor="@color/primaryText"
             android:textSize="18sp"
             android:id="@+id/timeTextView"
             android:clickable="false"
@@ -109,14 +110,14 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_star_border_white_36dp"
+            app:srcCompat="@drawable/ic_star_border_black_36dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="1" />
 
         <ImageView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_location_on_white_36dp"
+            app:srcCompat="@drawable/ic_location_on_black_36dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="1" />
 
@@ -177,7 +178,6 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:srcCompat="@drawable/ic_save_white_36dp"
-        android:layout_marginLeft="310dp"
         android:layout_marginStart="310dp"
         android:layout_marginTop="150dp"
         android:id="@+id/saveButton"
@@ -190,8 +190,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:srcCompat="@drawable/ic_mode_edit_white_36dp"
-        android:layout_marginLeft="310dp"
-        android:layout_marginStart="310dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="150dp"
         android:id="@+id/editButton"
         android:onClick="edit"

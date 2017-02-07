@@ -11,4 +11,11 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat" />
 
+
+    <style name="MyActionBarTheme" parent="ThemeOverlay.AppCompat">
+        <item name="android:background">@color/actionBarColor</item>
+        <item name="android:textColorPrimary">@color/primaryText</item>
+        <item name="colorAccent">@color/highlight</item>
+    </style>
+
 </resources>

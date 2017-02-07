@@ -13,14 +13,14 @@
         android:id="@+id/country_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:textColor="@color/text"
         android:layout_below="@+id/country_photo"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
-        android:background="#1976D2"/>
+        android:background="@color/defaultPrimary"/>
 
 
 </android.support.v7.widget.CardView>
