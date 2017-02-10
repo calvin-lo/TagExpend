@@ -12,6 +12,8 @@ public class SolventRecyclerViewAdapter  extends RecyclerView.Adapter<SolventVie
 
     private List<Tag> itemList;
     private Context context;
+    float min = 15;
+    float max = 30;
 
     public SolventRecyclerViewAdapter(Context context, List<Tag> itemList) {
         this.itemList = itemList;
@@ -29,6 +31,13 @@ public class SolventRecyclerViewAdapter  extends RecyclerView.Adapter<SolventVie
     @Override
     public void onBindViewHolder(SolventViewHolders holder, int position) {
         holder.textView.setText(itemList.get(position).toString());
+        float textSize = itemList.get(position).getAmount();
+        if (textSize < min) {
+            textSize = min;
+        } else if (textSize > max) {
+            textSize = max;
+        }
+        holder.textView.setTextSize(textSize);
     }
 
     @Override

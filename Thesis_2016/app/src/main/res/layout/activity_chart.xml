@@ -7,29 +7,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/formToolbar"
-        android:background="@color/primary"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:title="@string/chartTitle"/>
+        android:id="@+id/chartAppBar"
+        android:theme="@style/MyActionBarTheme"
+        app:popupTheme="@style/MyActionBarTheme"
+        app:elevation="2dp">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/chartToolbar"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/chartTitle"
+            app:elevation="5dp" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/categorySpinner" />
+    </GridLayout>
+
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/chartLayout">
-        </LinearLayout>
-
-    </ScrollView>
+        android:id="@+id/chartLayout">
+    </LinearLayout>
 
 
 </LinearLayout>

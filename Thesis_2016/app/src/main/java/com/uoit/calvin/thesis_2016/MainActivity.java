@@ -3,24 +3,23 @@ package com.uoit.calvin.thesis_2016;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ListView;
+import android.view.MotionEvent;
+
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -39,6 +38,10 @@ public class MainActivity extends AppCompatActivity
     TransactionDBHelper transDB;
     TagDBHelper tagDB;
 
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -51,8 +54,9 @@ public class MainActivity extends AppCompatActivity
         //deleteDatabase("tagCloudDB");
 
         // Set up the action bar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(getResources().getString(R.string.fragment1));
 
         // Set up the drawer
         //updateDrawer();
@@ -69,13 +73,66 @@ public class MainActivity extends AppCompatActivity
             navigationView.setNavigationItemSelectedListener(this);
         }
 
-        /**
-         * Databases
-         */
-        displayTransList();
+        // Tab Layout
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        setupViewPager(viewPager);
+
+        final TabLayout.Tab home = tabLayout.newTab();
+        home.setIcon(R.drawable.ic_home_black_24dp);
+
+        final TabLayout.Tab dashboard = tabLayout.newTab();
+        dashboard.setIcon(R.drawable.ic_dashboard_black_24dp);
+
+        final TabLayout.Tab chart = tabLayout.newTab();
+        chart.setIcon(R.drawable.ic_insert_chart_black_24dp);
+
+        final TabLayout.Tab following = tabLayout.newTab();
+        following.setIcon(R.drawable.ic_explore_black_24dp);
+
+        tabLayout.addTab(home, 0);
+        tabLayout.addTab(dashboard, 1);
+        tabLayout.addTab(chart, 2);
+        tabLayout.addTab(following,3);
+
+        tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
 
 
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+              @Override
+              public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+              @Override
+              public void onPageSelected(int position) {
+                  switch (position) {
+                      case 0:
+                          //home.setIcon(R.drawable.ic_home_black_24dp);
+                          //star.setIcon(R.drawable.ic_create_black_24dp);
+                          toolbar.setTitle(getResources().getString(R.string.fragment1));
+                          break;
+                      case 1:
+                         //home.setIcon(R.drawable.ic_home_black_24dp);
+                          //star.setIcon(R.drawable.ic_clear_black_24dp);
+                          toolbar.setTitle(getResources().getString(R.string.fragment2));
+                          break;
+                      case 2:
+                          toolbar.setTitle(getResources().getString(R.string.fragment3));
+                          break;
+                      case 3:
+                          toolbar.setTitle(getResources().getString(R.string.fragment4));
+                          break;
+
+                  }
+              }
+
+              @Override
+              public void onPageScrollStateChanged(int state) {}
+
+          });
     }
 
     @Override
@@ -100,17 +157,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        displayTransList();
+        //displayTransList();
     }
 
-    public void create(View v) {
-        Intent intent = new Intent(getApplicationContext(), FormActivity.class);
-        startActivityForResult(intent, SAVING_DATA);
-    }
-
-    /*
-        Drawer
-     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -139,28 +188,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     /*
+        View Pager
+     */
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new FragmentHome(), getResources().getString(R.string.fragment1));
+        adapter.addFragment(new FragmentTagCloud(),getResources().getString(R.string.fragment2));
+        adapter.addFragment(new FragmentChart(), getResources().getString(R.string.fragment3));
+        adapter.addFragment(new FragmentFollowing(), getResources().getString(R.string.fragment4));
+        viewPager.setAdapter(adapter);
+    }
+
+
+    /*
         Setting Menu
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView =
+                (SearchView) MenuItemCompat.getActionView(searchItem);
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.setting:
-                Intent intent = new Intent(this, SettingActivity.class);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    // List Layout
+/*    // List Layout
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -279,7 +332,7 @@ public class MainActivity extends AppCompatActivity
         transDB.close();
     }
     // End of List Layout
-
+*/
 
 } // end of class
 

@@ -6,23 +6,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class TagActivity extends AppCompatActivity {
@@ -68,7 +77,11 @@ public class TagActivity extends AppCompatActivity {
         }
 
         transDB.close();
-        displayTrend();
+        setYearSpinner();
+        setMonthSpinner();
+        int currYear = Calendar.getInstance().get(Calendar.YEAR);
+        int currMonth = Calendar.getInstance().get(Calendar.MONTH);
+        displayTrend(currYear, -1);
     }
 
     public void clickDelete(View v) {
@@ -78,78 +91,157 @@ public class TagActivity extends AppCompatActivity {
         finish();
     }
 
+    public void setMonthSpinner() {
+        String[] mMonths = new String[]{
+                "All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+
+        Spinner monthSpinner = (Spinner) findViewById(R.id.monthSpinner);
+        List<String> months = new ArrayList<>(Arrays.asList(mMonths));
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, months);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (monthSpinner != null) {
+            monthSpinner.setAdapter(adapter);
+        }
+
+        if (monthSpinner != null) {
+            monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                    int month = new Helper().parseMonthtoInt(parentView.getItemAtPosition(position).toString());
+                    Log.i("TEST", month+"");
+                    Spinner yearSpinner = (Spinner) findViewById(R.id.yearSpinner);
+                    if (yearSpinner != null) {
+                        int year = Integer.parseInt(yearSpinner.getSelectedItem().toString());
+                        displayTrend(year, month);
+                    }
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parentView) {
+                    // your code here
+                }
+            });
+        }
+
+    }
+
+    public void setYearSpinner() {
+        Spinner yearSpinner = (Spinner) findViewById(R.id.yearSpinner);
+
+        int currYear = Calendar.getInstance().get(Calendar.YEAR);
+        List<Integer> years = new ArrayList<>();
+        for (int i = currYear; i >= 2000; i--){
+            years.add(i);
+        }
+
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, years);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (yearSpinner != null) {
+            yearSpinner.setAdapter(adapter);
+        }
+
+        yearSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                int year = Integer.parseInt(parentView.getItemAtPosition(position).toString());
+                Spinner monthSpinner = (Spinner) findViewById(R.id.yearSpinner);
+                if (monthSpinner != null) {
+                    int month = new Helper().parseMonthtoInt(monthSpinner.getSelectedItem().toString());
+                    displayTrend(year, month);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+    }
+
     public ArrayList<Float> calculateDateByYear (int year) {
         ArrayList<Float> resultList = new ArrayList<>();
         for (int i = 0; i < 12; i++) {
             resultList.add(0.0f);
         }
-        for (Transaction t : transList) {
+        for (int i = 0; i < transList.size(); i++) {
+            Transaction t = transList.get(i);
             if (t.getYear() == year) {
-                switch (t.getMonth()){
-                    case 1:
-                        resultList.set(0, resultList.get(0) + t.getAmount());
-                        break;
-                    case 2:
-                        resultList.set(1, resultList.get(1) + t.getAmount());
-                        break;
-                    case 3:
-                        resultList.set(2, resultList.get(2) + t.getAmount());
-                        break;
-                    case 4:
-                        resultList.set(3, resultList.get(3) + t.getAmount());
-                        break;
-                    case 5:
-                        resultList.set(4, resultList.get(4) + t.getAmount());
-                        break;
-                    case 6:
-                        resultList.set(5, resultList.get(5) + t.getAmount());
-                        break;
-                    case 7:
-                        resultList.set(6, resultList.get(6) + t.getAmount());
-                        break;
-                    case 8:
-                        resultList.set(7, resultList.get(7) + t.getAmount());
-                        break;
-                    case 9:
-                        resultList.set(8, resultList.get(8) + t.getAmount());
-                        break;
-                    case 10:
-                        resultList.set(9, resultList.get(9) + t.getAmount());
-                        break;
-                    case 11:
-                        resultList.set(10, resultList.get(10) + t.getAmount());
-                        break;
-                    case 12:
-                        resultList.set(11, resultList.get(11) + t.getAmount());
-                        break;
-                }
+                resultList.set(t.getMonth()-1, resultList.get(t.getMonth()-1) + t.getAmount());
             }
         }
         return resultList;
     }
 
-    public void displayTrend() {
+    public ArrayList<Float> calculateDateByDay (int year, int month) {
+        ArrayList<Float> resultList = new ArrayList<>();
+        for (int i = 0; i < 31; i++) {
+            resultList.add(0.0f);
+        }
+        for (int i = 0; i < transList.size(); i++) {
+            Transaction t = transList.get(i);
+            if ((t.getYear() == year) && (t.getMonth() == month)) {
+                resultList.set(t.getDay(), resultList.get(t.getDay()) + t.getAmount());
+            }
+        }
+        return resultList;
+    }
 
-        Description description = new Description();
-        description.setText("");
+    public void displayTrend(int year, int month) {
 
         LineChart chart = (LineChart) findViewById(R.id.chart);
 
-        ArrayList<Float> arrayList = calculateDateByYear(2017);
+        boolean type = month > 0 && month <= 12;
+
+        ArrayList<Float> arrayList;
         ArrayList<Entry> entries = new ArrayList<>();
-
-
-        for (int i =0; i < 12; i++) {
-            entries.add(new Entry(i+1, arrayList.get(i)));
+        if (type) {
+            arrayList = calculateDateByDay(year, month);
+            for (int i = 0; i < 31; i++) {
+                entries.add(new Entry(i, arrayList.get(i)));
+            }
+        } else {
+            arrayList = calculateDateByYear(year);
+            for (int i =0; i < 12; i++) {
+                entries.add(new Entry(i, arrayList.get(i)));
+            }
         }
 
         LineDataSet dataset = new LineDataSet(entries, "Amount");
-
         LineData data = new LineData(dataset);
         if (chart != null) {
             chart.setData(data);
             chart.invalidate();
-            chart.setDescription(description);
+            chart.getDescription().setEnabled(false);
+            chart.getLegend().setEnabled(false);
+            //chart.setScaleEnabled(false);
+
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(false);
+            xAxis.setGranularity(1f);
+
+            if (type) {
+                xAxis.setLabelCount(10);
+                xAxis.setAxisMinimum(1.0f);
+                xAxis.setAxisMaximum(31.0f);
+                xAxis.setValueFormatter(new XAxisFormatterDefault());
+            } else {
+                xAxis.setLabelCount(12);
+                xAxis.setAxisMinimum(0.0f);
+                xAxis.setAxisMaximum(11.0f);
+                xAxis.setValueFormatter(new XAxisFormatterMonth());
+            }
+            YAxis yAxisLeft = chart.getAxisLeft();
+            yAxisLeft.setAxisMinimum(0.0f);
+            yAxisLeft.setDrawGridLines(false);
+
+
+            YAxis yAxisRight = chart.getAxisRight();
+            yAxisRight.setEnabled(false);
+
         }
 
 

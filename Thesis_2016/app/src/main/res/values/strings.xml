@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name">Money Manager</string>
-    <string name="wallet">Wallet</string>
-    <string name="visual">Visual</string>
 
-    <string name="formTitle">Add a transaction</string>
+    <!-- Main -->
+    <string name="app_name">Money Manager</string>
+    <string name="fragment1">Home</string>
+    <string name="fragment2">Tag Cloud</string>
+    <string name="fragment3">Chart</string>
+    <string name="fragment4">Following</string>
+    <string name="action_search">Search</string>
 
 
     <string name="save">Save</string>
