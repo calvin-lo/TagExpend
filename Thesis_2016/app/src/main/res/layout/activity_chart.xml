@@ -25,22 +25,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp">
-
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/categorySpinner" />
-    </GridLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/chartLayout">
-    </LinearLayout>
+    <include layout="@layout/fragment_chart"/>
 
 
 </LinearLayout>

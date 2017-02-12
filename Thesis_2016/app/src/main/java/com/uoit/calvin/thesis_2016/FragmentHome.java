@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -130,11 +131,11 @@ public class FragmentHome extends Fragment{
             uniqueDate.add(todayDate);
         }
 
-
         Collections.sort(transList);
         Collections.reverse(transList);
         Collections.sort(uniqueDate);
         Collections.reverse(uniqueDate);
+
         for (Date date : uniqueDate) {
             List<Transaction> temp = new ArrayList<>();
             for (Transaction t : transList) {
@@ -162,9 +163,10 @@ public class FragmentHome extends Fragment{
             if (transListView != null) {
                 transListView.setAdapter(mainAdapter);
                 transListView.setSelectionFromTop(todayPosition,0);
+                registerForContextMenu(transListView);
             }
-            registerForContextMenu(transListView);
         }
+
 
         transDB.close();
     }

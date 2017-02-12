@@ -92,13 +92,10 @@ public class TagActivity extends AppCompatActivity {
     }
 
     public void setMonthSpinner() {
-        String[] mMonths = new String[]{
-                "All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 
         Spinner monthSpinner = (Spinner) findViewById(R.id.monthSpinner);
-        List<String> months = new ArrayList<>(Arrays.asList(mMonths));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, months);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.months, R.layout.spinner_layout);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if (monthSpinner != null) {
             monthSpinner.setAdapter(adapter);
@@ -109,8 +106,7 @@ public class TagActivity extends AppCompatActivity {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
-                    int month = new Helper().parseMonthtoInt(parentView.getItemAtPosition(position).toString());
-                    Log.i("TEST", month+"");
+                    int month = new Helper().parseMonthtoInt(parentView.getItemAtPosition(position).toString());;
                     Spinner yearSpinner = (Spinner) findViewById(R.id.yearSpinner);
                     if (yearSpinner != null) {
                         int year = Integer.parseInt(yearSpinner.getSelectedItem().toString());

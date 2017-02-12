@@ -41,37 +41,7 @@ public class ChartActivity extends AppCompatActivity {
             //ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         }
 
-        displayChart();
     }
 
-    public void displayChart() {
 
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.chartLayout);
-        TagDBHelper tagDBHelper = new TagDBHelper(getApplicationContext());
-
-        PieChart chart = new PieChart(getApplicationContext());
-        List<Tag> dashList = tagDBHelper.getTagsList(CATEGORY_ICON);
-        ArrayList<PieEntry> entries = new ArrayList<>();
-
-        for (Tag t : dashList) {
-            if (t.getAmount() > 0) {
-                entries.add(new PieEntry(t.getAmount(), t.getName()));
-            }
-        }
-
-        PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-
-        chart.setDrawHoleEnabled(false);
-
-        PieData data = new PieData(dataSet);
-        data.setDrawValues(false);
-        chart.setData(data);
-        // add all the object
-        if (linearLayout != null) {
-            linearLayout.addView(chart, MARGIN, MARGIN);
-        }
-
-        tagDBHelper.close();
-    }
 }

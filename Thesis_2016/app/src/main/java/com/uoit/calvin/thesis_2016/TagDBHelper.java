@@ -133,6 +133,7 @@ class TagDBHelper extends SQLiteOpenHelper {
         return tagList;
     }
 
+
     String[] getTagsStringList() {
         List<String> tagList = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + TABLE_NAME;

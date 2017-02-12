@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity
     TransactionDBHelper transDB;
     TagDBHelper tagDB;
 
+    ViewPagerAdapter adapter;
+
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -137,13 +139,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onRestart() {
+        adapter.notifyDataSetChanged();
         super.onRestart();
-        //updateDrawer();
     }
 
     @Override
     public void onBackPressed() {
-        //updateDrawer();
+        adapter.notifyDataSetChanged();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null) {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -156,8 +158,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onResume() {
+        adapter.notifyDataSetChanged();
         super.onResume();
-        //displayTransList();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -191,7 +193,7 @@ public class MainActivity extends AppCompatActivity
         View Pager
      */
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new FragmentHome(), getResources().getString(R.string.fragment1));
         adapter.addFragment(new FragmentTagCloud(),getResources().getString(R.string.fragment2));
         adapter.addFragment(new FragmentChart(), getResources().getString(R.string.fragment3));
@@ -213,126 +215,6 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-/*    // List Layout
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case SAVING_DATA:
-                    // add the transaction
-                    transDB = new TransactionDBHelper(getApplicationContext());
-                    Helper helper = new Helper();
-
-                    String message = data.getStringExtra("trans");
-
-                    Transaction trans = new Transaction();
-                    trans.setMessage(message);
-                    trans.setTags(helper.parseTag(message));
-                    trans.setGeneral(helper.parseGeneral(message));
-                    trans.setLocation(helper.parseLocation(message));
-                    trans.setCategory(helper.parseCategory(message));
-                    trans.setTimestamp(helper.getCurrentTime());
-                    trans.setAmount(helper.getAmount(message));
-                    transDB.addTransactions(trans);
-
-                    // add the tag to tag cloud
-                    tagDB = new TagDBHelper(getApplicationContext());
-                    for (Tag t : trans.getTagsList()) {
-                        tagDB.addTag(t);
-                    }
-
-                    transDB.close();
-                    tagDB.close();
-                    break;
-                case UPDATE:
-                    break;
-
-            }
-        }
-
-        displayTransList();
-    }
-
-    public void displayTransList() {
-        transDB = new TransactionDBHelper(getApplicationContext());
-
-        List<Transaction> transList = transDB.getAllData();;
-        List<List<Transaction>> myList = new ArrayList<>();
-
-        List<Date> uniqueDate = new ArrayList<>();
-
-        int todayPosition = -1;
-        Helper helper = new Helper();
-        Date todayDate = helper.timeToDate(helper.getCurrentTime());
-
-        // Date Sorting
-        for (Transaction t : transList) {
-            boolean dup = false;
-            for (Date date : uniqueDate) {
-                if (helper.getYear(t.getDate())== helper.getYear(date)
-                        && helper.getMonth(t.getDate()) == helper.getMonth(date)
-                        && helper.getDay(t.getDate()) == helper.getDay(date)) {
-                    dup = true;
-                }
-            }
-            if (!dup) {
-                uniqueDate.add(t.getDate());
-            }
-        }
-
-        boolean haveToday = false;
-        for (Transaction t : transList) {
-            if (helper.getYear(t.getDate())== helper.getYear(todayDate)
-                    && helper.getMonth(t.getDate()) == helper.getMonth(todayDate)
-                    && helper.getDay(t.getDate()) == helper.getDay(todayDate)) {
-                haveToday = true;
-            }
-        }
-        if (!haveToday) {
-            uniqueDate.add(todayDate);
-        }
-
-
-        Collections.sort(transList);
-        Collections.reverse(transList);
-        Collections.sort(uniqueDate);
-        Collections.reverse(uniqueDate);
-        for (Date date : uniqueDate) {
-            List<Transaction> temp = new ArrayList<>();
-            for (Transaction t : transList) {
-                if (helper.getYear(t.getDate())== helper.getYear(date)
-                        && helper.getMonth(t.getDate()) == helper.getMonth(date)
-                        && helper.getDay(t.getDate()) == helper.getDay(date)) {
-                    temp.add(t);
-                }
-            }
-            myList.add(temp);
-        }
-
-        for (int i = 0; i < uniqueDate.size(); i++) {
-            if (helper.getYear(uniqueDate.get(i)) == helper.getYear(todayDate)
-                    && helper.getMonth(uniqueDate.get(i))  == helper.getMonth(todayDate)
-                    && helper.getDay(uniqueDate.get(i))  == helper.getDay(todayDate)) {
-                todayPosition = i;
-            }
-        }
-
-
-        if (myList.size() > 0) {
-            MainListViewAdapter mainAdapter = new MainListViewAdapter(getApplicationContext(), myList, uniqueDate, todayPosition);
-            ListView transListView = (ListView) findViewById(R.id.transactionList);
-            if (transListView != null) {
-                transListView.setAdapter(mainAdapter);
-                transListView.setSelectionFromTop(todayPosition,0);
-            }
-            registerForContextMenu(transListView);
-        }
-
-        transDB.close();
-    }
-    // End of List Layout
-*/
 
 } // end of class
 
