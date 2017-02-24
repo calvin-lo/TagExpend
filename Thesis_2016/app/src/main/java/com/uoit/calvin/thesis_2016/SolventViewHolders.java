@@ -24,7 +24,6 @@ public class SolventViewHolders extends RecyclerView.ViewHolder implements View.
     public void onClick(View view) {
         String tag = textView.getText().toString();
         Intent intent = new Intent(context, TagActivity.class);
-        // symbol ☆
         intent.putExtra("tag", tag);
         context.startActivity(intent);
     }

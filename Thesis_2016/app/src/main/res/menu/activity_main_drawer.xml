@@ -4,15 +4,14 @@
     <group android:checkableBehavior="single"
         android:id="@+id/group1">
         <item
-            android:id="@+id/nav_tag"
+            android:id="@+id/nav_user"
             android:icon="@drawable/ic_star_border_black_36dp"
-            android:title="@string/drawer1" />
-        <item android:id="@+id/nav_chart"
-            android:icon="@drawable/ic_show_chart_white_36dp"
-            android:title="@string/chartTitle"/>
-        <item android:id="@+id/nav_trend"
-            android:icon="@drawable/ic_trending_up_white_36dp"
-            android:title="@string/trendTitle"/>
+            android:title="@string/nav_1"
+            />
+        <item
+            android:id="@+id/nav_tag"
+            android:icon="@drawable/ic_dashboard_black_24dp"
+            android:title="@string/nav_2" />
     </group>
 
     <group android:checkableBehavior="single"

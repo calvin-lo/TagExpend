@@ -1,5 +1,7 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -28,12 +30,13 @@ public class FragmentChart extends Fragment{
 
     View v;
     private static final int MARGIN = 1080;
-    private static final String GENERAL_ICON = "\u2606";
-    private static final String LOCATION_ICON = "\u27B4";
-    private static final String DOLLAR_ICON = "\u00A4";
-    private static final String CATEGORY_ICON = "\u00A7";
+    private String GENERAL_ICON;
+    private String LOCATION_ICON;
+    private String DOLLAR_ICON;
+    private String CATEGORY_ICON;
 
-    private Spinner typeSpinner;;
+    private Spinner typeSpinner;
+    private String user;
 
     public FragmentChart() {
         // Required empty public constructor
@@ -50,6 +53,15 @@ public class FragmentChart extends Fragment{
         // Inflate the layout for this fragment
         v =  inflater.inflate(R.layout.fragment_chart, container, false);
 
+        GENERAL_ICON = v.getResources().getString(R.string.generalIcon);
+        LOCATION_ICON = v.getResources().getString(R.string.locationIcon);
+        DOLLAR_ICON = v.getResources().getString(R.string.dollarIcon);
+        CATEGORY_ICON = v.getResources().getString(R.string.categoryIcon);
+
+
+        SharedPreferences sharedpreferences = getActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
+        user = sharedpreferences.getString("user", null);
+
         typeSpinner = (Spinner) v.findViewById(R.id.typeSpinner);
         setTypeSpinner();
 
@@ -63,7 +75,7 @@ public class FragmentChart extends Fragment{
         TagDBHelper tagDBHelper = new TagDBHelper(v.getContext());
 
         PieChart chart = new PieChart(v.getContext());
-        List<Tag> tagList = tagDBHelper.getTagsList(type);
+        List<Tag> tagList = tagDBHelper.getTagsList(type, user);
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         for (Tag t : tagList) {

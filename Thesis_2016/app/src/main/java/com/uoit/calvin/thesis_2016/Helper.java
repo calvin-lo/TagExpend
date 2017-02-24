@@ -1,5 +1,8 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,11 +14,22 @@ import java.util.Locale;
 
 class Helper {
 
-    private static final String STAR_ICON = "\u2606";
-    private static final String LOCATION_ICON = "\u27B4";
-    private static final String DOLLAR_ICON = "\u00A4";
-    private static final String CATEGORY_ICON = "\u00A7";
-    private static final String format = "(?=" + STAR_ICON + "|" + LOCATION_ICON + "|"+ CATEGORY_ICON + "|" + DOLLAR_ICON + ")";
+    private String GENERAL_ICON;
+    private String LOCATION_ICON;
+    private String DOLLAR_ICON;
+    private String CATEGORY_ICON;
+    private String format;
+    private Context context;
+
+    Helper(Context context) {
+        this.context = context;
+        GENERAL_ICON = context.getResources().getString(R.string.generalIcon);
+        LOCATION_ICON = context.getResources().getString(R.string.locationIcon);
+        DOLLAR_ICON = context.getResources().getString(R.string.dollarIcon);
+        CATEGORY_ICON = context.getResources().getString(R.string.categoryIcon);
+        format = "(?=" + GENERAL_ICON + "|" + LOCATION_ICON + "|"+ CATEGORY_ICON + "|" + DOLLAR_ICON + ")";
+
+    }
 
     Helper() {}
 
@@ -31,8 +45,8 @@ class Helper {
         }
 
         for (int i = 1; i < parsedTags.length; i++) {
-            if (parsedTags[i].substring(0,1).equals(STAR_ICON)) {
-                tags.add(new Tag(parsedTags[i].substring(1,parsedTags[i].length()), STAR_ICON, amount));
+            if (parsedTags[i].substring(0,1).equals(GENERAL_ICON)) {
+                tags.add(new Tag(parsedTags[i].substring(1,parsedTags[i].length()), GENERAL_ICON, amount));
             }
             if (parsedTags[i].substring(0,1).equals(LOCATION_ICON)) {
                 tags.add(new Tag(parsedTags[i].substring(1,parsedTags[i].length()), LOCATION_ICON, amount));
@@ -49,8 +63,8 @@ class Helper {
         String general = "";
         String parsedTags[] = message.split(format);
         for (int i = 1; i < parsedTags.length; i++) {
-            if (parsedTags[i].substring(0,1).equals(STAR_ICON)) {
-                general = general + STAR_ICON + parsedTags[i].substring(1, parsedTags[i].length());
+            if (parsedTags[i].substring(0,1).equals(GENERAL_ICON)) {
+                general = general + GENERAL_ICON + parsedTags[i].substring(1, parsedTags[i].length());
             }
         }
         return general;
@@ -168,5 +182,13 @@ class Helper {
             default:
                 return -1;
         }
+    }
+
+    public void setUser(String user) {
+        SharedPreferences sharedpreferences;
+        sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString("user", user);
+        editor.apply();
     }
 }

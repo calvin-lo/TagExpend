@@ -15,6 +15,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "transDB";
     private static final String TABLE_NAME = "transactions";
+    private Context context;
 
     private static final String KEY_ID = "id";
     private static final String KEY_MESSAGE = "message";
@@ -47,6 +48,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
 
     TransactionDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -63,7 +65,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     boolean addTransactions(Transaction trans) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Helper helper = new Helper();
+        Helper helper = new Helper(context);
 
         ContentValues values = new ContentValues();
         values.put(KEY_MESSAGE, trans.getMessage());
@@ -75,6 +77,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_YEAR, helper.getYear(trans.getDate()));
         values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
+        values.put(KEY_USER, trans.getUser());
 
         // Inserting Row
         db.insert(TABLE_NAME, null, values);
@@ -85,7 +88,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     public void updateTransaction(Transaction trans) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Helper helper = new Helper();
+        Helper helper = new Helper(context);
 
         ContentValues values = new ContentValues();
         values.put(KEY_MESSAGE, trans.getMessage());
@@ -97,6 +100,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_YEAR, helper.getYear(trans.getDate()));
         values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
+        values.put(KEY_USER, trans.getUser());
         db.update(TABLE_NAME, values,  KEY_ID+"="+ trans.getId(), null);
     }
 
@@ -107,9 +111,16 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    List<Transaction> getAllData() {
+    void clearUser(String user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, KEY_USER+ " = ? ", new String[] {user});
+        db.close();
+    }
+
+
+    List<Transaction> getAllData(String user) {
         List<Transaction> transList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -126,10 +137,10 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         return transList;
     }
 
-    Transaction getTransByID(long id) {
-        Transaction trans = new Transaction();
+    Transaction getTransByID(long id, String user) {
+        Transaction trans = new Transaction(context);
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_ID + "='" + id + "'";
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_ID + "='" + id + "'" + " AND " + KEY_USER + "='" + user + "'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         cursor.moveToFirst();
 
@@ -142,16 +153,16 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         return trans;
     }
 
-    List<Transaction> getTransByTag(String tag) {
+    List<Transaction> getTransByTag(String tag, String user) {
         List<Transaction> transList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
             String s = cursor.getString(cursor.getColumnIndex(KEY_MESSAGE));
-            Helper helper = new Helper();
+            Helper helper = new Helper(context);
             List<String> tagStrList = (helper.tagListToString(helper.parseTag(s)));
             if (tagStrList.contains(tag)) {
                 Transaction trans = getTransaction(cursor);
@@ -166,16 +177,17 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     }
 
     private Transaction getTransaction(Cursor cursor) {
-        Transaction trans = new Transaction();
+        Transaction trans = new Transaction(context);
 
         trans.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
         trans.setMessage(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE)));
-        trans.setTags(new Helper().parseTag(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE))));
+        trans.setTags(new Helper(context).parseTag(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE))));
         trans.setGeneral(cursor.getString(cursor.getColumnIndex(KEY_GENERAL)));
         trans.setLocation(cursor.getString(cursor.getColumnIndex(KEY_LOCATION)));
         trans.setCategory(cursor.getString(cursor.getColumnIndex(KEY_CATEGORY)));
         trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
         trans.setAmount(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+        trans.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
 
         return trans;
     }

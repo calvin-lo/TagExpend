@@ -24,10 +24,11 @@
     <string name="twitter">twitter</string>
 
 
-    <string name="atIcon">\u27B4</string>
-    <string name="starIcon">\u2606</string>
-    <string name="dollarIcon">\u00A4</string>
+    <string name="locationIcon">\u27B4</string>
+    <string name="generalIcon">\u2606</string>
+    <string name="dollarIcon">\u0024</string>
     <string name="categoryIcon">\u00A7</string>
+
     <string name="tags">Tags</string>
 
     <!-- Form -->
@@ -54,5 +55,13 @@
     <!-- Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Drawer -->
+    <string name="nav_1">Your</string>
+    <string name="nav_2">Tag</string>
+
+    <!-- Dialog -->
+    <string name="dialog_message">Follow</string>
+    <string name="dialog_title">Follow</string>
 
 </resources>

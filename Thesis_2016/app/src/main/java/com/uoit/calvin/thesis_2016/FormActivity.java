@@ -18,9 +18,6 @@ import io.fabric.sdk.android.Fabric;
 
 public class FormActivity extends AppCompatActivity{
 
-    static final String STAR_SIGN = "&#9734;";
-    static final String LOCATION_SIGN = "&#10164;";
-    static final String CURRENCY_SIGN = "&#164;";
     final int RESULT_OK = 1;
     Helper helper;
     EditText input;
@@ -39,7 +36,7 @@ public class FormActivity extends AppCompatActivity{
         TwitterAuthConfig authConfig =  new TwitterAuthConfig("consumerKey", "consumerSecret");
         Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
 
-        helper = new Helper();
+        helper = new Helper(this);
         input = (EditText) findViewById(R.id.tagInput);
     }
 
@@ -103,10 +100,10 @@ public class FormActivity extends AppCompatActivity{
             String code = "";
             switch (type) {
                 case "star":
-                    code = getResources().getString(R.string.starIcon);
+                    code = getResources().getString(R.string.generalIcon);
                     break;
                 case "at":
-                    code = getResources().getString(R.string.atIcon);
+                    code = getResources().getString(R.string.locationIcon);
                     break;
                 case "dollar":
                     code = getResources().getString(R.string.dollarIcon);
@@ -115,7 +112,7 @@ public class FormActivity extends AppCompatActivity{
                     code = getResources().getString(R.string.categoryIcon);
                     break;
                 default:
-                    code = getResources().getString(R.string.starIcon);
+                    code = getResources().getString(R.string.generalIcon);
                     break;
 
             }

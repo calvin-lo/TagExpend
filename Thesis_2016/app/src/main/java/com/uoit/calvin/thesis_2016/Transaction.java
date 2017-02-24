@@ -1,5 +1,6 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
 import android.util.Log;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,12 +24,23 @@ public class Transaction implements Comparable<Transaction>{
     private String general;
     private String location;
     private String category;
+    private String user;
 
-    private static final String STAR_ICON = "\u2606";
-    private static final String LOCATION_ICON = "\u27B4";
-    private static final String DOLLAR_ICON = "\u00A4";
-    private static final String CATEGORY_ICON = "\u00A7";
+    private String GENERAL_ICON;
+    private String LOCATION_ICON;
+    private String DOLLAR_ICON;
+    private String CATEGORY_ICON;
 
+    private Context context;
+
+
+    Transaction(Context context) {
+        this.context = context;
+        GENERAL_ICON = context.getResources().getString(R.string.generalIcon);
+        LOCATION_ICON = context.getResources().getString(R.string.locationIcon);
+        DOLLAR_ICON = context.getResources().getString(R.string.dollarIcon);
+        CATEGORY_ICON = context.getResources().getString(R.string.categoryIcon);
+    }
 
     Transaction() {
     }
@@ -51,7 +63,7 @@ public class Transaction implements Comparable<Transaction>{
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
-        setDate(new Helper().timeToDate(timestamp));
+        setDate(new Helper(context).timeToDate(timestamp));
     }
 
     public String getTimestamp() {
@@ -67,15 +79,15 @@ public class Transaction implements Comparable<Transaction>{
     }
 
     public int getYear() {
-        return new Helper().getYear(getDate());
+        return new Helper(context).getYear(getDate());
     }
 
     public int getMonth() {
-        return new Helper().getMonth(getDate());
+        return new Helper(context).getMonth(getDate());
     }
 
     public int getDay() {
-        return new Helper().getDay(getDate());
+        return new Helper(context).getDay(getDate());
     }
 
     public void setAmount(float amount) {
@@ -154,11 +166,15 @@ public class Transaction implements Comparable<Transaction>{
     public ArrayList<String> getGeneralList() {
         String[] generals = {};
         if (getGeneral() != null) {
-            generals = getGeneral().split("(?=" + STAR_ICON + ")");
+            generals = getGeneral().split("(?=" + GENERAL_ICON + ")");
         }
 
         ArrayList<String> generalsList = new ArrayList<>(Arrays.asList(generals));
         generalsList.remove(0);
         return generalsList;
     }
+
+    public String getUser() { return user;}
+
+    public void setUser(String user) {this.user = user;}
 }

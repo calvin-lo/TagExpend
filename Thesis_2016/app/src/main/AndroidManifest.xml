@@ -54,14 +54,6 @@
                 android:value=".MainActivity" />
         </activity>
 
-        <activity
-            android:name=".ChartActivity"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="149ec2ed93e9b826c65fab4e9ca4c51d03ec701b" />

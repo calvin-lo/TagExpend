@@ -1,6 +1,8 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -16,6 +18,8 @@ import java.util.List;
 
 public class TagCloudActivity extends AppCompatActivity {
 
+    private String user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,14 +32,15 @@ public class TagCloudActivity extends AppCompatActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-
+        SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+        user = sharedpreferences.getString("user", null);
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
         StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
         recyclerView.setLayoutManager(GridLayoutManager);
 
-        List<Tag> tagList = new TagDBHelper(this).getTagsList("*");
+        List<Tag> tagList = new TagDBHelper(this).getTagsList("*", user);
 
         SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(this, tagList);
         recyclerView.setAdapter(rcAdapter);

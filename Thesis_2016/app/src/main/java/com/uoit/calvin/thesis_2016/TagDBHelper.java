@@ -21,12 +21,14 @@ class TagDBHelper extends SQLiteOpenHelper {
     private static final String KEY_TAG = "tag";
     private static final String KEY_AMOUNT = "amount";
     private static final String KEY_TYPE = "type";
+    private static final String KEY_USER = "user";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     KEY_TAG + " TEXT" + "UNIQUE," +
                     KEY_AMOUNT + " REAL," +
+                    KEY_USER + " TEXT," +
                     KEY_TYPE + " TEXT" + " )";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -56,6 +58,7 @@ class TagDBHelper extends SQLiteOpenHelper {
             values.put(KEY_TAG, tag.getName());
             values.put(KEY_AMOUNT, tag.getAmount());
             values.put(KEY_TYPE, tag.getType());
+            values.put(KEY_USER, tag.getUser());
 
             // Inserting Row
             db.insert(TABLE_NAME, null, values);
@@ -95,7 +98,7 @@ class TagDBHelper extends SQLiteOpenHelper {
     }
 
     private boolean checkDuplicate(Tag tag) {
-        return (new ArrayList<>(Arrays.asList(getTagsStringList()))).contains(tag.toString());
+        return (new ArrayList<>(Arrays.asList(getTagsStringList(tag.getUser())))).contains(tag.toString());
     }
 
     boolean deleteTag(String tag) {
@@ -107,15 +110,23 @@ class TagDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    boolean clearUser(String user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, KEY_USER+ " = ? ", new String[] {user});
+        db.close();
+        return true;
+    }
 
-    List<Tag> getTagsList(String type) {
+
+
+    List<Tag> getTagsList(String type, String user) {
         List<Tag> tagList = new ArrayList<>();
         String selectQuery;
 
         if (type.equals("*")) {
-            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user +"'";
         } else {
-            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_TYPE + "='" + type + "'";
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_TYPE + "='" + type + "'" + " AND " + KEY_USER + "='" + user +"'";
         }
 
 
@@ -134,9 +145,9 @@ class TagDBHelper extends SQLiteOpenHelper {
     }
 
 
-    String[] getTagsStringList() {
+    String[] getTagsStringList(String user) {
         List<String> tagList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

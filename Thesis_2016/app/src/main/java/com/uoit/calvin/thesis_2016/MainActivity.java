@@ -1,6 +1,9 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -10,13 +13,17 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -30,24 +37,21 @@ public class MainActivity extends AppCompatActivity
     private static final String TWITTER_KEY = "PvpXWnRXyy9ggCnhsh26aGOLc";
     private static final String TWITTER_SECRET = "VX0q8UBgeIiT4UT5fzygdfq49xiwWzTOoL0wKxZaGs0sg7Qjfy";
 
-    // List Layout
-    private static final int UPDATE = 2;
-    private static final int SAVING_DATA = 1;
-    private static final int RESULT_OK = 1;
-
-    TransactionDBHelper transDB;
-    TagDBHelper tagDB;
-
     ViewPagerAdapter adapter;
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+    private Helper helper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        helper = new Helper(this);
+        helper.setUser("Default");
+
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
@@ -73,6 +77,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
+            navigationView.getMenu().getItem(0).setChecked(true);
         }
 
         // Tab Layout
@@ -168,14 +173,34 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         int id = item.getItemId();
-        if (id == R.id.nav_tag) {
-            Intent intent = new Intent(this, TagCloudActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_chart) {
-            Intent intent = new Intent(this, ChartActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_trend) {
-
+        if (id == R.id.nav_user) {
+            helper.setUser("Default");
+            adapter.notifyDataSetChanged();
+        }
+        else if (id == R.id.nav_tag) {
+            final EditText input = new EditText(MainActivity.this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.dialog_title)
+                    .setView(input)
+                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            String followUser = input.getText().toString();
+                            helper.setUser(followUser);
+                            adapter.notifyDataSetChanged();
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            // what ever you want to do with No option.
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.setView(input);
+            dialog.show();
         }
         else if (id == R.id.nav_setting) {
             Intent intent = new Intent(this, SettingActivity.class);
@@ -207,12 +232,14 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+        /*getMenuInflater().inflate(R.menu.main_activity_actions, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView =
-                (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
         return super.onCreateOptionsMenu(menu);
+        */
+        return false;
     }
 
 

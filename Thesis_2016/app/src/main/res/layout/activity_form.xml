@@ -25,7 +25,7 @@
         android:elevation="5dp">
 
         <Button
-            android:text="@string/starIcon"
+            android:text="@string/generalIcon"
             android:textSize="30sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             android:layout_weight="1"
             />
         <Button
-            android:text="@string/atIcon"
+            android:text="@string/locationIcon"
             android:textSize="30sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

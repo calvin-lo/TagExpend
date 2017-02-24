@@ -1,10 +1,16 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +29,7 @@ public class FragmentHome extends Fragment{
 
     TransactionDBHelper transDB;
     TagDBHelper tagDB;
+    String user;
 
     View v;
 
@@ -33,6 +40,7 @@ public class FragmentHome extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -40,6 +48,9 @@ public class FragmentHome extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v =  inflater.inflate(R.layout.fragment_home, container, false);
+
+        SharedPreferences sharedpreferences = getActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
+        user = sharedpreferences.getString("user", null);
 
         FloatingActionButton btnFab = (FloatingActionButton) v.findViewById(R.id.addFab);
         btnFab.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +67,29 @@ public class FragmentHome extends Fragment{
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.main_activity_actions, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent intent = new Intent(getContext(), TagActivity.class);
+                intent.putExtra("tag", query);
+                getContext().startActivity(intent);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK) {
@@ -63,11 +97,11 @@ public class FragmentHome extends Fragment{
                 case SAVING_DATA:
                     // add the transaction
                     transDB = new TransactionDBHelper(v.getContext().getApplicationContext());
-                    Helper helper = new Helper();
+                    Helper helper = new Helper(getContext());
 
                     String message = data.getStringExtra("trans");
 
-                    Transaction trans = new Transaction();
+                    Transaction trans = new Transaction(getContext());
                     trans.setMessage(message);
                     trans.setTags(helper.parseTag(message));
                     trans.setGeneral(helper.parseGeneral(message));
@@ -75,11 +109,13 @@ public class FragmentHome extends Fragment{
                     trans.setCategory(helper.parseCategory(message));
                     trans.setTimestamp(helper.getCurrentTime());
                     trans.setAmount(helper.getAmount(message));
+                    trans.setUser("Default");
                     transDB.addTransactions(trans);
 
                     // add the tag to tag cloud
                     tagDB = new TagDBHelper(v.getContext().getApplicationContext());
                     for (Tag t : trans.getTagsList()) {
+                        t.setUser("Default");
                         tagDB.addTag(t);
                     }
 
@@ -95,13 +131,13 @@ public class FragmentHome extends Fragment{
     public void displayTransList() {
         transDB = new TransactionDBHelper(v.getContext().getApplicationContext());
 
-        List<Transaction> transList = transDB.getAllData();;
+        List<Transaction> transList = transDB.getAllData(user);;
         List<List<Transaction>> myList = new ArrayList<>();
 
         List<Date> uniqueDate = new ArrayList<>();
 
         int todayPosition = -1;
-        Helper helper = new Helper();
+        Helper helper = new Helper(getContext());
         Date todayDate = helper.timeToDate(helper.getCurrentTime());
 
         // Date Sorting
@@ -158,7 +194,7 @@ public class FragmentHome extends Fragment{
 
 
         if (myList.size() > 0) {
-            MainListViewAdapter mainAdapter = new MainListViewAdapter(v.getContext().getApplicationContext(), myList, uniqueDate, todayPosition);
+            MainListViewAdapter mainAdapter = new MainListViewAdapter(v.getContext().getApplicationContext(), myList, uniqueDate, todayPosition , user);
             ListView transListView = (ListView) v.findViewById(R.id.transactionList);
             if (transListView != null) {
                 transListView.setAdapter(mainAdapter);

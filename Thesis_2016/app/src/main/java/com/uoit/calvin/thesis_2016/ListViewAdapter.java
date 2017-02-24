@@ -19,10 +19,12 @@ class ListViewAdapter extends BaseSwipeAdapter {
 
     private Context context;
     private ArrayList<Transaction> transactionsList;
+    private String user;
 
-    ListViewAdapter(Context context, ArrayList<Transaction> objects) {
+    ListViewAdapter(Context context, ArrayList<Transaction> objects, String user) {
         this.context = context;
         this.transactionsList = objects;
+        this.user = user;
     }
 
     @Override
@@ -64,8 +66,8 @@ class ListViewAdapter extends BaseSwipeAdapter {
 
                 TransactionDBHelper transDB = new TransactionDBHelper(context.getApplicationContext());
 
-                Helper helper = new Helper();
-                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id).getMessage());
+                Helper helper = new Helper(context);
+                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, user).getMessage());
 
                 transDB.deleteTransactions(id);
 

@@ -22,13 +22,15 @@ class MainListViewAdapter extends BaseAdapter {
     private List<Date> uniqueDate;
 
     private static final int SAVING_DATA = 1;
+    private String user;
 
 
-    MainListViewAdapter(Context context, List<List<Transaction>> transactionsList, List<Date> uniqueDate, int selectedPosition) {
+    MainListViewAdapter(Context context, List<List<Transaction>> transactionsList, List<Date> uniqueDate, int selectedPosition, String user) {
         this.context = context;
         this.transactionList = transactionsList;
         this.uniqueDate = uniqueDate;
         this.selectedPosition = selectedPosition;
+        this.user = user;
     }
 
     public int getCount() {
@@ -53,13 +55,13 @@ class MainListViewAdapter extends BaseAdapter {
             ListView lv;
             tv = (TextView) row.findViewById(R.id.dateTV);
             lv = (ListView) row.findViewById(R.id.transactionList);
-            String s = Integer.toString(new Helper().getDay(uniqueDate.get(position)));
+            String s = Integer.toString(new Helper(context).getDay(uniqueDate.get(position)));
             tv.setText(s);
             if (position == this.selectedPosition) {
                 tv.setTextColor(context.getResources().getColor(R.color.highlight));
             }
 
-            ListViewAdapter arrayAdapter = new ListViewAdapter(context.getApplicationContext(), new ArrayList<>(transactionList.get(position)));
+            ListViewAdapter arrayAdapter = new ListViewAdapter(context.getApplicationContext(), new ArrayList<>(transactionList.get(position)), user);
             if (lv != null) {
                 lv.setAdapter(arrayAdapter);
             }

@@ -1,5 +1,7 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -37,7 +39,7 @@ import java.util.List;
 public class TagActivity extends AppCompatActivity {
 
     public String tag;
-    private static final int MARGIN = 700;
+    private String user;
     List<Transaction> transList;
 
     @Override
@@ -46,10 +48,15 @@ public class TagActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tag);
         tag = getIntent().getStringExtra("tag");
 
+        if (!tag.startsWith(getResources().getString(R.string.generalIcon))) {
+            tag = getResources().getString(R.string.generalIcon) + tag;
+        }
+
+
         Toolbar toolBar = (Toolbar) findViewById(R.id.tagToolbar);
         if (toolBar != null) {
             TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
-            List<Tag> tagList = tagDBHelper.getTagsList("*");
+            List<Tag> tagList = tagDBHelper.getTagsList("*", user);
             for (Tag t : tagList) {
                 if (t.toString().equals(tag)) {
                     String title= tag + " - Total: $" + t.getAmount();
@@ -65,11 +72,14 @@ public class TagActivity extends AppCompatActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+        user = sharedpreferences.getString("user", null);
+
         // set the title
         TransactionDBHelper transDB = new TransactionDBHelper(this);
-        transList = transDB.getTransByTag(tag);
+        transList = transDB.getTransByTag(tag, user);
 
-        ListViewAdapter arrayAdapter = new ListViewAdapter(this, new ArrayList<>(transList));
+        ListViewAdapter arrayAdapter = new ListViewAdapter(this, new ArrayList<>(transList), user);
         ListView transListView = (ListView) findViewById(R.id.transListView);
         if (transListView != null) {
             transListView.setAdapter(arrayAdapter);
@@ -106,7 +116,7 @@ public class TagActivity extends AppCompatActivity {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
-                    int month = new Helper().parseMonthtoInt(parentView.getItemAtPosition(position).toString());;
+                    int month = new Helper(getApplicationContext()).parseMonthtoInt(parentView.getItemAtPosition(position).toString());;
                     Spinner yearSpinner = (Spinner) findViewById(R.id.yearSpinner);
                     if (yearSpinner != null) {
                         int year = Integer.parseInt(yearSpinner.getSelectedItem().toString());
@@ -144,7 +154,7 @@ public class TagActivity extends AppCompatActivity {
                 int year = Integer.parseInt(parentView.getItemAtPosition(position).toString());
                 Spinner monthSpinner = (Spinner) findViewById(R.id.yearSpinner);
                 if (monthSpinner != null) {
-                    int month = new Helper().parseMonthtoInt(monthSpinner.getSelectedItem().toString());
+                    int month = new Helper(getApplicationContext()).parseMonthtoInt(monthSpinner.getSelectedItem().toString());
                     displayTrend(year, month);
                 }
             }

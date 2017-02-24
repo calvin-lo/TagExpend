@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -38,6 +39,7 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
     private Transaction transaction;
     private String time;
     private String date;
+    String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,9 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
+
+        SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+        user = sharedpreferences.getString("user", null);
 
         TextView dateTV = (TextView) findViewById(R.id.dateTextView);
         TextView timeTV = (TextView) findViewById(R.id.timeTextView);
@@ -68,7 +73,7 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
 
         long id = getIntent().getLongExtra("ID", 0);
         TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
-        transaction = transactionDBHelper.getTransByID(id);
+        transaction = transactionDBHelper.getTransByID(id, user);
 
         // Amount
         if (amountTV != null) {
