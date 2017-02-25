@@ -2,24 +2,25 @@ package com.uoit.calvin.thesis_2016;
 
 class Tag {
 
-    private String name;
+    private String title;
     private String type;
     private float amount;
+    private String name;
     private String user;
 
     Tag(String name, String type, float amount) {
-        setName(name);
+        setTitle(name);
         setType(type);
         setAmount(amount);
     }
 
-    public String getName() {
-        return this.name;
+    public String getTitle() {
+        return this.title;
     }
 
-    public void setName(String name) {
-        this.name = name.substring(0,name.length());
-        this.name = this.name.replace(" ", "");
+    public void setTitle(String name) {
+        this.title = name.substring(0,name.length());
+        this.title = this.title.replace(" ", "");
     }
 
     public void setType(String type) {
@@ -38,16 +39,25 @@ class Tag {
         return this.amount;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getUser() {
-        return this.user;
+    public String getName() {
+        return this.name;
     }
 
     @Override
     public String toString() {
-        return this.getType() + this.getName();
+        return this.getType() + this.getTitle();
+    }
+
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 }

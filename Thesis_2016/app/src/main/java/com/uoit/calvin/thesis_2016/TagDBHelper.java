@@ -21,6 +21,7 @@ class TagDBHelper extends SQLiteOpenHelper {
     private static final String KEY_TAG = "tag";
     private static final String KEY_AMOUNT = "amount";
     private static final String KEY_TYPE = "type";
+    private static final String KEY_NAME = "name";
     private static final String KEY_USER = "user";
 
     private static final String SQL_CREATE_ENTRIES =
@@ -29,6 +30,7 @@ class TagDBHelper extends SQLiteOpenHelper {
                     KEY_TAG + " TEXT" + "UNIQUE," +
                     KEY_AMOUNT + " REAL," +
                     KEY_USER + " TEXT," +
+                    KEY_NAME + " TEXT," +
                     KEY_TYPE + " TEXT" + " )";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -55,18 +57,19 @@ class TagDBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         if (!checkDuplicate(tag)) {
-            values.put(KEY_TAG, tag.getName());
+            values.put(KEY_TAG, tag.getTitle());
             values.put(KEY_AMOUNT, tag.getAmount());
             values.put(KEY_TYPE, tag.getType());
+            values.put(KEY_NAME, tag.getName());
             values.put(KEY_USER, tag.getUser());
 
             // Inserting Row
             db.insert(TABLE_NAME, null, values);
 
         } else {
-            float amount = getAmount(tag.getName()) + tag.getAmount();
+            float amount = getAmount(tag.getTitle()) + tag.getAmount();
             values.put(KEY_AMOUNT, amount);
-            db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getName()});
+            db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getTitle()});
         }
         db.close();
         return true;
@@ -91,9 +94,9 @@ class TagDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        float amount = getAmount(tag.getName()) - tag.getAmount();
+        float amount = getAmount(tag.getTitle()) - tag.getAmount();
         values.put(KEY_AMOUNT, amount);
-        db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getName()});
+        db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getTitle()});
         db.close();
     }
 
@@ -112,9 +115,19 @@ class TagDBHelper extends SQLiteOpenHelper {
 
     boolean clearUser(String user) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAME, KEY_USER+ " = ? ", new String[] {user});
+        db.delete(TABLE_NAME, KEY_NAME + " = ? ", new String[] {user});
         db.close();
         return true;
+    }
+
+
+    public void updateUser(String newUser, String oldUser) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, newUser);
+        db.update(TABLE_NAME, values, KEY_NAME + "='" + oldUser + "'", null);
+        db.close();
+
     }
 
 
@@ -136,8 +149,9 @@ class TagDBHelper extends SQLiteOpenHelper {
 
         while(!cursor.isAfterLast()){
             Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+            tag.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+            tag.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
             tagList.add(tag);
-            Log.i("MYHERE", "HERE");
             cursor.moveToNext();
         }
         cursor.close();
@@ -154,10 +168,14 @@ class TagDBHelper extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            String tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)),
+            Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)),
                                     cursor.getString(cursor.getColumnIndex(KEY_TYPE)),
-                                    cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT))).toString();
-            tagList.add(tag);
+                                    cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+            tag.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+            tag.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+
+            String tagStr = tag.toString();
+            tagList.add(tagStr);
             cursor.moveToNext();
         }
         cursor.close();

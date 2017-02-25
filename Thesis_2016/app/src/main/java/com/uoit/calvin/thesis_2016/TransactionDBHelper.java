@@ -2,6 +2,7 @@ package com.uoit.calvin.thesis_2016;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -28,6 +29,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     private static final String KEY_CATEGORY = "category";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_GENERAL = "general";
+    private static final String KEY_NAME = "name";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME+ " (" +
@@ -39,6 +41,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
                     KEY_CATEGORY + " TEXT," +
                     KEY_AMOUNT + " REAL, " +
                     KEY_USER + " TEXT," +
+                    KEY_NAME + " TEXT, " +
                     KEY_YEAR + " REAL," +
                     KEY_MONTH + " REAL," +
                     KEY_DAY + " REAL" + " )";
@@ -78,6 +81,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
         values.put(KEY_USER, trans.getUser());
+        values.put(KEY_NAME, trans.getName());
 
         // Inserting Row
         db.insert(TABLE_NAME, null, values);
@@ -101,7 +105,18 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
         values.put(KEY_USER, trans.getUser());
+        values.put(KEY_NAME, trans.getName());
         db.update(TABLE_NAME, values,  KEY_ID+"="+ trans.getId(), null);
+        db.close();
+    }
+
+    public void updateUser(String newUser, String oldUser) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, newUser);
+        db.update(TABLE_NAME, values, KEY_NAME + "='" + oldUser + "'", null);
+        db.close();
+
     }
 
 
@@ -176,6 +191,27 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         return transList;
     }
 
+    String[] getUser() {
+        List<String> userList = new ArrayList<>();
+        String selectQuery = "SELECT DISTINCT " + KEY_USER + " FROM " + TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            String s = cursor.getString(cursor.getColumnIndex(KEY_USER));
+            userList.add(s);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+
+        SharedPreferences sharedpreferences = context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        userList.remove(context.getResources().getString(R.string.default_user));
+        return userList.toArray(new String[userList.size()]);
+    }
+
+
     private Transaction getTransaction(Cursor cursor) {
         Transaction trans = new Transaction(context);
 
@@ -188,6 +224,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
         trans.setAmount(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
         trans.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+        trans.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
 
         return trans;
     }

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +20,6 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -76,16 +73,17 @@ public class FragmentChart extends Fragment{
 
         PieChart chart = new PieChart(v.getContext());
         List<Tag> tagList = tagDBHelper.getTagsList(type, user);
+
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         for (Tag t : tagList) {
             if (t.getAmount() > 0) {
-                entries.add(new PieEntry(t.getAmount(), t.getName()));
+                entries.add(new PieEntry(t.getAmount(), t.getTitle()));
             }
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(ColorTemplate.PASTEL_COLORS);
+        dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
 
         PieData data = new PieData(dataSet);
         data.setDrawValues(false);

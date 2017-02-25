@@ -11,6 +11,7 @@
     <color name="accent">#3942ad</color>
     <color name="highlight">#3942ad</color>
     <color name="defaultPrimary">#0c1a30</color>
+    <color name="box">#ff357f</color>
     <color name="text">#FFFFFF</color>
     <color name="primaryText">#212121</color>
     <color name="secondaryText">#757575</color>
@@ -18,6 +19,7 @@
     <color name="actionBarColor">#f9f9f9</color>
     <color name="notificationBarColor">#757575</color>
 
+    <color name="line">#dbdbdb</color>
 
     <color name="white">#FFF</color>>
     <color name="DarkGray">#303030</color>

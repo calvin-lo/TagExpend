@@ -15,12 +15,11 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textColor="@color/text"
-        android:layout_below="@+id/country_photo"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
         android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
-        android:background="@color/defaultPrimary"/>
+        android:background="@color/box"/>
 
 
 </android.support.v7.widget.CardView>

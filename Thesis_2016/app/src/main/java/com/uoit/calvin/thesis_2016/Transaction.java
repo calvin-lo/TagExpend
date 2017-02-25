@@ -25,6 +25,7 @@ public class Transaction implements Comparable<Transaction>{
     private String location;
     private String category;
     private String user;
+    private String name;
 
     private String GENERAL_ICON;
     private String LOCATION_ICON;
@@ -42,8 +43,6 @@ public class Transaction implements Comparable<Transaction>{
         CATEGORY_ICON = context.getResources().getString(R.string.categoryIcon);
     }
 
-    Transaction() {
-    }
 
     public void setId(long id) {
         this.id = id;
@@ -177,4 +176,8 @@ public class Transaction implements Comparable<Transaction>{
     public String getUser() { return user;}
 
     public void setUser(String user) {this.user = user;}
+
+    public String getName() { return name;}
+
+    public void setName(String name) {this.name = name;}
 }

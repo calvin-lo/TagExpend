@@ -2,6 +2,7 @@ package com.uoit.calvin.thesis_2016;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,11 +28,9 @@ class Helper {
         LOCATION_ICON = context.getResources().getString(R.string.locationIcon);
         DOLLAR_ICON = context.getResources().getString(R.string.dollarIcon);
         CATEGORY_ICON = context.getResources().getString(R.string.categoryIcon);
-        format = "(?=" + GENERAL_ICON + "|" + LOCATION_ICON + "|"+ CATEGORY_ICON + "|" + DOLLAR_ICON + ")";
+        format = "(?=" + GENERAL_ICON + "|" + LOCATION_ICON + "|"+ "\\" + DOLLAR_ICON + "|" + CATEGORY_ICON + ")";
 
     }
-
-    Helper() {}
 
     List<Tag> parseTag(String message) {
         List<Tag> tags = new ArrayList<>();
@@ -189,6 +188,22 @@ class Helper {
         sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("user", user);
+        editor.apply();
+    }
+
+    public void setSelectedPosition(int posID) {
+        SharedPreferences sharedpreferences;
+        sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt("selectedPosition", posID);
+        editor.apply();
+    }
+
+    public void setDefaultUser(String user) {
+        SharedPreferences sharedpreferences;
+        sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString("defaultUser", user);
         editor.apply();
     }
 }

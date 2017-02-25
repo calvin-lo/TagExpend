@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_details"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="10dp">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/MyActionBarTheme"
+        app:popupTheme="@style/MyActionBarTheme"
+        app:elevation="2dp"
+        android:id="@+id/detailAppBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/detail"
+            />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@color/primary"
+        android:id="@+id/amountLayout"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/detailAppBar"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="@color/primaryText"
+            android:textSize="24sp"
+            android:id="@+id/amountTextView"
+            android:text="@string/sampleAmount"
+            android:layout_gravity="center_vertical"
+            android:clickable="false"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@color/primary"
+        android:layout_below="@+id/amountLayout"
+        android:id="@+id/timeLayout"
+        android:paddingTop="10dp"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_access_time_white_24dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/imageView2"
+            android:layout_weight="0.5" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="@color/primaryText"
+            android:textSize="18sp"
+            android:id="@+id/dateTextView"
+            android:clickable="false"
+            android:onClick="showDatePickerDialog"
+            android:text="@string/sampleDate"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="@color/primaryText"
+            android:textSize="18sp"
+            android:id="@+id/timeTextView"
+            android:clickable="false"
+            android:onClick="showTimePickerDialog"
+            android:text="@string/sampleTime"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/timeLayout"
+        android:id="@+id/tagLabel"
+        android:background="@color/primary"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_star_border_black_36dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_location_on_black_36dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        >
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:srcCompat="@drawable/ic_mode_edit_white_36dp"
+            android:id="@+id/editButton"
+            android:onClick="edit"
+            android:elevation="0dp"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:srcCompat="@drawable/ic_save_white_36dp"
+            android:id="@+id/saveButton"
+            android:onClick="save"
+            android:visibility="gone"
+            android:elevation="0dp"/>
+
+        <android.support.v4.widget.Space
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:srcCompat="@drawable/ic_add_white_36dp"
+            android:onClick="addTag"
+            app:backgroundTint="@color/orange"
+            android:elevation="0dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tagListView"
+        android:layout_above="@id/buttonLayout"
+        android:layout_below="@+id/tagLabel">
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/starListView"
+            android:dividerHeight="0dp"
+            android:divider="@null"
+            android:layout_weight="0.5"
+            android:layout_gravity="center"
+            />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/categoryListView"
+            android:dividerHeight="0dp"
+            android:divider="@null"
+            android:layout_weight="0.5"
+            android:layout_gravity="center"
+            />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/locationListView"
+            android:dividerHeight="0dp"
+            android:divider="@null"
+            android:layout_weight="0.5"
+            />
+    </LinearLayout>
+
+
+
+</RelativeLayout>

@@ -65,25 +65,6 @@ class MainListViewAdapter extends BaseAdapter {
             if (lv != null) {
                 lv.setAdapter(arrayAdapter);
             }
-
-            if (arrayAdapter.getCount() == 0) {
-                if (lv != null) {
-                    lv.setVisibility(View.GONE);
-                }
-                TextView label = (TextView) row.findViewById(R.id.addTV);
-                if (label != null) {
-                    label.setVisibility(View.VISIBLE);
-                    final Context parentContext = parent.getContext();
-                    label.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent( parentContext, FormActivity.class);
-                            ((MainActivity)parentContext).startActivityForResult(intent, SAVING_DATA);
-                        }
-                    });
-                }
-            }
-
             getTotalHeightOfListView(lv);
 
 

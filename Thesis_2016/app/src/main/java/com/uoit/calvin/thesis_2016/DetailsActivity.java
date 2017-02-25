@@ -12,6 +12,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -31,14 +33,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class DetailsActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener{
+public class DetailsActivity extends AppCompatActivity {
 
 
     private Transaction transaction;
-    private String time;
-    private String date;
     String user;
 
     @Override
@@ -46,8 +47,8 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        Toolbar myChildToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(myChildToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detailToolbar);
+        setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
@@ -56,286 +57,51 @@ public class DetailsActivity extends AppCompatActivity implements TimePickerDial
         SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
         user = sharedpreferences.getString("user", null);
 
-        TextView dateTV = (TextView) findViewById(R.id.dateTextView);
-        TextView timeTV = (TextView) findViewById(R.id.timeTextView);
-        TextView amountTV = (TextView) findViewById(R.id.amountTextView);
-
-        // set default clickable to false
-        if (dateTV != null) {
-            dateTV.setClickable(false);
-        }
-        if (timeTV != null) {
-            timeTV.setClickable(false);
-        }
-        if (amountTV != null) {
-            amountTV.setClickable(false);
-        }
-
+        // get the transaction
         long id = getIntent().getLongExtra("ID", 0);
         TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
         transaction = transactionDBHelper.getTransByID(id, user);
 
-        // Amount
-        if (amountTV != null) {
-            String s = Float.toString(transaction.getAmount());
-            amountTV.setText(s);
+        // user
+        TextView nameTV = (TextView) findViewById(R.id.nameTV);
+        if (nameTV != null) {
+            nameTV.setText(transaction.getName());
         }
 
-        // Date
-        Date d = transaction.getDate();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, yyyy", Locale.CANADA);
-        date = sdf.format(d);
-        if (dateTV != null) {
-            dateTV.setText(date);
+        TextView userTV = (TextView) findViewById(R.id.userTV);
+        if (userTV != null) {
+            String s = "@" + transaction.getUser();
+            userTV.setText(s);
         }
 
-        SimpleDateFormat sdf2 = new SimpleDateFormat("h:mm a", Locale.CANADA);
-        time = sdf2.format(d);
-        if (timeTV != null) {
-            timeTV.setText(time);
+        // message
+        TextView msgTV = (TextView) findViewById(R.id.messageTextView);
+        if (msgTV != null) {
+            msgTV.setText(transaction.getMessage());
         }
 
-        // Tags
-
-
-        ArrayAdapter starAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getGeneralList());
-        ArrayAdapter locationAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getLocationList());
-        ArrayAdapter categoryAdapter = new ArrayAdapter<>(this, R.layout.list_item_center, transaction.getCategoryList());
-
-
-        ListView starLV = (ListView) findViewById(R.id.starListView);
-        if (starLV != null) {
-            starLV.setAdapter(starAdapter);
-        }
-        registerForContextMenu(starLV);
-
-        ListView locationLV = (ListView) findViewById(R.id.locationListView);
-        if (locationLV != null) {
-            locationLV.setAdapter(locationAdapter);
-        }
-        registerForContextMenu(locationLV);
-
-        ListView categoryLV = (ListView) findViewById(R.id.categoryListView);
-        if (categoryLV != null) {
-            categoryLV.setAdapter(categoryAdapter);
-        }
-        registerForContextMenu(categoryLV);
-
-        transactionDBHelper.close();
-
-    }
-
-    public void save(View v) {
-
-        String timestamp = date + " " + time;
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, yyyy h:mm a", Locale.CANADA);
-        Date d = null;
-        try {
-            d = sdf.parse(timestamp);
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
-        timestamp = formatter.format(d);
-        transaction.setTimestamp(timestamp);
-
-        TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
-        transactionDBHelper.updateTransaction(transaction);
-
-        FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.saveButton);
-        if (saveButton != null) {
-            saveButton.setVisibility(View.GONE);
-        }
-        FloatingActionButton editButton = (FloatingActionButton) findViewById(R.id.editButton);
-        if (editButton != null) {
-            editButton.setVisibility(View.VISIBLE);
-        }
-        TextView dateTV = (TextView) findViewById(R.id.dateTextView);
-        if (dateTV != null) {
-            dateTV.setClickable(false);
-        }
+        // time
         TextView timeTV = (TextView) findViewById(R.id.timeTextView);
         if (timeTV != null) {
-            timeTV.setClickable(false);
-        }
-        TextView amountTV = (TextView) findViewById(R.id.amountTextView);
-        if (amountTV != null) {
-            amountTV.setClickable(false);
-        }
-    }
-
-    public void edit(View v) {
-        FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.saveButton);
-        if (saveButton != null) {
-            saveButton.setVisibility(View.VISIBLE);
-        }
-        FloatingActionButton editButton = (FloatingActionButton) findViewById(R.id.editButton);
-        if (editButton != null) {
-            editButton.setVisibility(View.GONE);
-        }
-        TextView dateTV = (TextView) findViewById(R.id.dateTextView);
-        if (dateTV != null) {
-            dateTV.setClickable(true);
-        }
-        TextView timeTV = (TextView) findViewById(R.id.timeTextView);
-        if (timeTV != null) {
-            timeTV.setClickable(true);
-        }
-        TextView amountTV = (TextView) findViewById(R.id.amountTextView);
-        if (amountTV != null) {
-            amountTV.setClickable(true);
-        }
-    }
-
-    public void addTag(View v) {
-        LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = layoutInflater.inflate(R.layout.popup_addtag, null);
-        final PopupWindow popupWindow = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-        RelativeLayout mRelativeLayout = (RelativeLayout) findViewById(R.id.activity_details);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.showAtLocation(mRelativeLayout, Gravity.CENTER,0,0);
-    }
-
-
-    public void showDatePickerDialog(View v) {
-        DialogFragment newFragment = new DatePickerFragment();
-        newFragment.show(getSupportFragmentManager(), "datePicker");
-
-    }
-
-    public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getSupportFragmentManager(), "timePicker");
-
-    }
-
-    @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        // Do something with the time chosen by the user
-
-        String newTime = hourOfDay + ":" + minute;
-        Date d = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("hh:mm", Locale.CANADA);
-        try {
-            d = format.parse(newTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            timeTV.setText(transaction.getTimestamp());
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.CANADA);
-        time = sdf.format(d);
+        // Tag
 
-        TextView timeTV = (TextView) findViewById(R.id.timeTextView);
-        if (timeTV != null) {
-            timeTV.setText(time);
-        }
-    }
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
 
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int day) {
-        // Do something with the date chosen by the user
+        StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
+        recyclerView.setLayoutManager(GridLayoutManager);
 
-        String newDate =   day + "/" + (month + 1) + "/" + year;
-        Date d = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.CANADA);
-        try {
-            d = format.parse(newDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        List<Tag> tagList = transaction.getTagsList();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, yyyy", Locale.CANADA);
-        date = sdf.format(d);
-        TextView dateTV = (TextView) findViewById(R.id.dateTextView);
-        if (dateTV != null) {
-            dateTV.setText(date);
-        }
+        SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(this, tagList);
+        recyclerView.setAdapter(rcAdapter);
 
-    }
 
-    public static class DatePickerFragment extends DialogFragment {
 
-        private Activity mActivity;
-        private DatePickerDialog.OnDateSetListener mListener;
 
-        @Override
-        public void onAttach(Context context) {
-            super.onAttach(context);
-
-            Activity activity= null;
-
-            if (context instanceof Activity){
-                activity=(Activity) context;
-            }
-
-            mActivity = activity;
-
-            // This error will remind you to implement an OnTimeSetListener
-            //   in your Activity if you forget
-            try {
-                mListener = (DatePickerDialog.OnDateSetListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement OnTimeSetListener");
-            }
-        }
-
-        @Override
-        @NonNull
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(mActivity, mListener, year, month, day);
-        }
-
-    }
-
-    public static class TimePickerFragment extends DialogFragment  {
-
-        private Activity mActivity;
-        private TimePickerDialog.OnTimeSetListener mListener;
-
-        @Override
-        public void onAttach(Context context) {
-            super.onAttach(context);
-
-            Activity activity= null;
-
-            if (context instanceof Activity){
-                activity=(Activity) context;
-            }
-
-            mActivity = activity;
-
-            // This error will remind you to implement an OnTimeSetListener
-            //   in your Activity if you forget
-            try {
-                mListener = (TimePickerDialog.OnTimeSetListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString() + " must implement OnTimeSetListener");
-            }
-        }
-
-        @Override
-        @NonNull
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            // Use the current time as the default values for the picker
-            final Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-
-            // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(mActivity, mListener, hour, minute,
-                    DateFormat.is24HourFormat(mActivity));
-        }
 
     }
 }

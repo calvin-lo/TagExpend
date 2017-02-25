@@ -5,17 +5,14 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.twitter.sdk.android.core.Callback;
@@ -32,7 +29,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -46,8 +42,11 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
     TransactionDBHelper transDB;
     TagDBHelper tagDB;
     Helper helper;
-    String followUser;
     TweetsListener tweetsListener;
+    SharedPreferences sharedPreferences;
+    List<Tweet> tweets;
+
+    String followUser;
 
     public FragmentFollowing() {
         // Required empty public constructor
@@ -63,9 +62,29 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_following, container, false);
+
         helper = new Helper(v.getContext());
+
+        sharedPreferences = getContext().getSharedPreferences("USER", Context.MODE_PRIVATE);
+        followUser = sharedPreferences.getString("followUser", "");
+        if (sharedPreferences.getString("followUser", null) != null) {
+            new LoadTweets(this).execute(sharedPreferences.getString("followUser", null));
+        }
+
         tweetsListener = this;
         setHasOptionsMenu(true);
+
+        Button pullButton = (Button) v.findViewById(R.id.pullButton);
+        pullButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pullData();
+                ((MainActivity)getActivity()).setToolbarTitle(sharedPreferences.getString("followUser", v.getResources().getString(R.string.fragment4)));
+
+            }
+        });
+
+        tweets = new ArrayList<>();
 
         return v;
     }
@@ -86,6 +105,10 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 followUser = query;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("followUser", followUser);
+                editor.apply();
+
                 new LoadTweets(tweetsListener).execute(query);
                 return false;
             }
@@ -103,52 +126,12 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
     @Override
     public void tweetsCompleted(List<Tweet> tweetsNew){
 
-        List<Tweet> tweets = new ArrayList<>();
+        tweets = new ArrayList<>();
 
         if (tweetsNew != null) {
-
-            helper.setUser(tweetsNew.get(0).user.name);
-
-            transDB = new TransactionDBHelper(v.getContext().getApplicationContext());
-            transDB.clearUser(tweetsNew.get(0).user.name);
-            tagDB = new TagDBHelper(v.getContext().getApplicationContext());
-            tagDB.clearUser(tweetsNew.get(0).user.name);
-
             for (Tweet t : tweetsNew) {
                 if (t.text.endsWith("- #MyMoneyTag")) {
                     tweets.add(t);
-
-                    String message = t.text.replace("- #MyMoneyTag", "");
-
-                    Transaction trans = new Transaction(getContext());
-                    trans.setMessage(message);
-                    trans.setTags(helper.parseTag(message));
-                    trans.setGeneral(helper.parseGeneral(message));
-                    trans.setLocation(helper.parseLocation(message));
-                    trans.setCategory(helper.parseCategory(message));
-                    String pattern = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-                    SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CANADA);
-                    String time = helper.getCurrentTime();
-                    try {
-                        Date date = format.parse(t.createdAt);
-                        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
-                        time = dateFormat.format(date);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    trans.setTimestamp(time);
-                    trans.setAmount(helper.getAmount(message));
-                    trans.setUser(t.user.name);
-                    transDB.addTransactions(trans);
-
-                    // add the tag to tag cloud
-                    for (Tag tag : trans.getTagsList()) {
-                        tag.setUser(t.user.name);
-                        tagDB.addTag(tag);
-                    }
-
-                    transDB.close();
-                    tagDB.close();
                 }
             }
         }
@@ -170,7 +153,54 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
             });
 
         }
+    }
 
+    public void pullData() {
+
+        if (tweets != null) {
+
+            transDB = new TransactionDBHelper(v.getContext().getApplicationContext());
+            transDB.clearUser(tweets.get(0).user.screenName);
+            tagDB = new TagDBHelper(v.getContext().getApplicationContext());
+            tagDB.clearUser(tweets.get(0).user.screenName);
+
+            for (Tweet t : tweets) {
+                String message = t.text.replace("- #MyMoneyTag", "");
+
+                Transaction trans = new Transaction(getContext());
+                trans.setMessage(message);
+                trans.setTags(helper.parseTag(message));
+                trans.setGeneral(helper.parseGeneral(message));
+                trans.setLocation(helper.parseLocation(message));
+                trans.setCategory(helper.parseCategory(message));
+                String pattern = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+                SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CANADA);
+                String time = helper.getCurrentTime();
+                try {
+                    Date date = format.parse(t.createdAt);
+                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
+                    time = dateFormat.format(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                trans.setTimestamp(time);
+                trans.setAmount(helper.getAmount(message));
+                trans.setUser(t.user.screenName);
+                trans.setName(t.user.name);
+                transDB.addTransactions(trans);
+
+                // add the tag to tag cloud
+                for (Tag tag : trans.getTagsList()) {
+                    tag.setName(t.user.name);
+                    tag.setUser(t.user.screenName);
+                    tagDB.addTag(tag);
+                }
+
+                transDB.close();
+                tagDB.close();
+            }
+        }
+        ((MainActivity)getActivity()).setupDrawer();
 
     }
 

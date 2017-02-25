@@ -48,13 +48,10 @@ public class TagActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tag);
         tag = getIntent().getStringExtra("tag");
 
-        if (!tag.startsWith(getResources().getString(R.string.generalIcon))) {
-            tag = getResources().getString(R.string.generalIcon) + tag;
-        }
-
-
         Toolbar toolBar = (Toolbar) findViewById(R.id.tagToolbar);
+        setSupportActionBar(toolBar);
         if (toolBar != null) {
+            toolBar.setTitle(tag);
             TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
             List<Tag> tagList = tagDBHelper.getTagsList("*", user);
             for (Tag t : tagList) {
@@ -64,9 +61,7 @@ public class TagActivity extends AppCompatActivity {
                     tagDBHelper.close();
                 }
             }
-
         }
-        setSupportActionBar(toolBar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);

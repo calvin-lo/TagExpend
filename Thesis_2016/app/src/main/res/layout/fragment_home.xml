@@ -11,8 +11,8 @@
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:id="@+id/transactionList"
-        android:dividerHeight="3dp"
-        android:divider="@drawable/divider"
+        android:divider="@color/tw__transparent"
+        android:dividerHeight="16dp"
         />
 
     <android.support.design.widget.FloatingActionButton

@@ -5,17 +5,48 @@
         android:id="@+id/group1">
         <item
             android:id="@+id/nav_user"
-            android:icon="@drawable/ic_star_border_black_36dp"
+            android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
             android:title="@string/nav_1"
             />
-        <item
-            android:id="@+id/nav_tag"
-            android:icon="@drawable/ic_dashboard_black_24dp"
-            android:title="@string/nav_2" />
     </group>
 
     <group android:checkableBehavior="single"
         android:id="@+id/group2">
+        <item android:title="@string/nav_2">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/nav_user1"
+                    android:title="@string/nav_2"
+                    android:icon="@drawable/ic_label_outline_black_24dp"
+                    android:visible="false"/>
+                <item android:id="@+id/nav_user2"
+                    android:title="@string/nav_2"
+                    android:icon="@drawable/ic_label_outline_black_24dp"
+                    android:visible="false"/>
+                <item android:id="@+id/nav_user3"
+                    android:title="@string/nav_2"
+                    android:icon="@drawable/ic_label_outline_black_24dp"
+                    android:visible="false"/>
+                <item android:id="@+id/nav_user4"
+                    android:title="@string/nav_2"
+                    android:icon="@drawable/ic_label_outline_black_24dp"
+                    android:visible="false"/>
+                <item android:id="@+id/nav_user5"
+                    android:title="@string/nav_2"
+                    android:icon="@drawable/ic_label_outline_black_24dp"
+                    android:visible="false"/>
+                <item android:id="@+id/nav_user_more"
+                    android:icon="@drawable/ic_expand_more_black_24dp"
+                    android:title="@string/nav_more"
+                    android:visible="false"/>
+            </group>
+        </menu>
+        </item>
+    </group>
+
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/group3">
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings_black_36dp"

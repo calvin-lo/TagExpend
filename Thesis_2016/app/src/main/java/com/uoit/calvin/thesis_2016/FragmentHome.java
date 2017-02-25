@@ -13,7 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -109,13 +108,16 @@ public class FragmentHome extends Fragment{
                     trans.setCategory(helper.parseCategory(message));
                     trans.setTimestamp(helper.getCurrentTime());
                     trans.setAmount(helper.getAmount(message));
-                    trans.setUser("Default");
+                    SharedPreferences sharedpreferences = getContext().getSharedPreferences("USER", Context.MODE_PRIVATE);;
+                    trans.setName(sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user)));
+                    trans.setUser(getResources().getString(R.string.default_user));
                     transDB.addTransactions(trans);
 
                     // add the tag to tag cloud
                     tagDB = new TagDBHelper(v.getContext().getApplicationContext());
                     for (Tag t : trans.getTagsList()) {
-                        t.setUser("Default");
+                        t.setName(sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user)));
+                        t.setUser(v.getResources().getString(R.string.default_user));
                         tagDB.addTag(t);
                     }
 
@@ -153,18 +155,6 @@ public class FragmentHome extends Fragment{
             if (!dup) {
                 uniqueDate.add(t.getDate());
             }
-        }
-
-        boolean haveToday = false;
-        for (Transaction t : transList) {
-            if (helper.getYear(t.getDate())== helper.getYear(todayDate)
-                    && helper.getMonth(t.getDate()) == helper.getMonth(todayDate)
-                    && helper.getDay(t.getDate()) == helper.getDay(todayDate)) {
-                haveToday = true;
-            }
-        }
-        if (!haveToday) {
-            uniqueDate.add(todayDate);
         }
 
         Collections.sort(transList);
