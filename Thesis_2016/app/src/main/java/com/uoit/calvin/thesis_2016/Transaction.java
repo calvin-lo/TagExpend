@@ -33,6 +33,7 @@ public class Transaction implements Comparable<Transaction>{
     private String CATEGORY_ICON;
 
     private Context context;
+    private int color;
 
 
     Transaction(Context context) {
@@ -180,4 +181,12 @@ public class Transaction implements Comparable<Transaction>{
     public String getName() { return name;}
 
     public void setName(String name) {this.name = name;}
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
 }

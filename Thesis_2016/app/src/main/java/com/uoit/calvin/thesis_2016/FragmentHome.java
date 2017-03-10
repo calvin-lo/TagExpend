@@ -108,6 +108,7 @@ public class FragmentHome extends Fragment{
                     trans.setCategory(helper.parseCategory(message));
                     trans.setTimestamp(helper.getCurrentTime());
                     trans.setAmount(helper.getAmount(message));
+                    trans.setColor(data.getIntExtra("color", 0));
                     SharedPreferences sharedpreferences = getContext().getSharedPreferences("USER", Context.MODE_PRIVATE);;
                     trans.setName(sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user)));
                     trans.setUser(getResources().getString(R.string.default_user));
@@ -132,8 +133,21 @@ public class FragmentHome extends Fragment{
 
     public void displayTransList() {
         transDB = new TransactionDBHelper(v.getContext().getApplicationContext());
+        ArrayList<Transaction> transList = new ArrayList<>(transDB.getAllData(user));
+        Collections.sort(transList);
+        Collections.reverse(transList);
+        if (transList.size() > 0) {
+            ListViewAdapter mainAdapter = new ListViewAdapter(v.getContext().getApplicationContext(), transList, user);
+            ListView transListView = (ListView) v.findViewById(R.id.transactionList);
+            if (transListView != null) {
+                transListView.setAdapter(mainAdapter);
+                registerForContextMenu(transListView);
+            }
+        }
 
-        List<Transaction> transList = transDB.getAllData(user);;
+
+        /*
+        List<Transaction> transList = transDB.getAllData(user);
         List<List<Transaction>> myList = new ArrayList<>();
 
         List<Date> uniqueDate = new ArrayList<>();
@@ -192,7 +206,7 @@ public class FragmentHome extends Fragment{
                 registerForContextMenu(transListView);
             }
         }
-
+    */
 
         transDB.close();
     }

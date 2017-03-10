@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.daimajia.swipe.SimpleSwipeListener;
@@ -37,7 +38,8 @@ class ListViewAdapter extends BaseSwipeAdapter {
         View v = LayoutInflater.from(context).inflate(R.layout.listview_item, null);
         final SwipeLayout swipeLayout = (SwipeLayout)v.findViewById(getSwipeLayoutResourceId(position));
         swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
-        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, v.findViewById(R.id.left_bottom));
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, v.findViewById(R.id.bottom_wrapper));
+        swipeLayout.setRightSwipeEnabled(false);
         swipeLayout.addSwipeListener(new SimpleSwipeListener() {
             @Override
             public void onOpen(SwipeLayout layout) {
@@ -57,51 +59,38 @@ class ListViewAdapter extends BaseSwipeAdapter {
                }
         });
 
-        // Delete
-        v.findViewById(R.id.swipe2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        ImageButton deleteButton = (ImageButton) v.findViewById(R.id.swipe2);
 
-                long id = transactionsList.get(position).getId();
-
-                TransactionDBHelper transDB = new TransactionDBHelper(context.getApplicationContext());
-
-                Helper helper = new Helper(context);
-                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, user).getMessage());
-
-                transDB.deleteTransactions(id);
-
-                // update tag cloud
-                TagDBHelper tagDB = new TagDBHelper(context.getApplicationContext());
-                for (Tag t : tagList) {
-                    tagDB.updateTag(t);
+        if (!transactionsList.get(position).getUser().equals(context.getResources().getString(R.string.default_user))) {
+            deleteButton.setVisibility(View.GONE);
+        } else {
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    delete(position, swipeLayout);
                 }
+            });
+        }
 
-                mItemManger.removeShownLayouts(swipeLayout);
-                transactionsList.remove(position);
-                notifyDataSetChanged();
-                mItemManger.closeAllItems();
-
-                transDB.close();
-                tagDB.close();
-
-            }
-        });
-
-        // Left
-        TextView swipe3TV = (TextView) v.findViewById(R.id.swipe3);
-        String s = transactionsList.get(position).getMessage() + " $" + transactionsList.get(position).getAmount();
-        swipe3TV.setText(s);
         return v;
     }
 
     @Override
     public void fillValues(int position, View convertView) {
+        Transaction t = transactionsList.get(position);
+        convertView.setBackgroundColor(t.getColor());
         TextView tagTv = (TextView)convertView.findViewById(R.id.tag);
-        String s = transactionsList.get(position).getMessage();
+        String s = t.getMessage();
         tagTv.setText(s);
         TextView timeTv = (TextView)convertView.findViewById(R.id.time);
-        timeTv.setText(transactionsList.get(position).getTimestamp());
+        long time = new Helper(context).parseDate(t.getTimestamp());
+        timeTv.setText(new TimeAgo().getTimeAgo(time,context));
+
+        TextView userNameTV = (TextView)convertView.findViewById(R.id.userName);
+        TextView displayNameTV = (TextView)convertView.findViewById(R.id.displayName);
+        displayNameTV.setText(t.getName());
+        s = "@" + t.getUser();
+        userNameTV.setText(s);
     }
 
     @Override
@@ -117,5 +106,31 @@ class ListViewAdapter extends BaseSwipeAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    private void delete(int position, SwipeLayout swipeLayout) {
+        long id = transactionsList.get(position).getId();
+
+        TransactionDBHelper transDB = new TransactionDBHelper(context.getApplicationContext());
+
+        Helper helper = new Helper(context);
+        List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, user).getMessage(), user);
+
+        transDB.deleteTransactions(id);
+
+        // update tag cloud
+        TagDBHelper tagDB = new TagDBHelper(context.getApplicationContext());
+        for (Tag t : tagList) {
+            tagDB.updateTag(t);
+        }
+
+        mItemManger.removeShownLayouts(swipeLayout);
+        transactionsList.remove(position);
+        notifyDataSetChanged();
+        mItemManger.closeAllItems();
+
+        transDB.close();
+        tagDB.close();
+
     }
 }

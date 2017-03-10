@@ -61,6 +61,11 @@
     <string name="nav_1">Your</string>
     <string name="nav_2">Following</string>
     <string name="nav_more">More</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_tag">Tag Cloud</string>
+    <string name="nav_chart">Chart</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_all">All</string>
 
     <!-- Dialog -->
     <string name="dialog_message">Follow</string>
@@ -73,4 +78,6 @@
     <!-- Button -->
     <string name="pullData">Pull</string>
 
+    <!-- Color -->
+    <string name="color_title">Select your color:</string>
 </resources>

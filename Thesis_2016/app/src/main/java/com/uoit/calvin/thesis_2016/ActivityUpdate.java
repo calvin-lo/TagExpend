@@ -1,42 +1,27 @@
 package com.uoit.calvin.thesis_2016;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.colorpicker.ColorPickerDialog;
-import com.android.colorpicker.ColorPickerPalette;
-import com.android.colorpicker.ColorPickerSwatch;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import io.fabric.sdk.android.Fabric;
 
-public class FormActivity extends AppCompatActivity{
+public class ActivityUpdate extends AppCompatActivity{
 
     final int RESULT_OK = 1;
     Helper helper;
     EditText input;
 
-    int selectedColor;
-    int colors[];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,14 +36,13 @@ public class FormActivity extends AppCompatActivity{
         TwitterAuthConfig authConfig =  new TwitterAuthConfig("consumerKey", "consumerSecret");
         Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
 
+        String original = getIntent().getStringExtra("original");
+
         helper = new Helper(this);
         input = (EditText) findViewById(R.id.tagInput);
-        colors = helper.getColorArray();
-        int randomNum = ThreadLocalRandom.current().nextInt(0, colors.length);
-        selectedColor = colors[randomNum];
-        Button colorButton = (Button) findViewById(R.id.colorButton);
-        if (colorButton != null) {
-            colorButton.setBackgroundColor(selectedColor);
+        if (input != null) {
+            input.setText(original);
+            input.setSelection(input.getText().length());
         }
     }
 
@@ -66,10 +50,15 @@ public class FormActivity extends AppCompatActivity{
         Intent returnIntent = new Intent();
         if (input != null) {
             String trans = input.getEditableText().toString();
-            returnIntent.putExtra("trans", trans );
-            returnIntent.putExtra("color", selectedColor);
-            setResult(this.RESULT_OK, returnIntent);
-            finish();
+            boolean format = true;
+            if (format) {
+                returnIntent.putExtra("trans", trans );
+                setResult(this.RESULT_OK, returnIntent);
+                finish();
+            } else {
+                Toast toast = Toast.makeText(this, getResources().getString(R.string.errorFormat), Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
     }
 
@@ -133,43 +122,12 @@ public class FormActivity extends AppCompatActivity{
         }
     }
 
-
     public void selectColor(View v) {
-        int columns = 5;
 
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        final ColorPickerPalette colorPickerPalette = (ColorPickerPalette) layoutInflater
-                .inflate(R.layout.custom_picker, null);
-        colorPickerPalette.init(colors.length, columns, new ColorPickerSwatch.OnColorSelectedListener() {
-            @Override
-            public void onColorSelected(int color) {
-                colorPickerPalette.drawPalette(colors, color);
-                selectedColor = color;
-            }
-        });
-        colorPickerPalette.drawPalette(colors, selectedColor);
-
-        AlertDialog alert = new AlertDialog.Builder(this, R.style.MyDialogTheme)
-                .setTitle(R.string.color_title)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Button colorButton = (Button) findViewById(R.id.colorButton);
-                        if (colorButton != null) {
-                            colorButton.setBackgroundColor(selectedColor);
-                        }
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                })
-                .setView(colorPickerPalette)
-                .create();
-        alert.show();
     }
+
+
+
 
 
 }

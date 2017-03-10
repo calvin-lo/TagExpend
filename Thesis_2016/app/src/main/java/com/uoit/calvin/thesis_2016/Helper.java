@@ -2,6 +2,7 @@ package com.uoit.calvin.thesis_2016;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.text.DateFormat;
@@ -53,6 +54,40 @@ class Helper {
             if (parsedTags[i].substring(0,1).equals(CATEGORY_ICON)) {
                 tags.add(new Tag(parsedTags[i].substring(1, parsedTags[i].length()), CATEGORY_ICON, amount));
             }
+
+        }
+
+        return tags;
+    }
+
+    List<Tag> parseTag(String message, String user) {
+        List<Tag> tags = new ArrayList<>();
+        String parsedTags[] =  message.split(format);
+        float amount = 0;
+
+        for (int i = 1; i < parsedTags.length; i++) {
+            if (parsedTags[i].substring(0,1).equals(DOLLAR_ICON)) {
+                amount = amount + Float.parseFloat(parsedTags[i].substring(1, parsedTags[i].length()));
+            }
+        }
+
+        for (int i = 1; i < parsedTags.length; i++) {
+            if (parsedTags[i].substring(0,1).equals(GENERAL_ICON)) {
+                Tag t = new Tag(parsedTags[i].substring(1,parsedTags[i].length()), GENERAL_ICON, amount);
+                t.setUser(user);
+                tags.add(t);
+            }
+            if (parsedTags[i].substring(0,1).equals(LOCATION_ICON)) {
+                Tag t = new Tag(parsedTags[i].substring(1,parsedTags[i].length()), LOCATION_ICON, amount);
+                t.setUser(user);
+                tags.add(t);
+            }
+            if (parsedTags[i].substring(0,1).equals(CATEGORY_ICON)) {
+                Tag t = new Tag(parsedTags[i].substring(1, parsedTags[i].length()), CATEGORY_ICON, amount);
+                t.setUser(user);
+                tags.add(t);
+            }
+
         }
 
         return tags;
@@ -91,7 +126,6 @@ class Helper {
         return category;
     }
 
-
     public float getAmount(String message) {
         String parsedTags[] =  message.split(format);
         float amount = 0;
@@ -117,6 +151,18 @@ class Helper {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    public long parseDate(String text)
+    {
+        long time = 0;
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
+        try {
+            time = dateFormat.parse(text).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return time;
     }
 
     public int getDay(Date date) {
@@ -205,5 +251,29 @@ class Helper {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("defaultUser", user);
         editor.apply();
+    }
+
+    public int[] getColorArray() {
+        int my_colors[] = {ContextCompat.getColor(context, R.color.red),
+                ContextCompat.getColor(context, R.color.pink),
+                ContextCompat.getColor(context, R.color.purple),
+                ContextCompat.getColor(context, R.color.deep_purple),
+                ContextCompat.getColor(context, R.color.indigo),
+                ContextCompat.getColor(context, R.color.blue),
+                ContextCompat.getColor(context, R.color.light_blue),
+                ContextCompat.getColor(context, R.color.cyan),
+                ContextCompat.getColor(context, R.color.teal),
+                ContextCompat.getColor(context, R.color.green),
+                ContextCompat.getColor(context, R.color.light_green),
+                ContextCompat.getColor(context, R.color.lime),
+                ContextCompat.getColor(context, R.color.yellow),
+                ContextCompat.getColor(context, R.color.amber),
+                ContextCompat.getColor(context, R.color.orange),
+                ContextCompat.getColor(context, R.color.deep_orange),
+                ContextCompat.getColor(context, R.color.brown),
+                ContextCompat.getColor(context, R.color.grey),
+                ContextCompat.getColor(context, R.color.blue_grey)};
+
+        return my_colors;
     }
 }

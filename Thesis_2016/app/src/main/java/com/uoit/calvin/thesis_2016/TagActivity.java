@@ -50,13 +50,16 @@ public class TagActivity extends AppCompatActivity {
 
         Toolbar toolBar = (Toolbar) findViewById(R.id.tagToolbar);
         setSupportActionBar(toolBar);
+        SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+        user = sharedpreferences.getString("user", null);
         if (toolBar != null) {
             toolBar.setTitle(tag);
             TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
             List<Tag> tagList = tagDBHelper.getTagsList("*", user);
             for (Tag t : tagList) {
                 if (t.toString().equals(tag)) {
-                    String title= tag + " - Total: $" + t.getAmount();
+                    //String title= tag + " - Total: $" + t.getAmount();
+                    String title = tag;
                     toolBar.setTitle(title);
                     tagDBHelper.close();
                 }
@@ -67,8 +70,6 @@ public class TagActivity extends AppCompatActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
-        user = sharedpreferences.getString("user", null);
 
         // set the title
         TransactionDBHelper transDB = new TransactionDBHelper(this);

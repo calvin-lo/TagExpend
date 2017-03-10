@@ -66,13 +66,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/transListView"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
         android:layout_below="@+id/tagAppBar"
         android:layout_above="@id/spinnerLayout"
         android:divider="@color/tw__transparent"
-        android:dividerHeight="3dp"
         />
 
 

@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private CustomViewPager viewPager;
 
     private Helper helper;
     NavigationView navigationView;
@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity
 
         sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
         if (sharedpreferences.getString("user", null) == null) {
-            helper.setUser(getResources().getString(R.string.default_user));
+            helper.setUser("*");
             helper.setSelectedPosition(R.id.nav_user);
         }
 
         if (sharedpreferences.getString("defaultUser", null) == null) {
-            helper.setDefaultUser(getResources().getString(R.string.default_user));
+            helper.setDefaultUser("*");
         }
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
@@ -87,6 +87,10 @@ public class MainActivity extends AppCompatActivity
 
         // Set up the drawer
         setupDrawer();
+
+        viewPager = (CustomViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
 
         // Tab Layout
         setupTabLayout();
@@ -127,12 +131,25 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         int id = item.getItemId();
-        if (id == R.id.nav_user) {
-            if (sharedpreferences.getInt("selectedPosition", R.id.nav_user) != id) {
-                navigationView.getMenu().findItem(sharedpreferences.getInt("selectedPosition", R.id.nav_user)).setChecked(false);
-            }
+
+        if (id == R.id.nav_home) {
+            viewPager.setCurrentItem(0, true);
+        } else if (id == R.id.nav_tag) {
+            viewPager.setCurrentItem(1, true);
+        }
+        else if (id == R.id.nav_chart) {
+            viewPager.setCurrentItem(2, true);
+        }
+        else if (id == R.id.nav_explore) {
+            viewPager.setCurrentItem(3, true);
+        }
+        else if (id == R.id.nav_user) {
             helper.setUser(getResources().getString(R.string.default_user));
             helper.setSelectedPosition(R.id.nav_user);
+            adapter.notifyDataSetChanged();
+        } else if (id == R.id.nav_all) {
+            helper.setUser("*");
+            helper.setSelectedPosition(R.id.nav_all);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user_more) {
@@ -192,23 +209,50 @@ public class MainActivity extends AppCompatActivity
     /*
         View Pager
      */
-    private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager(CustomViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new FragmentHome(), getResources().getString(R.string.fragment1));
         adapter.addFragment(new FragmentTagCloud(),getResources().getString(R.string.fragment2));
         adapter.addFragment(new FragmentChart(), getResources().getString(R.string.fragment3));
         adapter.addFragment(new FragmentFollowing(), getResources().getString(R.string.fragment4));
         viewPager.setAdapter(adapter);
+        viewPager.setPagingEnabled(true);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        toolbar.setTitle(getResources().getString(R.string.fragment1));
+                        break;
+                    case 1:
+                        toolbar.setTitle(getResources().getString(R.string.fragment2));
+                        break;
+                    case 2:
+                        toolbar.setTitle(getResources().getString(R.string.fragment3));
+                        break;
+                    case 3:
+                        toolbar.setTitle(sharedpreferences.getString("followUser", getResources().getString(R.string.fragment4)));
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
+
 
     /*
         Set up Tab Layout
      */
-    private void setupTabLayout() {
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        setupViewPager(viewPager);
+    private void setupTabLayout() {
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         final TabLayout.Tab home = tabLayout.newTab();
         home.setIcon(R.drawable.ic_home_black_24dp);
@@ -231,40 +275,8 @@ public class MainActivity extends AppCompatActivity
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-            @Override
-            public void onPageSelected(int position) {
-                switch (position) {
-                    case 0:
-                        //home.setIcon(R.drawable.ic_home_black_24dp);
-                        //star.setIcon(R.drawable.ic_create_black_24dp);
-                        toolbar.setTitle(getResources().getString(R.string.fragment1));
-                        break;
-                    case 1:
-                        //home.setIcon(R.drawable.ic_home_black_24dp);
-                        //star.setIcon(R.drawable.ic_clear_black_24dp);
-                        toolbar.setTitle(getResources().getString(R.string.fragment2));
-                        break;
-                    case 2:
-                        toolbar.setTitle(getResources().getString(R.string.fragment3));
-                        break;
-                    case 3:
-                        toolbar.setTitle(sharedpreferences.getString("followUser",getResources().getString(R.string.fragment4)));
-                        break;
-
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {}
-
-        });
-
     }
+
 
 
     /*

@@ -33,6 +33,14 @@
                 android:value=".TagCloudActivity" />
         </activity>
         <activity
+            android:name=".ActivityUpdate"
+            android:parentActivityName=".DetailsActivity"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DetailsActivity" />
+        </activity>
+        <activity
             android:name=".SettingActivity"
             android:parentActivityName=".MainActivity">
             <meta-data

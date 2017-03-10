@@ -4,18 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.Space
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/bottomSpace"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/bottomSpace"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@color/white"
+        android:background="@color/accent"
+        android:textColor="@color/white"
         android:elevation="5dp"
         android:text="@string/pullData"
         android:id="@+id/pullButton"/>

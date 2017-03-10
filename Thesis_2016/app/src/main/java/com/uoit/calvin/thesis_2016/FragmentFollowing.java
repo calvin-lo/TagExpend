@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -74,6 +75,8 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
         tweetsListener = this;
         setHasOptionsMenu(true);
 
+        tweets = new ArrayList<>();
+
         Button pullButton = (Button) v.findViewById(R.id.pullButton);
         pullButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +87,6 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
             }
         });
 
-        tweets = new ArrayList<>();
 
         return v;
     }
@@ -158,53 +160,57 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
     public void pullData() {
 
         if (tweets != null) {
+            if (tweets.size() > 0) {
 
-            transDB = new TransactionDBHelper(v.getContext().getApplicationContext());
-            transDB.clearUser(tweets.get(0).user.screenName);
-            tagDB = new TagDBHelper(v.getContext().getApplicationContext());
-            tagDB.clearUser(tweets.get(0).user.screenName);
+                transDB = new TransactionDBHelper(v.getContext().getApplicationContext());
+                transDB.clearUser(tweets.get(0).user.screenName);
+                tagDB = new TagDBHelper(v.getContext().getApplicationContext());
+                tagDB.clearUser(tweets.get(0).user.screenName);
 
-            for (Tweet t : tweets) {
-                String message = t.text.replace("- #MyMoneyTag", "");
+                for (Tweet t : tweets) {
+                    String message = t.text.replace("- #MyMoneyTag", "");
 
-                Transaction trans = new Transaction(getContext());
-                trans.setMessage(message);
-                trans.setTags(helper.parseTag(message));
-                trans.setGeneral(helper.parseGeneral(message));
-                trans.setLocation(helper.parseLocation(message));
-                trans.setCategory(helper.parseCategory(message));
-                String pattern = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-                SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CANADA);
-                String time = helper.getCurrentTime();
-                try {
-                    Date date = format.parse(t.createdAt);
-                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
-                    time = dateFormat.format(date);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    Transaction trans = new Transaction(getContext());
+                    trans.setMessage(message);
+                    trans.setTags(helper.parseTag(message));
+                    trans.setGeneral(helper.parseGeneral(message));
+                    trans.setLocation(helper.parseLocation(message));
+                    trans.setCategory(helper.parseCategory(message));
+                    String pattern = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CANADA);
+                    String time = helper.getCurrentTime();
+                    int color[] = helper.getColorArray();
+                    int randomNum = ThreadLocalRandom.current().nextInt(0, color.length);
+                    trans.setColor(color[randomNum]);
+                    try {
+                        Date date = format.parse(t.createdAt);
+                        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
+                        time = dateFormat.format(date);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    trans.setTimestamp(time);
+                    trans.setAmount(helper.getAmount(message));
+                    trans.setUser(t.user.screenName);
+                    trans.setName(t.user.name);
+                    transDB.addTransactions(trans);
+
+                    // add the tag to tag cloud
+                    for (Tag tag : trans.getTagsList()) {
+                        tag.setName(t.user.name);
+                        tag.setUser(t.user.screenName);
+                        tagDB.addTag(tag);
+                    }
+
+                    transDB.close();
+                    tagDB.close();
                 }
-                trans.setTimestamp(time);
-                trans.setAmount(helper.getAmount(message));
-                trans.setUser(t.user.screenName);
-                trans.setName(t.user.name);
-                transDB.addTransactions(trans);
-
-                // add the tag to tag cloud
-                for (Tag tag : trans.getTagsList()) {
-                    tag.setName(t.user.name);
-                    tag.setUser(t.user.screenName);
-                    tagDB.addTag(tag);
-                }
-
-                transDB.close();
-                tagDB.close();
             }
+            ((MainActivity) getActivity()).setupDrawer();
         }
-        ((MainActivity)getActivity()).setupDrawer();
-
     }
 
-    class LoadTweets extends AsyncTask<String, Void, List<Tweet>> {
+    private class LoadTweets extends AsyncTask<String, Void, List<Tweet>> {
 
         private final TweetsListener listener;
         List<Tweet> tweets = new ArrayList<>();

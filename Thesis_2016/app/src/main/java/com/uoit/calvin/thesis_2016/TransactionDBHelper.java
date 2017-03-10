@@ -30,6 +30,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     private static final String KEY_LOCATION = "location";
     private static final String KEY_GENERAL = "general";
     private static final String KEY_NAME = "name";
+    private static final String KEY_COLOR = "color";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME+ " (" +
@@ -44,7 +45,8 @@ class TransactionDBHelper extends SQLiteOpenHelper {
                     KEY_NAME + " TEXT, " +
                     KEY_YEAR + " REAL," +
                     KEY_MONTH + " REAL," +
-                    KEY_DAY + " REAL" + " )";
+                    KEY_DAY + " REAL," +
+                    KEY_COLOR + " REAL" + ")";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -82,6 +84,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
         values.put(KEY_USER, trans.getUser());
         values.put(KEY_NAME, trans.getName());
+        values.put(KEY_COLOR, trans.getColor());
 
         // Inserting Row
         db.insert(TABLE_NAME, null, values);
@@ -106,6 +109,8 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
         values.put(KEY_USER, trans.getUser());
         values.put(KEY_NAME, trans.getName());
+        values.put(KEY_COLOR, trans.getColor());
+
         db.update(TABLE_NAME, values,  KEY_ID+"="+ trans.getId(), null);
         db.close();
     }
@@ -135,7 +140,12 @@ class TransactionDBHelper extends SQLiteOpenHelper {
 
     List<Transaction> getAllData(String user) {
         List<Transaction> transList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        String selectQuery;
+        if (user.equals("*")) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -155,7 +165,12 @@ class TransactionDBHelper extends SQLiteOpenHelper {
     Transaction getTransByID(long id, String user) {
         Transaction trans = new Transaction(context);
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_ID + "='" + id + "'" + " AND " + KEY_USER + "='" + user + "'";
+        String selectQuery;
+        if (user.equals("*")) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_ID + "='" + id + "'";
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_ID + "='" + id + "'" + " AND " + KEY_USER + "='" + user + "'";
+        }
         Cursor cursor = db.rawQuery(selectQuery, null);
         cursor.moveToFirst();
 
@@ -170,7 +185,12 @@ class TransactionDBHelper extends SQLiteOpenHelper {
 
     List<Transaction> getTransByTag(String tag, String user) {
         List<Transaction> transList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        String selectQuery;
+        if (user.equals("*")) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -225,6 +245,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         trans.setAmount(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
         trans.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
         trans.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+        trans.setColor(cursor.getInt(cursor.getColumnIndex(KEY_COLOR)));
 
         return trans;
     }

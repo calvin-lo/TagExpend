@@ -35,7 +35,7 @@ public class FragmentTagCloud extends Fragment{
         v =  inflater.inflate(R.layout.fragment_tag_cloud, container, false);
 
         SharedPreferences sharedpreferences = getActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
-        user = sharedpreferences.getString("user", null);
+        user = sharedpreferences.getString("user", getContext().getResources().getString(R.string.default_user));
 
         RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);

@@ -67,7 +67,7 @@ class TagDBHelper extends SQLiteOpenHelper {
             db.insert(TABLE_NAME, null, values);
 
         } else {
-            float amount = getAmount(tag.getTitle()) + tag.getAmount();
+            float amount = getAmount(tag.getTitle(), tag.getUser()) + tag.getAmount();
             values.put(KEY_AMOUNT, amount);
             db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getTitle()});
         }
@@ -75,10 +75,15 @@ class TagDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    private float getAmount(String tag) {
+    private float getAmount(String tag, String user) {
         SQLiteDatabase database = this.getReadableDatabase();
 
-        String query = "SELECT " + KEY_AMOUNT +" FROM " + TABLE_NAME + " WHERE " + KEY_TAG + "='" + tag + "'";
+        String query;
+        if (user.equals("*")) {
+                query = "SELECT " + KEY_AMOUNT + " FROM " + TABLE_NAME + " WHERE " + KEY_TAG + "='" + tag + "'";
+        } else {
+            query = "SELECT " + KEY_AMOUNT + " FROM " + TABLE_NAME + " WHERE " + KEY_TAG + "='" + tag + "'" + " AND " + KEY_USER + "='" + user +"'";
+        }
         Cursor cursor = database.rawQuery(query,null);
 
         if (cursor !=null)  {
@@ -94,7 +99,7 @@ class TagDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        float amount = getAmount(tag.getTitle()) - tag.getAmount();
+        float amount = getAmount(tag.getTitle(), tag.getUser()) - tag.getAmount();
         values.put(KEY_AMOUNT, amount);
         db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getTitle()});
         db.close();
@@ -102,6 +107,14 @@ class TagDBHelper extends SQLiteOpenHelper {
 
     private boolean checkDuplicate(Tag tag) {
         return (new ArrayList<>(Arrays.asList(getTagsStringList(tag.getUser())))).contains(tag.toString());
+    }
+
+    private boolean checkDuplicateAll(Tag tag, List<Tag> tagList) {
+        List<String> tagStrList = new ArrayList<>();
+        for (Tag t : tagList) {
+            tagStrList.add(t.toString());
+        }
+        return (tagStrList.contains(tag.toString()));
     }
 
     boolean deleteTag(String tag) {
@@ -130,13 +143,16 @@ class TagDBHelper extends SQLiteOpenHelper {
 
     }
 
-
-
     List<Tag> getTagsList(String type, String user) {
         List<Tag> tagList = new ArrayList<>();
         String selectQuery;
 
-        if (type.equals("*")) {
+        if (type.equals("*") && user.equals("*")) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        } else if (!type.equals("*") && user.equals("*")) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_TYPE + "='" + type + "'";
+        }
+        else if (type.equals("*") && !user.equals("*")) {
             selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user +"'";
         } else {
             selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_TYPE + "='" + type + "'" + " AND " + KEY_USER + "='" + user +"'";
@@ -151,7 +167,9 @@ class TagDBHelper extends SQLiteOpenHelper {
             Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
             tag.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
             tag.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
-            tagList.add(tag);
+            if (!checkDuplicateAll(tag, tagList)) {
+                tagList.add(tag);
+            }
             cursor.moveToNext();
         }
         cursor.close();
@@ -161,7 +179,12 @@ class TagDBHelper extends SQLiteOpenHelper {
 
     String[] getTagsStringList(String user) {
         List<String> tagList = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        String selectQuery;
+        if (user.equals("*")) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        } else {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

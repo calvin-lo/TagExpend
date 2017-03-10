@@ -8,10 +8,39 @@
             android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
             android:title="@string/nav_1"
             />
+        <item
+            android:id="@+id/nav_all"
+            android:icon="@drawable/ic_group_work_black_24dp"
+            android:title="@string/nav_all"
+            />
     </group>
 
     <group android:checkableBehavior="single"
         android:id="@+id/group2">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/nav_home"
+            />
+        <item
+            android:id="@+id/nav_tag"
+            android:icon="@drawable/ic_dashboard_black_24dp"
+            android:title="@string/nav_tag"
+            />
+        <item
+            android:id="@+id/nav_chart"
+            android:icon="@drawable/ic_insert_chart_black_24dp"
+            android:title="@string/nav_chart"
+            />
+        <item
+            android:id="@+id/nav_explore"
+            android:icon="@drawable/ic_explore_black_24dp"
+            android:title="@string/nav_explore"
+            />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/group4">
         <item android:title="@string/nav_2">
         <menu>
             <group android:checkableBehavior="single">

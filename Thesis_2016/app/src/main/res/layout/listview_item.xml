@@ -4,78 +4,105 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/swipe"
     android:layout_width="match_parent"
-    android:layout_height="55dp"
+    android:layout_height="80dp"
     swipe:leftEdgeSwipeOffset="0dp"
     swipe:rightEdgeSwipeOffset="0dp"
-    android:background="@drawable/round_shape">
+    android:background="@color/accent">
 
     <LinearLayout
         android:id="@+id/bottom_wrapper"
-        android:layout_width="110dp"
-        android:layout_height="55dp"
-        android:weightSum="10">
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:weightSum="2">
 
         <ImageButton
             android:id="@+id/swipe1"
             android:contentDescription="@string/swipe1"
-            android:layout_width="55dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:src="@drawable/ic_details_white_36dp"
             android:background="@color/swipe1"
-
+            android:layout_weight="1"
             />
         <ImageButton
             android:id="@+id/swipe2"
             android:contentDescription="@string/swipe2"
-            android:layout_width="55dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:src="@drawable/ic_delete_white_36dp"
             android:background="@color/swipe2"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/left_bottom"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:weightSum="10">
+        android:layout_height="100dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_label_outline_white_big"
+            android:id="@+id/profile"/>
 
         <TextView
-            android:id="@+id/swipe3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/swipe1"
-            android:background="@color/swipe1"
-            android:textSize="17sp"
-            android:layout_gravity="center"
-            android:textColor="@color/white"/>
-    </LinearLayout>
+            android:id="@+id/displayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="@string/default_user"
+            android:textColor="@color/white"
+            android:layout_toEndOf="@id/profile"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:maxLines="1"
+            android:textStyle="bold"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:orientation="vertical"
-        android:padding="8dp">
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/default_user"
+            android:textColor="@color/white"
+            android:layout_toEndOf="@id/displayName"
+            android:layout_alignBaseline="@id/displayName"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="10dp"
+            android:maxLines="1" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_expand_more_white_24dp"
+            android:padding = "4dp"/>
 
         <TextView
             android:id="@+id/tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:maxLines="1" />
-
+            android:layout_below="@+id/displayName"
+            android:layout_toEndOf="@id/profile"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:maxLines="2" />
         <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:padding="12dp"
             android:textAlignment="viewEnd"
             android:textSize="12sp"
             android:textColor="@color/white"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 </com.daimajia.swipe.SwipeLayout>

@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             app:title="@string/fragment1"
             />
-
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             app:tabGravity="fill"
