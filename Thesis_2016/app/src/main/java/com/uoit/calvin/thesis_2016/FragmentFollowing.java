@@ -2,10 +2,15 @@ package com.uoit.calvin.thesis_2016;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +30,9 @@ import com.twitter.sdk.android.tweetui.TweetUtils;
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,7 +55,7 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
     SharedPreferences sharedPreferences;
     List<Tweet> tweets;
 
-    String followUser;
+    String followUsername;
 
     public FragmentFollowing() {
         // Required empty public constructor
@@ -67,9 +75,9 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
         helper = new Helper(v.getContext());
 
         sharedPreferences = getContext().getSharedPreferences("USER", Context.MODE_PRIVATE);
-        followUser = sharedPreferences.getString("followUser", "");
-        if (sharedPreferences.getString("followUser", null) != null) {
-            new LoadTweets(this).execute(sharedPreferences.getString("followUser", null));
+        followUsername = sharedPreferences.getString("followUsername", "");
+        if (sharedPreferences.getString("followUsername", null) != null) {
+            new LoadTweets(this).execute(sharedPreferences.getString("followUsername", null));
         }
 
         tweetsListener = this;
@@ -82,7 +90,7 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
             @Override
             public void onClick(View view) {
                 pullData();
-                ((MainActivity)getActivity()).setToolbarTitle(sharedPreferences.getString("followUser", v.getResources().getString(R.string.fragment4)));
+                ((MainActivity)getActivity()).setToolbarTitle(sharedPreferences.getString("followUsername", v.getResources().getString(R.string.fragment4)));
 
             }
         });
@@ -106,9 +114,9 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                followUser = query;
+                followUsername = query;
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("followUser", followUser);
+                editor.putString("followUsername", followUsername);
                 editor.apply();
 
                 new LoadTweets(tweetsListener).execute(query);
@@ -167,8 +175,20 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
                 tagDB = new TagDBHelper(v.getContext().getApplicationContext());
                 tagDB.clearUser(tweets.get(0).user.screenName);
 
+
+                int color[] = helper.getMaterialColor();
+                int randomNum = ThreadLocalRandom.current().nextInt(0, color.length);
+                int selectedColor = color[randomNum];
                 for (Tweet t : tweets) {
                     String message = t.text.replace("- #MyMoneyTag", "");
+                    User user = new User(getContext(), t.user.name, t.user.screenName);
+                    user.setProfileImageUrl(t.user.profileImageUrl);
+                    user.setProfileImage(-1);
+                    UserDBHelper userDBHelper = new UserDBHelper(getContext());
+
+
+
+                    userDBHelper.addUser(user);
 
                     Transaction trans = new Transaction(getContext());
                     trans.setMessage(message);
@@ -179,9 +199,7 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
                     String pattern = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
                     SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CANADA);
                     String time = helper.getCurrentTime();
-                    int color[] = helper.getColorArray();
-                    int randomNum = ThreadLocalRandom.current().nextInt(0, color.length);
-                    trans.setColor(color[randomNum]);
+                    trans.setColor(selectedColor);
                     try {
                         Date date = format.parse(t.createdAt);
                         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
@@ -190,15 +208,13 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
                         e.printStackTrace();
                     }
                     trans.setTimestamp(time);
+                    trans.setUser(user);
                     trans.setAmount(helper.getAmount(message));
-                    trans.setUser(t.user.screenName);
-                    trans.setName(t.user.name);
                     transDB.addTransactions(trans);
 
                     // add the tag to tag cloud
                     for (Tag tag : trans.getTagsList()) {
-                        tag.setName(t.user.name);
-                        tag.setUser(t.user.screenName);
+                        tag.setUser(user);
                         tagDB.addTag(tag);
                     }
 
@@ -243,9 +259,6 @@ public class FragmentFollowing extends Fragment implements TweetsListener {
         }
 
     }
-
-
-
 
 
 }

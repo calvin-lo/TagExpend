@@ -33,7 +33,7 @@ public class FragmentChart extends Fragment{
     private String CATEGORY_ICON;
 
     private Spinner typeSpinner;
-    private String user;
+    private String username;
 
     public FragmentChart() {
         // Required empty public constructor
@@ -57,7 +57,7 @@ public class FragmentChart extends Fragment{
 
 
         SharedPreferences sharedpreferences = getActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
-        user = sharedpreferences.getString("user", null);
+        username = sharedpreferences.getString("username", null);
 
         typeSpinner = (Spinner) v.findViewById(R.id.typeSpinner);
         setTypeSpinner();
@@ -72,7 +72,7 @@ public class FragmentChart extends Fragment{
         TagDBHelper tagDBHelper = new TagDBHelper(v.getContext());
 
         PieChart chart = new PieChart(v.getContext());
-        List<Tag> tagList = tagDBHelper.getTagsList(type, user);
+        List<Tag> tagList = tagDBHelper.getTagsList(type, username);
 
         ArrayList<PieEntry> entries = new ArrayList<>();
 

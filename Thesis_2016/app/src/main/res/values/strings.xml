@@ -6,6 +6,8 @@
     <string name="fragment2">Tag Cloud</string>
     <string name="fragment3">Chart</string>
     <string name="fragment4">Following</string>
+    <string name="fragment_tag1">List</string>
+    <string name="fragment_tag2">Trend</string>
     <string name="tagActivity">Tag</string>
     <string name="action_search">Search</string>
 

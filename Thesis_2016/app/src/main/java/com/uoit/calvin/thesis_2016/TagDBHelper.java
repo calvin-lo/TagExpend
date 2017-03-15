@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,13 +20,13 @@ class TagDBHelper extends SQLiteOpenHelper {
     private static final String KEY_TAG = "tag";
     private static final String KEY_AMOUNT = "amount";
     private static final String KEY_TYPE = "type";
-    private static final String KEY_NAME = "name";
-    private static final String KEY_USER = "user";
+    private static final String KEY_NAME = "displayName";
+    private static final String KEY_USER = "username";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    KEY_TAG + " TEXT" + "UNIQUE," +
+                    KEY_TAG + " TEXT,"+
                     KEY_AMOUNT + " REAL," +
                     KEY_USER + " TEXT," +
                     KEY_NAME + " TEXT," +
@@ -36,8 +35,10 @@ class TagDBHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
+    private Context context;
     TagDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -60,14 +61,14 @@ class TagDBHelper extends SQLiteOpenHelper {
             values.put(KEY_TAG, tag.getTitle());
             values.put(KEY_AMOUNT, tag.getAmount());
             values.put(KEY_TYPE, tag.getType());
-            values.put(KEY_NAME, tag.getName());
-            values.put(KEY_USER, tag.getUser());
+            values.put(KEY_NAME, tag.getUser().getDisplayName());
+            values.put(KEY_USER, tag.getUser().getUsername());
 
             // Inserting Row
             db.insert(TABLE_NAME, null, values);
 
         } else {
-            float amount = getAmount(tag.getTitle(), tag.getUser()) + tag.getAmount();
+            float amount = getAmount(tag.getTitle(), tag.getUser().getUsername()) + tag.getAmount();
             values.put(KEY_AMOUNT, amount);
             db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getTitle()});
         }
@@ -99,14 +100,14 @@ class TagDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        float amount = getAmount(tag.getTitle(), tag.getUser()) - tag.getAmount();
+        float amount = getAmount(tag.getTitle(), tag.getUser().getUsername()) - tag.getAmount();
         values.put(KEY_AMOUNT, amount);
         db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getTitle()});
         db.close();
     }
 
     private boolean checkDuplicate(Tag tag) {
-        return (new ArrayList<>(Arrays.asList(getTagsStringList(tag.getUser())))).contains(tag.toString());
+        return (new ArrayList<>(Arrays.asList(getTagsStringList(tag.getUser().getUsername())))).contains(tag.toString());
     }
 
     private boolean checkDuplicateAll(Tag tag, List<Tag> tagList) {
@@ -164,9 +165,8 @@ class TagDBHelper extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-            tag.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
-            tag.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+            Tag tag = getTag(cursor);
+
             if (!checkDuplicateAll(tag, tagList)) {
                 tagList.add(tag);
             }
@@ -191,18 +191,20 @@ class TagDBHelper extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)),
-                                    cursor.getString(cursor.getColumnIndex(KEY_TYPE)),
-                                    cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-            tag.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
-            tag.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
-
+            Tag tag = getTag(cursor);
             String tagStr = tag.toString();
             tagList.add(tagStr);
             cursor.moveToNext();
         }
         cursor.close();
         return tagList.toArray(new String[tagList.size()]);
+    }
+
+    public Tag getTag(Cursor cursor) {
+        Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+        User user = new UserDBHelper(context).getUserNyUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+        tag.setUser(user);
+        return tag;
     }
 
 }

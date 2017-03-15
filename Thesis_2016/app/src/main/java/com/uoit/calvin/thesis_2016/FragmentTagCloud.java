@@ -15,7 +15,7 @@ import java.util.List;
 
 public class FragmentTagCloud extends Fragment{
 
-    private String user;
+    private String username;
 
     View v;
 
@@ -35,7 +35,7 @@ public class FragmentTagCloud extends Fragment{
         v =  inflater.inflate(R.layout.fragment_tag_cloud, container, false);
 
         SharedPreferences sharedpreferences = getActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
-        user = sharedpreferences.getString("user", getContext().getResources().getString(R.string.default_user));
+        username = sharedpreferences.getString("username", getContext().getResources().getString(R.string.default_user));
 
         RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -43,7 +43,7 @@ public class FragmentTagCloud extends Fragment{
         StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
         recyclerView.setLayoutManager(GridLayoutManager);
 
-        List<Tag> tagList = new TagDBHelper(getContext()).getTagsList("*", user);
+        List<Tag> tagList = new TagDBHelper(getContext()).getTagsList("*", username);
 
         SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(getContext(), tagList);
         recyclerView.setAdapter(rcAdapter);

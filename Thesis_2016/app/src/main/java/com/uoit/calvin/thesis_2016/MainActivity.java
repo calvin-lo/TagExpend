@@ -4,15 +4,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity
     ViewPagerAdapter adapter;
 
     private Toolbar toolbar;
+    private ActionBar ab;
     private TabLayout tabLayout;
     private CustomViewPager viewPager;
 
@@ -64,13 +68,13 @@ public class MainActivity extends AppCompatActivity
         helper = new Helper(this);
 
         sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
-        if (sharedpreferences.getString("user", null) == null) {
+        if (sharedpreferences.getString("username", null) == null) {
             helper.setUser("*");
             helper.setSelectedPosition(R.id.nav_user);
         }
 
-        if (sharedpreferences.getString("defaultUser", null) == null) {
-            helper.setDefaultUser("*");
+        if (sharedpreferences.getString("defaultUsername", null) == null) {
+            helper.setDefaultUser(getString(R.string.default_user));
         }
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
@@ -79,10 +83,12 @@ public class MainActivity extends AppCompatActivity
 
         //deleteDatabase("transDB");
         //deleteDatabase("tagCloudDB");
+        //deleteDatabase("userDB");
 
         // Set up the action bar
         toolbar = (Toolbar) findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
+        ab = getSupportActionBar();
         toolbar.setTitle(getResources().getString(R.string.fragment1));
 
         // Set up the drawer
@@ -100,6 +106,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onRestart() {
         setupDrawer();
+        setupViewPager(viewPager);
         navigationView.getMenu().findItem(R.id.nav_setting).setChecked(false);
         adapter.notifyDataSetChanged();
         super.onRestart();
@@ -108,6 +115,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         setupDrawer();
+        setupViewPager(viewPager);
         navigationView.getMenu().findItem(R.id.nav_setting).setChecked(false);
         adapter.notifyDataSetChanged();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -123,6 +131,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         adapter.notifyDataSetChanged();
+        setupViewPager(viewPager);
         super.onResume();
     }
 
@@ -146,10 +155,12 @@ public class MainActivity extends AppCompatActivity
         else if (id == R.id.nav_user) {
             helper.setUser(getResources().getString(R.string.default_user));
             helper.setSelectedPosition(R.id.nav_user);
+            viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         } else if (id == R.id.nav_all) {
             helper.setUser("*");
             helper.setSelectedPosition(R.id.nav_all);
+            viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user_more) {
@@ -172,26 +183,31 @@ public class MainActivity extends AppCompatActivity
         else if (id == R.id.nav_user1) {;
             helper.setUser(item.getTitle().toString());
             helper.setSelectedPosition(R.id.nav_user1);
+            viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user2) {
             helper.setUser(item.getTitle().toString());
             helper.setSelectedPosition(R.id.nav_user2);
+            viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user3) {
             helper.setUser(item.getTitle().toString());
             helper.setSelectedPosition(R.id.nav_user3);
+            viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user4) {
             helper.setUser(item.getTitle().toString());
             helper.setSelectedPosition(R.id.nav_user4);
+            viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user5) {
             helper.setUser(item.getTitle().toString());
             helper.setSelectedPosition(R.id.nav_user5);
+            viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_setting) {
@@ -203,6 +219,9 @@ public class MainActivity extends AppCompatActivity
         if (drawer != null) {
             drawer.closeDrawer(GravityCompat.START);
         }
+
+        setToolbar();
+
         return true;
     }
 
@@ -217,6 +236,8 @@ public class MainActivity extends AppCompatActivity
         adapter.addFragment(new FragmentFollowing(), getResources().getString(R.string.fragment4));
         viewPager.setAdapter(adapter);
         viewPager.setPagingEnabled(true);
+
+        setToolbar();
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -224,18 +245,44 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
+                String username = sharedpreferences.getString("username", getString(R.string.default_user));
                 switch (position) {
                     case 0:
-                        toolbar.setTitle(getResources().getString(R.string.fragment1));
+                        if (username.equals("*")) {
+                            toolbar.setTitle(getResources().getString(R.string.fragment1));
+                        } else {
+                            setToolbar();
+                            TransactionDBHelper transactionDBHelper = new TransactionDBHelper(getApplicationContext());
+                            int count = transactionDBHelper.getAllData(username).size();
+                            String s = count + " transactions";
+                            toolbar.setSubtitle(s);
+                        }
                         break;
                     case 1:
-                        toolbar.setTitle(getResources().getString(R.string.fragment2));
+                        if (username.equals("*")) {
+                            toolbar.setTitle(getResources().getString(R.string.fragment2));
+                        } else {
+                            setToolbar();
+                            TagDBHelper tagDBHelper = new TagDBHelper(getApplicationContext());
+                            int count = tagDBHelper.getTagsList("*", username).size();
+                            String s = count + " tags";
+                            toolbar.setSubtitle(s);
+                        }
                         break;
                     case 2:
-                        toolbar.setTitle(getResources().getString(R.string.fragment3));
+                        if (username.equals("*")) {
+                            toolbar.setTitle(getResources().getString(R.string.fragment3));
+                        } else {
+                            setToolbar();
+                            TagDBHelper tagDBHelper = new TagDBHelper(getApplicationContext());
+                            int count = tagDBHelper.getTagsList("*", username).size();
+                            String s = count + " tags";
+                            toolbar.setSubtitle(s);
+                        }
                         break;
                     case 3:
-                        toolbar.setTitle(sharedpreferences.getString("followUser", getResources().getString(R.string.fragment4)));
+                        toolbar.setTitle(sharedpreferences.getString("followUsername", getResources().getString(R.string.fragment4)));
+                        toolbar.setSubtitle("");
                         break;
                 }
             }
@@ -245,7 +292,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
 
     /*
         Set up Tab Layout
@@ -277,8 +323,6 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
     }
 
-
-
     /*
         Set up Drawer
      */
@@ -301,10 +345,10 @@ public class MainActivity extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
 
         TextView title = (TextView) header.findViewById(R.id.headerTitle);
-        title.setText(sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user)));
+        title.setText(sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)));
 
         if (navigationView != null) {
-            navigationView.getMenu().getItem(0).setTitle(sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user)));
+            navigationView.getMenu().getItem(0).setTitle(sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)));
             int i = 0;
             for (String s : followingList) {
                 if (i > 5) {
@@ -340,6 +384,30 @@ public class MainActivity extends AppCompatActivity
 
     public void setToolbarTitle(String title) {
         toolbar.setTitle(title);
+    }
+
+    public void setToolbar() {
+        String username = sharedpreferences.getString("username", getString(R.string.default_user));
+        UserDBHelper userDBHelper = new UserDBHelper(getApplicationContext());
+        String displayName = userDBHelper.getUserNyUsername(username).getDisplayName();
+        if (!username.equals("*")) {
+            toolbar.setTitle(displayName);
+            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.tw__transparent));
+            TransactionDBHelper transactionDBHelper = new TransactionDBHelper(getApplicationContext());
+            int count = transactionDBHelper.getAllData(username).size();
+            String s = count + " transactions";
+            toolbar.setSubtitle(s);
+            if (ab != null) {
+                ab.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.side_toolbar));
+            }
+        } else {
+            toolbar.setTitle(getString(R.string.fragment1));
+            toolbar.setSubtitle("");
+            if (ab != null) {
+                toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.primaryText));
+                ab.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.actionBarColor)));
+            }
+        }
     }
 
 } // end of class

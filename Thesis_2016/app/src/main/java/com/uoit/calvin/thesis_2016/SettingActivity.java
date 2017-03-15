@@ -88,7 +88,7 @@ public class SettingActivity extends AppCompatActivity {
                                             TagDBHelper tagDBHelper = new TagDBHelper(context);
                                             SharedPreferences sharedpreferences;
                                             sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
-                                            String oldUser = sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user));
+                                            String oldUser = sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user));
 
                                             helper.setDefaultUser(newUser);
                                             helper.setUser(getResources().getString(R.string.default_user));

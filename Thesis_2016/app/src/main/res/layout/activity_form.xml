@@ -96,7 +96,7 @@
 
     </LinearLayout>
 
-    <EditText
+    <MultiAutoCompleteTextView
         android:hint="@string/defaultMsg"
         android:inputType="textMultiLine"
         android:layout_width="match_parent"

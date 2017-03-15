@@ -82,8 +82,8 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_YEAR, helper.getYear(trans.getDate()));
         values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
-        values.put(KEY_USER, trans.getUser());
-        values.put(KEY_NAME, trans.getName());
+        values.put(KEY_USER, trans.getUser().getUsername());
+        values.put(KEY_NAME, trans.getUser().getDisplayName());
         values.put(KEY_COLOR, trans.getColor());
 
         // Inserting Row
@@ -107,8 +107,8 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         values.put(KEY_YEAR, helper.getYear(trans.getDate()));
         values.put(KEY_MONTH, helper.getMonth(trans.getDate()));
         values.put(KEY_DAY, helper.getDay(trans.getDate()));
-        values.put(KEY_USER, trans.getUser());
-        values.put(KEY_NAME, trans.getName());
+        values.put(KEY_USER, trans.getUser().getUsername());
+        values.put(KEY_NAME, trans.getUser().getDisplayName());
         values.put(KEY_COLOR, trans.getColor());
 
         db.update(TABLE_NAME, values,  KEY_ID+"="+ trans.getId(), null);
@@ -243,8 +243,8 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         trans.setCategory(cursor.getString(cursor.getColumnIndex(KEY_CATEGORY)));
         trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
         trans.setAmount(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-        trans.setUser(cursor.getString(cursor.getColumnIndex(KEY_USER)));
-        trans.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+        User user = new UserDBHelper(context).getUserNyUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+        trans.setUser(user);
         trans.setColor(cursor.getInt(cursor.getColumnIndex(KEY_COLOR)));
 
         return trans;

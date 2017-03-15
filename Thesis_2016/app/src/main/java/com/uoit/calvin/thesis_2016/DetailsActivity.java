@@ -1,46 +1,19 @@
 package com.uoit.calvin.thesis_2016;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateFormat;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -48,7 +21,7 @@ public class DetailsActivity extends AppCompatActivity {
     private Transaction transaction;
     private static final int RESULT_OK = 1;
     private static final int SAVING_DATA = 1;
-    String user;
+    String username;
     long id;
     TransactionDBHelper transactionDBHelper;
 
@@ -59,10 +32,10 @@ public class DetailsActivity extends AppCompatActivity {
 
         // get the transaction
         SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
-        user = sharedpreferences.getString("user", null);
+        username = sharedpreferences.getString("username", null);
         id = getIntent().getLongExtra("ID", 0);
         transactionDBHelper = new TransactionDBHelper(this);
-        transaction = transactionDBHelper.getTransByID(id, user);
+        transaction = transactionDBHelper.getTransByID(id, username);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.detailToolbar);
         setSupportActionBar(toolbar);
@@ -81,17 +54,17 @@ public class DetailsActivity extends AppCompatActivity {
 
         id = getIntent().getLongExtra("ID", 0);
         transactionDBHelper = new TransactionDBHelper(this);
-        transaction = transactionDBHelper.getTransByID(id, user);
+        transaction = transactionDBHelper.getTransByID(id, username);
 
         // user
         TextView nameTV = (TextView) findViewById(R.id.nameTV);
         if (nameTV != null) {
-            nameTV.setText(transaction.getName());
+            nameTV.setText(transaction.getUser().getDisplayName());
         }
 
         TextView userTV = (TextView) findViewById(R.id.userTV);
         if (userTV != null) {
-            String s = "@" + transaction.getUser();
+            String s = "@" + transaction.getUser().getUsername();
             userTV.setText(s);
         }
 
@@ -110,7 +83,7 @@ public class DetailsActivity extends AppCompatActivity {
         // delete button
         ImageButton deleteButton = (ImageButton) findViewById(R.id.deleteButton);
         ImageButton updateButton = (ImageButton) findViewById(R.id.updateButton);
-        if (!user.equals(getResources().getString(R.string.default_user))) {
+        if (!username.equals(getResources().getString(R.string.default_user))) {
             if (deleteButton != null) {
                 deleteButton.setVisibility(View.GONE);
             }
@@ -135,7 +108,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public void update(View v) {
-        Intent intent = new Intent(this, ActivityUpdate.class);
+        Intent intent = new Intent(this, FormActivity.class);
         intent.putExtra("original", transaction.getMessage());
         startActivityForResult(intent, SAVING_DATA);
 
@@ -151,11 +124,15 @@ public class DetailsActivity extends AppCompatActivity {
                 Helper helper = new Helper(this);
                 String time = transaction.getTimestamp();
 
-                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, user).getMessage(), user);
+                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, username).getMessage(), username);
 
-                //transDB.deleteTransactions(id);
+                SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+                User user = new User(this,
+                        sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)),
+                        getResources().getString(R.string.default_user));
 
                 for (Tag t : tagList) {
+                    t.setUser(user);
                     tagDB.updateTag(t);
                 }
 
@@ -170,15 +147,12 @@ public class DetailsActivity extends AppCompatActivity {
                 transaction.setCategory(helper.parseCategory(message));
                 transaction.setTimestamp(time);
                 transaction.setAmount(helper.getAmount(message));
-                SharedPreferences sharedpreferences = this.getSharedPreferences("USER", Context.MODE_PRIVATE);;
-                transaction.setName(sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user)));
-                transaction.setUser(getResources().getString(R.string.default_user));
+                transaction.setUser(user);
                 transDB.updateTransaction(transaction);
 
                 // add the tag to tag cloud
                 for (Tag t : transaction.getTagsList()) {
-                    t.setName(sharedpreferences.getString("defaultUser", getResources().getString(R.string.default_user)));
-                    t.setUser(getResources().getString(R.string.default_user));
+                    t.setUser(user);
                     tagDB.addTag(t);
                 }
 
@@ -192,20 +166,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void delete(View v) {
 
-        TransactionDBHelper transDB = new TransactionDBHelper(this);
-
-        Helper helper = new Helper(this);
-        List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, user).getMessage(), user);
-
-        transDB.deleteTransactions(id);
-
-        // update tag cloud
-        TagDBHelper tagDB = new TagDBHelper(this);
-        for (Tag t : tagList) {
-            tagDB.updateTag(t);
-        }
-        transDB.close();
-        tagDB.close();
+        new Helper(this).deleteTrans(id, username);
 
         finish();
 

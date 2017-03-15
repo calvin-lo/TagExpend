@@ -24,8 +24,6 @@ public class Transaction implements Comparable<Transaction>{
     private String general;
     private String location;
     private String category;
-    private String user;
-    private String name;
 
     private String GENERAL_ICON;
     private String LOCATION_ICON;
@@ -34,6 +32,10 @@ public class Transaction implements Comparable<Transaction>{
 
     private Context context;
     private int color;
+
+    private User user;
+
+
 
 
     Transaction(Context context) {
@@ -174,13 +176,11 @@ public class Transaction implements Comparable<Transaction>{
         return generalsList;
     }
 
-    public String getUser() { return user;}
+    public User getUser() { return user;}
 
-    public void setUser(String user) {this.user = user;}
+    public void setUser(User user) {this.user = user;}
 
-    public String getName() { return name;}
-
-    public void setName(String name) {this.name = name;}
+    public String getName() { return user.getDisplayName();}
 
     public int getColor() {
         return color;
@@ -189,4 +189,5 @@ public class Transaction implements Comparable<Transaction>{
     public void setColor(int color) {
         this.color = color;
     }
+
 }

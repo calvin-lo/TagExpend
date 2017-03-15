@@ -2,7 +2,11 @@ package com.uoit.calvin.thesis_2016;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,7 +43,14 @@ import java.util.List;
 public class TagActivity extends AppCompatActivity {
 
     public String tag;
-    private String user;
+    private String username;
+
+    ViewPagerAdapter adapter;
+    Toolbar toolBar;
+    SharedPreferences sharedpreferences;
+    private CustomViewPager viewPager;
+    private TabLayout tabLayout;
+
     List<Transaction> transList;
 
     @Override
@@ -48,14 +59,16 @@ public class TagActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tag);
         tag = getIntent().getStringExtra("tag");
 
-        Toolbar toolBar = (Toolbar) findViewById(R.id.tagToolbar);
+        sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+
+        toolBar = (Toolbar) findViewById(R.id.tagToolbar);
         setSupportActionBar(toolBar);
         SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
-        user = sharedpreferences.getString("user", null);
+        username = sharedpreferences.getString("username", null);
         if (toolBar != null) {
             toolBar.setTitle(tag);
             TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
-            List<Tag> tagList = tagDBHelper.getTagsList("*", user);
+            List<Tag> tagList = tagDBHelper.getTagsList("*", username);
             for (Tag t : tagList) {
                 if (t.toString().equals(tag)) {
                     //String title= tag + " - Total: $" + t.getAmount();
@@ -70,24 +83,10 @@ public class TagActivity extends AppCompatActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        viewPager = (CustomViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
 
-        // set the title
-        TransactionDBHelper transDB = new TransactionDBHelper(this);
-        transList = transDB.getTransByTag(tag, user);
-
-        ListViewAdapter arrayAdapter = new ListViewAdapter(this, new ArrayList<>(transList), user);
-        ListView transListView = (ListView) findViewById(R.id.transListView);
-        if (transListView != null) {
-            transListView.setAdapter(arrayAdapter);
-            registerForContextMenu(transListView);
-        }
-
-        transDB.close();
-        setYearSpinner();
-        setMonthSpinner();
-        int currYear = Calendar.getInstance().get(Calendar.YEAR);
-        int currMonth = Calendar.getInstance().get(Calendar.MONTH);
-        displayTrend(currYear, -1);
+        setupTabLayout();
     }
 
     public void clickDelete(View v) {
@@ -96,6 +95,43 @@ public class TagActivity extends AppCompatActivity {
         tagDB.close();
         finish();
     }
+
+
+    /*
+    View Pager
+ */
+    private void setupViewPager(CustomViewPager viewPager) {
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new FragmentTag1(), getResources().getString(R.string.fragment_tag1));
+        adapter.addFragment(new FragmentTag2(),getResources().getString(R.string.fragment_tag2));
+        viewPager.setAdapter(adapter);
+        viewPager.setPagingEnabled(true);
+    }
+
+
+    private void setupTabLayout() {
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        final TabLayout.Tab list = tabLayout.newTab();
+        list.setIcon(R.drawable.ic_dns_black_24dp);
+
+        final TabLayout.Tab trend = tabLayout.newTab();
+        trend.setIcon(R.drawable.ic_insert_chart_black_24dp);
+
+
+
+        tabLayout.addTab(list, 0);
+        tabLayout.addTab(trend, 1);
+
+        tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+    }
+
+
+
+
 
     public void setMonthSpinner() {
 

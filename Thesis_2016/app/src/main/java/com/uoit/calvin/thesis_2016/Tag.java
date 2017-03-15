@@ -5,8 +5,7 @@ class Tag {
     private String title;
     private String type;
     private float amount;
-    private String name;
-    private String user;
+    private User user;
 
     Tag(String name, String type, float amount) {
         setTitle(name);
@@ -39,13 +38,11 @@ class Tag {
         return this.amount;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public String getName() {
-        return this.name;
-    }
+    public User getUser(){return this.user;}
 
     @Override
     public String toString() {
@@ -53,11 +50,4 @@ class Tag {
     }
 
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
 }
