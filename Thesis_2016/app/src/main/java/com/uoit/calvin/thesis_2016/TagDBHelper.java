@@ -135,11 +135,11 @@ class TagDBHelper extends SQLiteOpenHelper {
     }
 
 
-    public void updateUser(String newUser, String oldUser) {
+    public void updateUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, newUser);
-        db.update(TABLE_NAME, values, KEY_NAME + "='" + oldUser + "'", null);
+        values.put(KEY_NAME, user.getDisplayName());
+        db.update(TABLE_NAME, values, KEY_NAME + "='" + user.getUsername() + "'", null);
         db.close();
 
     }

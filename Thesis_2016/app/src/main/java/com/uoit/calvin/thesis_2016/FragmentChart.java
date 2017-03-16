@@ -87,7 +87,7 @@ public class FragmentChart extends Fragment{
 
         PieData data = new PieData(dataSet);
         data.setDrawValues(false);
-        chart.setDrawHoleEnabled(true);
+        chart.setDrawHoleEnabled(false);
         chart.setData(data);
         chart.getDescription().setEnabled(false);
         linearLayout.addView(chart, MARGIN, MARGIN);

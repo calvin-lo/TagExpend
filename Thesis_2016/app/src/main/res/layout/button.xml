@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/formLayout">
+    android:layout_height="wrap_content"
+    android:id="@+id/buttonLayout"
+    android:background="@color/white"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentStart="true"
+    android:elevation="5dp">
 
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/formToolbar"
-        app:title=" "/>
-<!--
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:id="@+id/main"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonLayout"
+        android:orientation="horizontal"
         android:background="@color/white"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:weightSum="7"
-        android:elevation="5dp">
+        android:weightSum="5">
 
         <Button
             android:text="@string/generalIcon"
@@ -79,48 +74,25 @@
             android:id="@+id/twitterButton"
             android:onClick="clickTwitter"
             android:background="@android:color/transparent"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:contentDescription="@string/save"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_done_black_24dp"
-            android:id="@+id/saveButton"
-            android:onClick="clickSave"
-            android:background="@android:color/transparent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             />
 
 
     </LinearLayout>
-    -->
 
-    <include layout="@layout/button"
-        android:id="@+id/buttonLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        />
 
-    <MultiAutoCompleteTextView
-        android:hint="@string/form_defaultMsg"
-        android:inputType="textMultiLine"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:contentDescription="@string/save"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tagInput"
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="60dp"
+        app:srcCompat="@drawable/ic_done_black_24dp"
+        android:id="@+id/saveButton"
+        android:onClick="clickSave"
         android:background="@android:color/transparent"
-        android:layout_below="@+id/formToolbar"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:paddingEnd="25dp"
+        android:paddingStart="25dp"/>
 
 
 </RelativeLayout>

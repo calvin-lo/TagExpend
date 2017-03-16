@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -29,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,6 +42,7 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
@@ -60,6 +64,11 @@ public class MainActivity extends AppCompatActivity
     private Helper helper;
     NavigationView navigationView;
     SharedPreferences sharedpreferences;
+    SharedPreferences autoPostCheck;
+    private List<MenuItem> items;
+
+    private static final int RESULT_OK = 1;
+    private static final int SAVING_DATA = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,15 +76,20 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         helper = new Helper(this);
 
+        //sharedpreferences = getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+
         sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
         if (sharedpreferences.getString("username", null) == null) {
             helper.setUser("*");
-            helper.setSelectedPosition(R.id.nav_user);
         }
 
         if (sharedpreferences.getString("defaultUsername", null) == null) {
             helper.setDefaultUser(getString(R.string.default_user));
         }
+
+
+        helper.setUser("*");
+        helper.setSelectedPosition(0);
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
@@ -97,9 +111,19 @@ public class MainActivity extends AppCompatActivity
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-
         // Tab Layout
         setupTabLayout();
+
+        FloatingActionButton btnFab = (FloatingActionButton) findViewById(R.id.addFab);
+        if (btnFab != null) {
+            btnFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), FormActivity.class);
+                    startActivityForResult(intent, SAVING_DATA);
+                }
+            });
+        }
 
     }
 
@@ -131,6 +155,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         adapter.notifyDataSetChanged();
+        setupDrawer();
         setupViewPager(viewPager);
         super.onResume();
     }
@@ -140,28 +165,21 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         int id = item.getItemId();
+        final int position = items.indexOf(item);
 
-        if (id == R.id.nav_home) {
-            viewPager.setCurrentItem(0, true);
-        } else if (id == R.id.nav_tag) {
-            viewPager.setCurrentItem(1, true);
-        }
-        else if (id == R.id.nav_chart) {
-            viewPager.setCurrentItem(2, true);
-        }
-        else if (id == R.id.nav_explore) {
-            viewPager.setCurrentItem(3, true);
-        }
-        else if (id == R.id.nav_user) {
-            helper.setUser(getResources().getString(R.string.default_user));
-            helper.setSelectedPosition(R.id.nav_user);
-            viewPager.setCurrentItem(0, true);
-            adapter.notifyDataSetChanged();
-        } else if (id == R.id.nav_all) {
+        if (id == R.id.nav_all) {
             helper.setUser("*");
-            helper.setSelectedPosition(R.id.nav_all);
+            helper.setSelectedPosition(position);
             viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
+        } else if (id == R.id.nav_user) {
+            helper.setUser(getResources().getString(R.string.default_user));
+            helper.setSelectedPosition(position);
+            viewPager.setCurrentItem(0, true);
+            adapter.notifyDataSetChanged();
+        } else if (id == R.id.nav_explore) {
+            Intent intent = new Intent(this, ExploreActivity.class);
+            startActivity(intent);
         }
         else if (id == R.id.nav_user_more) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -173,40 +191,40 @@ public class MainActivity extends AppCompatActivity
                     .setItems(followingList, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             helper.setUser(followingList[which]);
-                            helper.setSelectedPosition(R.id.nav_user_more);
+                            helper.setSelectedPosition(position);
                             adapter.notifyDataSetChanged();
                         }
                     });
             AlertDialog dialog = builder.create();
             dialog.show();
         }
-        else if (id == R.id.nav_user1) {;
+        else if (id == R.id.nav_user1) {
             helper.setUser(item.getTitle().toString());
-            helper.setSelectedPosition(R.id.nav_user1);
+            helper.setSelectedPosition(position);
             viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user2) {
             helper.setUser(item.getTitle().toString());
-            helper.setSelectedPosition(R.id.nav_user2);
+            helper.setSelectedPosition(position);
             viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user3) {
             helper.setUser(item.getTitle().toString());
-            helper.setSelectedPosition(R.id.nav_user3);
+            helper.setSelectedPosition(position);
             viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user4) {
             helper.setUser(item.getTitle().toString());
-            helper.setSelectedPosition(R.id.nav_user4);
+            helper.setSelectedPosition(position);
             viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
         else if (id == R.id.nav_user5) {
             helper.setUser(item.getTitle().toString());
-            helper.setSelectedPosition(R.id.nav_user5);
+            helper.setSelectedPosition(position);
             viewPager.setCurrentItem(0, true);
             adapter.notifyDataSetChanged();
         }
@@ -233,7 +251,6 @@ public class MainActivity extends AppCompatActivity
         adapter.addFragment(new FragmentHome(), getResources().getString(R.string.fragment1));
         adapter.addFragment(new FragmentTagCloud(),getResources().getString(R.string.fragment2));
         adapter.addFragment(new FragmentChart(), getResources().getString(R.string.fragment3));
-        adapter.addFragment(new FragmentFollowing(), getResources().getString(R.string.fragment4));
         viewPager.setAdapter(adapter);
         viewPager.setPagingEnabled(true);
 
@@ -309,13 +326,9 @@ public class MainActivity extends AppCompatActivity
         final TabLayout.Tab chart = tabLayout.newTab();
         chart.setIcon(R.drawable.ic_insert_chart_black_24dp);
 
-        final TabLayout.Tab following = tabLayout.newTab();
-        following.setIcon(R.drawable.ic_explore_black_24dp);
-
         tabLayout.addTab(home, 0);
         tabLayout.addTab(dashboard, 1);
         tabLayout.addTab(chart, 2);
-        tabLayout.addTab(following,3);
 
         tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
 
@@ -336,19 +349,24 @@ public class MainActivity extends AppCompatActivity
         }
         toggle.syncState();
 
+        items = new ArrayList<>();
+        Menu menu;
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            menu = navigationView.getMenu();
+            for(int i=0; i<menu.size(); i++){
+                items.add(menu.getItem(i));
+            }
+
+        }
+
 
         TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
         String[] followingList = transactionDBHelper.getUser();
         int[] navUserID = {R.id.nav_user1, R.id.nav_user2, R.id.nav_user3, R.id.nav_user4, R.id.nav_user5};
 
-        View header = navigationView.getHeaderView(0);
-
-        TextView title = (TextView) header.findViewById(R.id.headerTitle);
-        title.setText(sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)));
-
         if (navigationView != null) {
-            navigationView.getMenu().getItem(0).setTitle(sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)));
+            navigationView.getMenu().getItem(1).setTitle(sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)));
             int i = 0;
             for (String s : followingList) {
                 if (i > 5) {
@@ -356,13 +374,18 @@ public class MainActivity extends AppCompatActivity
                     break;
                 }
                 else {
-                    navigationView.getMenu().findItem(navUserID[i]).setTitle(followingList[0]);
+                    UserDBHelper userDBHelper = new UserDBHelper(this);
+                    User user = userDBHelper.getUserNyUsername(followingList[i]);
+                    navigationView.getMenu().findItem(navUserID[i]).setTitle(user.getUsername());
+                    navigationView.getMenu().findItem(navUserID[i]).setIcon(new BitmapDrawable(getResources(), helper.loadImageFromStorage(user)));
                     navigationView.getMenu().findItem(navUserID[i]).setVisible(true);
                     i++;
                 }
             }
             navigationView.setNavigationItemSelectedListener(this);
-            //navigationView.getMenu().findItem(sharedpreferences.getInt("selectedPosition", 0)).setChecked(true);
+            if (sharedpreferences.getInt("selectedPosition",0) != -1) {
+                navigationView.getMenu().getItem(sharedpreferences.getInt("selectedPosition", 0)).setChecked(true);
+            }
         }
 
     }
@@ -408,6 +431,64 @@ public class MainActivity extends AppCompatActivity
                 ab.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.actionBarColor)));
             }
         }
+    }
+
+
+    /*
+        Add
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case SAVING_DATA:
+                    SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+                    User user = new User(this,
+                            sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)),
+                            getResources().getString(R.string.default_user));
+                    user.setProfileImage(R.drawable.ic_label_outline_white_big);
+                    UserDBHelper userDBHelper = new UserDBHelper(this);
+                    if (userDBHelper.checkDuplicate(user)) {
+                        user = userDBHelper.getUserNyUsername(getResources().getString(R.string.default_user));
+                        user.addCount();
+                        userDBHelper.updateUser(user);
+                    } else {
+                        user.setCount(0);
+                        userDBHelper.addUser(user);
+                    }
+                    // add the transaction
+                    TransactionDBHelper transDB = new TransactionDBHelper(this);
+                    Helper helper = new Helper(this);
+
+                    String message = data.getStringExtra("trans");
+
+                    Transaction trans = new Transaction(this);
+                    trans.setMessage(message);
+                    trans.setTags(helper.parseTag(message));
+                    trans.setGeneral(helper.parseGeneral(message));
+                    trans.setLocation(helper.parseLocation(message));
+                    trans.setCategory(helper.parseCategory(message));
+                    trans.setTimestamp(helper.getCurrentTime());
+                    trans.setAmount(helper.getAmount(message));
+                    trans.setColor(data.getIntExtra("color", 0));
+                    trans.setUser(user);
+                    transDB.addTransactions(trans);
+
+                    // add the tag to tag cloud
+                    TagDBHelper tagDB = new TagDBHelper(this);
+                    for (Tag t : trans.getTagsList()) {
+                        t.setUser(user);
+                        tagDB.addTag(t);
+                    }
+
+                    transDB.close();
+                    tagDB.close();
+                    break;
+            }
+        }
+
+        helper.displayTransList(findViewById(android.R.id.content), this);
     }
 
 } // end of class

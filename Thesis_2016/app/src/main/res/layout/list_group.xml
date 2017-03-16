@@ -10,8 +10,8 @@
         android:layout_height="60dp"
         android:src="@drawable/ic_label_outline_black_big"
         android:id="@+id/profile"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"/>
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp" />
 
     <TextView
         android:id="@+id/displayName"
@@ -22,9 +22,11 @@
         android:textColor="@color/white"
         android:layout_toEndOf="@id/profile"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="7dp"
         android:maxLines="1"
-        android:textStyle="bold"/>
+        android:maxWidth="140dp"
+        android:textStyle="bold"
+        android:ellipsize="end"/>
 
     <TextView
         android:id="@+id/userName"
@@ -36,6 +38,7 @@
         android:layout_toEndOf="@id/displayName"
         android:layout_alignBaseline="@id/displayName"
         android:layout_marginStart="10dp"
+        android:maxWidth="100dp"
         android:maxLines="1"
         android:ellipsize="end" />
 
@@ -47,6 +50,7 @@
         android:layout_toEndOf="@+id/userName"
         android:layout_alignBaseline="@id/displayName"
         android:layout_marginStart="10dp"
+        android:maxWidth="100dp"
         android:textSize="13sp"
         android:textColor="@color/white"/>
 

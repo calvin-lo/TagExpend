@@ -128,9 +128,17 @@ public class SampleExpandableListAdapter extends BaseExpandableListAdapter imple
         if (isExpanded) {
             holder.tagTv.setMaxLines(Integer.MAX_VALUE);
             holder.tagTv.setEllipsize(null);
+            holder.displayNameTV.setMaxLines(Integer.MAX_VALUE);
+            holder.displayNameTV.setEllipsize(null);
+            holder.userNameTV.setMaxLines(Integer.MAX_VALUE);
+            holder.userNameTV.setEllipsize(null);
         } else {
             holder.tagTv.setMaxLines(1);
             holder.tagTv.setEllipsize(TextUtils.TruncateAt.END);
+            holder.displayNameTV.setMaxLines(1);
+            holder.displayNameTV.setEllipsize(TextUtils.TruncateAt.END);
+            holder.userNameTV.setMaxLines(1);
+            holder.userNameTV.setEllipsize(TextUtils.TruncateAt.END);
         }
 
         return v;

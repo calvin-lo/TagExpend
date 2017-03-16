@@ -1,16 +1,20 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.ExpandableListView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -165,13 +170,13 @@ class Helper implements ImageListener{
         return tagStrList;
     }
 
-    public String getCurrentTime() {
+    String getCurrentTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
         Date date = new Date();
         return dateFormat.format(date);
     }
 
-    public long parseDate(String text)
+    long parseDate(String text)
     {
         long time = 0;
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
@@ -183,26 +188,26 @@ class Helper implements ImageListener{
         return time;
     }
 
-    public int getDay(Date date) {
+    int getDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         return cal.get(Calendar.DAY_OF_MONTH);
     }
 
-    public int getMonth(Date date) {
+    int getMonth(Date date) {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         return cal.get(Calendar.MONTH) + 1;
     }
 
-    public int getYear(Date date) {
+    int getYear(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         return cal.get(Calendar.YEAR);
     }
 
-    public Date timeToDate(String timestamp) {
+    Date timeToDate(String timestamp) {
         DateFormat format =  new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
         Date date = new Date();
         try {
@@ -214,7 +219,7 @@ class Helper implements ImageListener{
         return date;
     }
 
-    public int parseMonthtoInt(String month) {
+    int parseMonthtoInt(String month) {
         switch (month) {
             case ("January"):
                 return 1;
@@ -255,7 +260,7 @@ class Helper implements ImageListener{
         editor.apply();
     }
 
-    public void setSelectedPosition(int posID) {
+    void setSelectedPosition(int posID) {
         SharedPreferences sharedpreferences;
         sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -263,11 +268,19 @@ class Helper implements ImageListener{
         editor.apply();
     }
 
-    public void setDefaultUser(String defaultUsername) {
+    void setDefaultUser(String defaultUsername) {
         SharedPreferences sharedpreferences;
         sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("defaultUsername", defaultUsername);
+        editor.apply();
+    }
+
+    public void setAutoPost(boolean checked) {
+        SharedPreferences sharedpreferences;
+        sharedpreferences = this.context.getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putBoolean("autoPost", checked);
         editor.apply();
     }
 
@@ -412,8 +425,7 @@ class Helper implements ImageListener{
         storeImage(b, user);
     }
 
-    public Bitmap loadImageFromStorage(User user)
-    {
+    public Bitmap loadImageFromStorage(User user) {
 
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
                 + "/Android/data/"
@@ -454,4 +466,34 @@ class Helper implements ImageListener{
 
         tagDB.close();
     }
+
+    public void displayTransList(View v, Activity activity) {
+
+        TransactionDBHelper transDB = new TransactionDBHelper(context);
+        SharedPreferences sharedpreferences = context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        String username = sharedpreferences.getString("username", null);
+        ArrayList<Transaction> transList = new ArrayList<>(transDB.getAllData(username));
+        Collections.sort(transList);
+        Collections.reverse(transList);
+        if (transList.size() > 0) {
+            SampleExpandableListAdapter listAdapter;
+            ExpandableListView expListView = (ExpandableListView) v.findViewById(R.id.transactionList);
+            listAdapter = new SampleExpandableListAdapter(context, activity, transList, username);
+
+            expListView.setAdapter(listAdapter);
+            expListView.setGroupIndicator(new ColorDrawable(ContextCompat.getColor(context, R.color.tw__transparent)));
+        }
+
+        transDB.close();
+    }
+
+    public void setTwitterConnected(boolean checked) {
+        SharedPreferences sharedpreferences;
+        sharedpreferences = this.context.getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putBoolean("twitterConnected", checked);
+        editor.apply();
+    }
+
+
 }

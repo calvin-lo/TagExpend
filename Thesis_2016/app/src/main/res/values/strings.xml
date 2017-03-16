@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Main -->
-    <string name="app_name">Money Manager</string>
+    <string name="app_name">My Money Tag</string>
     <string name="fragment1">Home</string>
     <string name="fragment2">Tag Cloud</string>
     <string name="fragment3">Chart</string>
@@ -30,13 +30,13 @@
     <string name="locationIcon">\u27B4</string>
     <string name="generalIcon">\u2606</string>
     <string name="dollarIcon">\u0024</string>
-    <string name="categoryIcon">\u00A7</string>
+    <string name="categoryIcon">\u238A</string>
 
     <string name="tags">Tags</string>
 
     <!-- Form -->
-    <string name="defaultMsg">What\'s your transaction?</string>
-
+    <string name="form_defaultMsg">What\'s your transaction?</string>
+    <string name="form_hint">\u2606: general tag \n \u27B4: location tag \n \u0024: amount \n \u238A: category tag</string>
 
 
     <!-- Tag Cloud -->
@@ -73,6 +73,9 @@
     <string name="dialog_message">Follow</string>
     <string name="dialog_title">Select a name</string>
     <string name="dialog_updateUser">Enter your name</string>
+    <string name="dialog_okay">Okay</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_success">Update successfully!</string>
 
     <!-- Default -->
     <string name="default_user">local</string>
@@ -82,4 +85,20 @@
 
     <!-- Color -->
     <string name="color_title">Select your color:</string>
+
+    <!-- Twitter -->
+    <string name="twitter_not_login_msg">No twitter account connected!</string>
+    <string name="twitter_disconnected_msg">Twitter disconnected!</string>
+    <string name="twitter_connected_msg">Twitter connected!</string>
+    <string name="twitter_connect_fail_msg">Twitter connect fail!</string>
+    <string name="twitter_no_session_msg">No active twitter session!</string>
+    <string name="twitter_hint_search">Search twitter user</string>
+    <string name="twitter_status_connected">Connected</string>
+    <string name="twitter_status_disconnected">Disconnected</string>
+
+    <!-- Setting -->
+
+    <!-- Follow -->
+    <string name="follow_msg_pull_success">Pull successfully!</string>
+
 </resources>

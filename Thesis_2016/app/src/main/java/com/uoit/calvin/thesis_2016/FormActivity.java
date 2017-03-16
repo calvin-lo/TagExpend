@@ -1,9 +1,12 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -24,20 +27,33 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerPalette;
 import com.android.colorpicker.ColorPickerSwatch;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import io.fabric.sdk.android.Fabric;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class FormActivity extends AppCompatActivity{
 
@@ -48,13 +64,15 @@ public class FormActivity extends AppCompatActivity{
     int selectedColor;
     int colors[];
 
+    boolean posted;
+
     ActionBar ab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
-        Toolbar myChildToolbar = (Toolbar) findViewById(R.id.formToolbar);
-        setSupportActionBar(myChildToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.formToolbar);
+        setSupportActionBar(toolbar);
         ab = getSupportActionBar();
         helper = new Helper(this);
         colors = helper.getMaterialColor();
@@ -66,8 +84,19 @@ public class FormActivity extends AppCompatActivity{
             ab.setHomeAsUpIndicator(getDrawable(R.drawable.ic_clear_white_24dp));
         }
 
+        if (toolbar != null) {
+            toolbar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectColor(view);
+                }
+            });
+
+        }
         TwitterAuthConfig authConfig =  new TwitterAuthConfig("consumerKey", "consumerSecret");
         Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
+
+        posted = false;
 
         String original = getIntent().getStringExtra("original");
 
@@ -87,10 +116,12 @@ public class FormActivity extends AppCompatActivity{
         input.setAdapter(adapter);
         input.setThreshold(1);
 
-
-        Button colorButton = (Button) findViewById(R.id.colorButton);
-        if (colorButton != null) {
-            colorButton.setBackgroundColor(selectedColor);
+        SharedPreferences sharedpreferences = getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+        if (sharedpreferences.getBoolean("autoPost", false)) {
+            ImageButton twitterButton = (ImageButton) findViewById(R.id.twitterButton);
+            if (twitterButton != null) {
+                twitterButton.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -101,6 +132,13 @@ public class FormActivity extends AppCompatActivity{
             returnIntent.putExtra("trans", trans );
             returnIntent.putExtra("color", selectedColor);
             setResult(this.RESULT_OK, returnIntent);
+
+            // tweet
+            SharedPreferences sharedpreferences = getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+            if (sharedpreferences.getBoolean("autoPost", false)) {
+                tweet();
+            }
+
             finish();
         }
     }
@@ -127,11 +165,27 @@ public class FormActivity extends AppCompatActivity{
 
     public void clickTwitter(View v) {
         input.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        //tweet();
         String trans = input.getEditableText().toString();
         trans = trans + " - #MyMoneyTag";
         TweetComposer.Builder builder = new TweetComposer.Builder(this)
                 .text(trans);
         builder.show();
+    }
+
+    public void tweet() {
+        String trans = input.getEditableText().toString();
+        trans = trans + " - #MyMoneyTag";
+        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        if (session != null) {
+            if (!posted) {
+                new updateTweets(session).execute(trans);
+                posted = true;
+            }
+        } else {
+            Toast toast = Toast.makeText(this, getString(R.string.twitter_not_login_msg), Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     public void clickSymbol(String type) {
@@ -193,10 +247,6 @@ public class FormActivity extends AppCompatActivity{
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Button colorButton = (Button) findViewById(R.id.colorButton);
-                        if (colorButton != null) {
-                            colorButton.setBackgroundColor(selectedColor);
-                        }
                         if (ab != null) {
                             ab.setBackgroundDrawable(new ColorDrawable(selectedColor));
                         }
@@ -212,6 +262,38 @@ public class FormActivity extends AppCompatActivity{
                 .setView(colorPickerPalette)
                 .create();
         alert.show();
+    }
+
+
+    private class updateTweets extends AsyncTask<String, Void, Boolean> {
+
+        private TwitterSession session;
+        public updateTweets(TwitterSession session) {
+            this.session = session;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            StatusesService statusesService = Twitter.getApiClient(session).getStatusesService();
+            Call<Tweet> tweetsCall = statusesService.update(params[0], null, null, null, null, null, null, null, null);
+
+            Response<Tweet> responses = null;
+            try {
+                responses = tweetsCall.execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return responses != null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+        }
+
     }
 
 

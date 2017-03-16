@@ -10,13 +10,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".SplashScreen"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"></activity>
         <activity
             android:name=".FormActivity"
             android:parentActivityName=".MainActivity"
@@ -51,7 +59,12 @@
             android:name="io.fabric.ApiKey"
             android:value="149ec2ed93e9b826c65fab4e9ca4c51d03ec701b" />
 
-        <activity android:name=".LoginWithTwitterActivity" />
+        <activity android:name=".ExploreActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
     </application>
 
 </manifest>

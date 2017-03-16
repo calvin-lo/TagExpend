@@ -13,10 +13,12 @@
     </string-array>
 
     <string-array name="setting_list">
+        <item>"Set your name"</item>
+        <item>"Auto tweet</item>
+        <item>"Connect with Twitter"</item>
+        <item>"Disconnect with Twitter"</item>
         <item>"Reset Transaction Database"</item>
         <item>"Reset Tag Database"</item>
-        <item>"Twitter"</item>
-        <item>"Set your name"</item>
     </string-array>
 
     <string-array name="type">
