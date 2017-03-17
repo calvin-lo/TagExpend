@@ -117,7 +117,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
 
     User getUserByUsername(String username) {
 
-        User user;
+        User user = new User();
 
         String selectQuery = "SELECT  * FROM " + TABLE_NAME;
 
@@ -134,7 +134,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        return null;
+        return user;
     }
 
     private User getUser(Cursor cursor) {

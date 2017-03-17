@@ -48,11 +48,11 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/mian_fab_add"
+        android:id="@+id/main_fab_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/ic_add_white_36dp"
+        app:srcCompat="@drawable/ic_attach_money_white_24dp"
         app:backgroundTint="@color/accent"
         android:layout_marginBottom="12dp"
         android:layout_alignParentBottom="true"

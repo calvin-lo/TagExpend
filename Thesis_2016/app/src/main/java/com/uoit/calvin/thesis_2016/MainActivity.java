@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity
         this.context = this;
 
         sharedpreferences = getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
+
+        setLocalUser();
+
         if (sharedpreferences.getString(getString(R.string.shared_pref_arg_username), null) == null) {
             helper.setUser(getString(R.string.user_default));
         }
@@ -93,13 +96,6 @@ public class MainActivity extends AppCompatActivity
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
 
-        UserDBHelper userDBHelper = new UserDBHelper(this);
-        if (userDBHelper.getUserByUsername(getString(R.string.user_default)) == null) {
-            User user = new User(this,
-                    sharedpreferences.getString(getString(R.string.shared_pref_arg_default_display_name), getResources().getString(R.string.user_default)),
-                    getResources().getString(R.string.user_default));
-           userDBHelper.addUser(user);
-        }
 
         //deleteDatabase("transDB");
         //deleteDatabase("tagCloudDB");
@@ -121,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.main_tabs);
         setupTabLayout();
 
-        final FloatingActionButton fab_add = (FloatingActionButton) findViewById(R.id.mian_fab_add);
+        final FloatingActionButton fab_add = (FloatingActionButton) findViewById(R.id.main_fab_add);
         if (fab_add != null) {
             fab_add.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,6 +151,7 @@ public class MainActivity extends AppCompatActivity
     protected void onRestart() {
         setupDrawer();
         setupViewPager();
+        setLocalUser();
         navigationView.getMenu().findItem(R.id.nav_setting).setChecked(false);
         adapter.notifyDataSetChanged();
         super.onRestart();
@@ -165,6 +162,7 @@ public class MainActivity extends AppCompatActivity
         tv_search = (MultiAutoCompleteTextView) findViewById(R.id.main_search);
         setupDrawer();
         setupViewPager();
+        setLocalUser();
         navigationView.getMenu().findItem(R.id.nav_setting).setChecked(false);
         adapter.notifyDataSetChanged();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout_drawer);
@@ -184,6 +182,7 @@ public class MainActivity extends AppCompatActivity
         adapter.notifyDataSetChanged();
         setupDrawer();
         setupViewPager();
+        setLocalUser();
         super.onResume();
     }
 
@@ -609,6 +608,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         helper.displayTransList(findViewById(android.R.id.content), this);
+    }
+
+    public void setLocalUser() {
+        UserDBHelper userDBHelper = new UserDBHelper(this);
+        if (userDBHelper.getUserByUsername(getString(R.string.user_default)).getUsername() == null) {
+            User user = new User(this,
+                    sharedpreferences.getString(getString(R.string.shared_pref_arg_default_display_name), getResources().getString(R.string.user_default)),
+                    getResources().getString(R.string.user_default));
+            userDBHelper.addUser(user);
+        }
     }
 
 } // end of class

@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Main -->
-    <string name="app_name">My Money Tag</string>
+    <string name="app_name">TagExpend</string>
     <string name="action_search">Search</string>
 
     <!-- Icon -->
@@ -11,6 +11,9 @@
     <string name="icon_category">\u238A</string>
     <string name="icon_at">\u0040</string>
     <string name="icon_all">*</string>
+
+    <!-- Splash -->
+    <string name="splash_msg">Your Money Tag</string>
 
     <!-- Home Fragment -->
     <string name="home_frag_title">Home</string>
@@ -79,7 +82,7 @@
     <string name="twitter_hint_search">Search twitter user</string>
     <string name="twitter_status_connected">Connected</string>
     <string name="twitter_status_disconnected">Disconnected</string>
-    <string name="twitter_tail">- #MyMoneyTag</string>
+    <string name="twitter_tail">- #TagExpend</string>
 
     <!-- Follow -->
     <string name="follow_msg_pull_success">Pull successfully!</string>

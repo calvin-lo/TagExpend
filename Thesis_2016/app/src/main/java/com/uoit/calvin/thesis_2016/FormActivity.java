@@ -85,7 +85,7 @@ public class FormActivity extends AppCompatActivity{
         TwitterAuthConfig authConfig =  new TwitterAuthConfig("consumerKey", "consumerSecret");
         Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
 
-        String original = getIntent().getStringExtra("original");
+        String original = getIntent().getStringExtra(getString(R.string.intent_extra_original_msg));
 
         tv_input = (MultiAutoCompleteTextView) findViewById(R.id.form_tv_input);
 
@@ -98,13 +98,13 @@ public class FormActivity extends AppCompatActivity{
 
         tv_input.setTokenizer(new SpaceTokenizer());
         TagDBHelper tagDBHelper = new TagDBHelper(this);
-        String tagList[] = tagDBHelper.getTagsStringList("*");
+        String tagList[] = tagDBHelper.getTagsStringList(getString(R.string.icon_all));
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tagList);
         tv_input.setAdapter(adapter);
         tv_input.setThreshold(1);
 
-        SharedPreferences sharedpreferences = getSharedPreferences("MAIN", Context.MODE_PRIVATE);
-        if (sharedpreferences.getBoolean("autoPost", false)) {
+        SharedPreferences sharedpreferences = getSharedPreferences(getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
+        if (sharedpreferences.getBoolean(getString(R.string.shared_pref_arg_auto_post), false)) {
             ImageButton ib_twitter = (ImageButton) findViewById(R.id.button_twitter);
             if (ib_twitter != null) {
                 ib_twitter.setVisibility(View.GONE);
@@ -166,13 +166,13 @@ public class FormActivity extends AppCompatActivity{
         Intent returnIntent = new Intent();
         if (tv_input != null) {
             String trans = tv_input.getEditableText().toString();
-            returnIntent.putExtra("trans", trans );
-            returnIntent.putExtra("color", selectedColor);
+            returnIntent.putExtra(getString(R.string.intent_extra_trans), trans );
+            returnIntent.putExtra(getString(R.string.intent_extra_color), selectedColor);
             setResult(this.RESULT_OK, returnIntent);
 
             // tweet
-            SharedPreferences sharedpreferences = getSharedPreferences("MAIN", Context.MODE_PRIVATE);
-            if (sharedpreferences.getBoolean("autoPost", false)) {
+            SharedPreferences sharedpreferences = getSharedPreferences(getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
+            if (sharedpreferences.getBoolean(getString(R.string.shared_pref_arg_auto_post), false)) {
                 tweet();
             }
 
@@ -204,7 +204,7 @@ public class FormActivity extends AppCompatActivity{
         tv_input.setRawInputType(InputType.TYPE_CLASS_TEXT);
         //tweet();
         String trans = tv_input.getEditableText().toString();
-        trans = trans + " - #MyMoneyTag";
+        trans = trans + " " + getString(R.string.twitter_tail);
         TweetComposer.Builder builder = new TweetComposer.Builder(this)
                 .text(trans);
         builder.show();
@@ -212,7 +212,7 @@ public class FormActivity extends AppCompatActivity{
 
     public void tweet() {
         String trans = tv_input.getEditableText().toString();
-        trans = trans + " - #MyMoneyTag";
+        trans = trans + " " +getString(R.string.twitter_tail);
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
         if (session != null) {
             new updateTweets(session).execute(trans);
