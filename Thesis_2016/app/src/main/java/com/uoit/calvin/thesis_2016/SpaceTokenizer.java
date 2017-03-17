@@ -1,6 +1,5 @@
 package com.uoit.calvin.thesis_2016;
 
-
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;

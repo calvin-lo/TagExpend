@@ -3,13 +3,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <LinearLayout
+        android:id="@+id/tag_trend_layout_spinner"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:id="@+id/spinnerLayout">
+        >
 
         <android.support.v4.widget.Space
             android:layout_width="0dp"
@@ -17,14 +17,14 @@
             android:layout_weight="0.5"/>
 
         <Spinner
+            android:id="@+id/tag_trend_spinner_year"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/yearSpinner"
             android:layout_weight="1" />
         <Spinner
+            android:id="@+id/tag_trend_spinner_month"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/monthSpinner"
             android:layout_weight="1" />
 
         <android.support.v4.widget.Space
@@ -34,7 +34,7 @@
     </LinearLayout>
 
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
+        android:id="@+id/tag_trend_chart"
         android:layout_width="match_parent"
         android:layout_height="250dp" />
 

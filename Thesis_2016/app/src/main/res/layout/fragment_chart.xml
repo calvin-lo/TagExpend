@@ -6,28 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <GridLayout
-        android:layout_marginTop="20dp"
-        android:layout_width="200dp"
+    <Spinner
+        android:id="@+id/chart_spinner_type"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:columnCount="2">
-
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/typeSpinner"
-            android:layout_columnSpan="2"/>
-
-
-    </GridLayout>
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="20dp"/>
 
     <LinearLayout
+        android:id="@+id/chart_layout_chart"
         android:layout_marginTop="20dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/chartLayout">
+        android:layout_height="match_parent">
     </LinearLayout>
 
 </LinearLayout>

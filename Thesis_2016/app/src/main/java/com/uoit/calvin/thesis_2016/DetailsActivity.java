@@ -15,7 +15,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import java.util.List;
 
-public class DetailsActivity extends AppCompatActivity {
+public class  DetailsActivity extends AppCompatActivity {
 
 
     private Transaction transaction;
@@ -31,13 +31,13 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         // get the transaction
-        SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
-        username = sharedpreferences.getString("username", null);
-        id = getIntent().getLongExtra("ID", 0);
+        SharedPreferences sharedpreferences = getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
+        username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), null);
+        id = getIntent().getLongExtra(getString(R.string.intent_extra_id), 0);
         transactionDBHelper = new TransactionDBHelper(this);
         transaction = transactionDBHelper.getTransByID(id, username);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detailToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -52,64 +52,66 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void display() {
 
-        id = getIntent().getLongExtra("ID", 0);
+        id = getIntent().getLongExtra(getString(R.string.intent_extra_id), 0);
         transactionDBHelper = new TransactionDBHelper(this);
         transaction = transactionDBHelper.getTransByID(id, username);
 
         // user
-        TextView nameTV = (TextView) findViewById(R.id.nameTV);
-        if (nameTV != null) {
-            nameTV.setText(transaction.getUser().getDisplayName());
+        TextView tv_display_name = (TextView) findViewById(R.id.detail_tv_display_name);
+        if (tv_display_name != null) {
+            tv_display_name.setText(transaction.getUser().getDisplayName());
         }
 
-        TextView userTV = (TextView) findViewById(R.id.userTV);
-        if (userTV != null) {
-            String s = "@" + transaction.getUser().getUsername();
-            userTV.setText(s);
+        TextView tv_username = (TextView) findViewById(R.id.detail_tv_username);
+        if (tv_username != null) {
+            String s = getString(R.string.icon_at) + transaction.getUser().getUsername();
+            tv_username.setText(s);
         }
 
         // message
-        TextView msgTV = (TextView) findViewById(R.id.messageTextView);
-        if (msgTV != null) {
-            msgTV.setText(transaction.getMessage());
+        TextView tv_msg = (TextView) findViewById(R.id.detail_tv_msg);
+        if (tv_msg != null) {
+            tv_msg.setText(transaction.getMessage());
         }
 
         // time
-        TextView timeTV = (TextView) findViewById(R.id.timeTextView);
-        if (timeTV != null) {
-            timeTV.setText(transaction.getTimestamp());
+        TextView tv_time = (TextView) findViewById(R.id.detail_tv_time);
+        if (tv_time != null) {
+            tv_time.setText(transaction.getTimestamp());
         }
 
         // delete button
-        ImageButton deleteButton = (ImageButton) findViewById(R.id.deleteButton);
-        ImageButton updateButton = (ImageButton) findViewById(R.id.updateButton);
-        if (!username.equals(getResources().getString(R.string.default_user))) {
-            if (deleteButton != null) {
-                deleteButton.setVisibility(View.GONE);
+        ImageButton ib_delete = (ImageButton) findViewById(R.id.detail_ib_delete);
+        ImageButton ib_update = (ImageButton) findViewById(R.id.detail_ib_update);
+        if (!username.equals(getResources().getString(R.string.user_default))) {
+            if (ib_delete != null) {
+                ib_delete.setVisibility(View.GONE);
             }
-            if (updateButton != null) {
-                updateButton.setVisibility(View.GONE);
+            if (ib_update != null) {
+                ib_update.setVisibility(View.GONE);
             }
         }
 
         // Tag
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
+        if (recyclerView != null) {
+            recyclerView.setHasFixedSize(true);
 
-        StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
-        recyclerView.setLayoutManager(GridLayoutManager);
+            StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
+            recyclerView.setLayoutManager(GridLayoutManager);
 
-        List<Tag> tagList = transaction.getTagsList();
+            List<Tag> tagsList = transaction.getTagsList();
 
-        SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(this, tagList);
-        recyclerView.setAdapter(rcAdapter);
+            SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(this, tagsList);
+            recyclerView.setAdapter(rcAdapter);
+        }
 
     }
 
     public void update(View v) {
         Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra("original", transaction.getMessage());
+        intent.putExtra(getString(R.string.intent_extra_original_msg), transaction.getMessage());
         startActivityForResult(intent, SAVING_DATA);
 
     }
@@ -119,26 +121,26 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
             if (requestCode == SAVING_DATA) {
-                TransactionDBHelper transDB = new TransactionDBHelper(this);
-                TagDBHelper tagDB = new TagDBHelper(this);
+                TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
+                TagDBHelper tagDBHelper = new TagDBHelper(this);
                 Helper helper = new Helper(this);
                 String time = transaction.getTimestamp();
 
-                List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, username).getMessage(), username);
+                List<Tag> tagList = helper.parseTag(transactionDBHelper.getTransByID(id, username).getMessage(), username);
 
-                SharedPreferences sharedpreferences = getSharedPreferences("USER", Context.MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
                 User user = new User(this,
-                        sharedpreferences.getString("defaultUsername", getResources().getString(R.string.default_user)),
-                        getResources().getString(R.string.default_user));
+                        sharedPreferences.getString(getString(R.string.shared_pref_arg_default_display_name), getString(R.string.user_default)),
+                        getResources().getString(R.string.user_default));
 
                 for (Tag t : tagList) {
                     t.setUser(user);
-                    tagDB.updateTag(t);
+                    tagDBHelper.updateTag(t);
                 }
 
 
 
-                String message = data.getStringExtra("trans");
+                String message = data.getStringExtra(getString(R.string.intent_extra_trans));
 
                 transaction.setMessage(message);
                 transaction.setTags(helper.parseTag(message));
@@ -148,16 +150,16 @@ public class DetailsActivity extends AppCompatActivity {
                 transaction.setTimestamp(time);
                 transaction.setAmount(helper.getAmount(message));
                 transaction.setUser(user);
-                transDB.updateTransaction(transaction);
+                transactionDBHelper.updateTransaction(transaction);
 
                 // add the tag to tag cloud
                 for (Tag t : transaction.getTagsList()) {
                     t.setUser(user);
-                    tagDB.addTag(t);
+                    tagDBHelper.addTag(t);
                 }
 
-                transDB.close();
-                tagDB.close();
+                transactionDBHelper.close();
+                tagDBHelper.close();
 
             }
         }

@@ -19,12 +19,13 @@
         <item>"Disconnect with Twitter"</item>
         <item>"Reset Transaction Database"</item>
         <item>"Reset Tag Database"</item>
+        <item>"Reset User Database"</item>
     </string-array>
 
     <string-array name="type">
-        <item>☆</item>
-        <item>➴</item>
-        <item>§</item>
+        <item>\u2606</item>
+        <item>\u27B4</item>
+        <item>\u238A</item>
     </string-array>
 
     <string-array name="months">

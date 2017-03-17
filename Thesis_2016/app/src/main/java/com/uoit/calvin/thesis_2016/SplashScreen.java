@@ -3,7 +3,6 @@ package com.uoit.calvin.thesis_2016;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -34,12 +33,9 @@ public class SplashScreen extends Activity {
 
             @Override
             public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                startActivity(i);
+                Intent intent = new Intent(SplashScreen.this, MainActivity.class);
+                startActivity(intent);
 
-                // close this activity
                 finish();
             }
         }, SPLASH_TIME_OUT);

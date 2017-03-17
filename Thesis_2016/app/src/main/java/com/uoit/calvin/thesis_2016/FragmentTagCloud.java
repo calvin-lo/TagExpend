@@ -15,8 +15,6 @@ import java.util.List;
 
 public class FragmentTagCloud extends Fragment{
 
-    private String username;
-
     View v;
 
     public FragmentTagCloud() {
@@ -26,24 +24,24 @@ public class FragmentTagCloud extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v =  inflater.inflate(R.layout.fragment_tag_cloud, container, false);
 
-        SharedPreferences sharedpreferences = getActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
-        username = sharedpreferences.getString("username", getContext().getResources().getString(R.string.default_user));
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(getString(R.string.shared_pref_arg_username), getContext().getResources().getString(R.string.user_default));
 
-        RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.tag_cloud_recycler_view);
         recyclerView.setHasFixedSize(true);
 
         StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
         recyclerView.setLayoutManager(GridLayoutManager);
 
-        List<Tag> tagList = new TagDBHelper(getContext()).getTagsList("*", username);
+        List<Tag> tagList = new TagDBHelper(getContext()).getTagsList(getString(R.string.icon_all), username);
 
         SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(getContext(), tagList);
         recyclerView.setAdapter(rcAdapter);

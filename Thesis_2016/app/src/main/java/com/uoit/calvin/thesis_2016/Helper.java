@@ -3,7 +3,6 @@ package com.uoit.calvin.thesis_2016;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 
@@ -43,10 +41,10 @@ class Helper implements ImageListener{
 
     Helper(Context context) {
         this.context = context;
-        GENERAL_ICON = context.getResources().getString(R.string.generalIcon);
-        LOCATION_ICON = context.getResources().getString(R.string.locationIcon);
-        DOLLAR_ICON = context.getResources().getString(R.string.dollarIcon);
-        CATEGORY_ICON = context.getResources().getString(R.string.categoryIcon);
+        GENERAL_ICON = context.getResources().getString(R.string.icon_general);
+        LOCATION_ICON = context.getResources().getString(R.string.icon_location);
+        DOLLAR_ICON = context.getResources().getString(R.string.icon_dollar);
+        CATEGORY_ICON = context.getResources().getString(R.string.icon_category);
         format = "(?=" + GENERAL_ICON + "|" + LOCATION_ICON + "|"+ "\\" + DOLLAR_ICON + "|" + CATEGORY_ICON + ")";
 
     }
@@ -92,7 +90,7 @@ class Helper implements ImageListener{
         }
 
         UserDBHelper userDBHelper = new UserDBHelper(context);
-        User user = userDBHelper.getUserNyUsername(username);
+        User user = userDBHelper.getUserByUsername(username);
 
         for (int i = 1; i < parsedTags.length; i++) {
             if (parsedTags[i].substring(0,1).equals(GENERAL_ICON)  && parsedTags[i].length()>1 ) {
@@ -171,15 +169,14 @@ class Helper implements ImageListener{
     }
 
     String getCurrentTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
+        DateFormat dateFormat = new SimpleDateFormat(context.getString(R.string.pattern_date_app), Locale.CANADA);
         Date date = new Date();
         return dateFormat.format(date);
     }
 
-    long parseDate(String text)
-    {
+    long parseDate(String text) {
         long time = 0;
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
+        DateFormat dateFormat = new SimpleDateFormat(context.getString(R.string.pattern_date_app), Locale.CANADA);
         try {
             time = dateFormat.parse(text).getTime();
         } catch (ParseException e) {
@@ -208,7 +205,7 @@ class Helper implements ImageListener{
     }
 
     Date timeToDate(String timestamp) {
-        DateFormat format =  new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
+        DateFormat format =  new SimpleDateFormat(context.getString(R.string.pattern_date_app), Locale.CANADA);
         Date date = new Date();
         try {
             date = format.parse(timestamp);
@@ -219,7 +216,7 @@ class Helper implements ImageListener{
         return date;
     }
 
-    int parseMonthtoInt(String month) {
+    int parseMonthToInt(String month) {
         switch (month) {
             case ("January"):
                 return 1;
@@ -254,37 +251,37 @@ class Helper implements ImageListener{
 
     public void setUser(String username) {
         SharedPreferences sharedpreferences;
-        sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString("username", username);
+        editor.putString(context.getString(R.string.shared_pref_arg_username), username);
         editor.apply();
     }
 
     void setSelectedPosition(int posID) {
         SharedPreferences sharedpreferences;
-        sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putInt("selectedPosition", posID);
+        editor.putInt(context.getString(R.string.shared_pref_arg_selected_pos), posID);
         editor.apply();
     }
 
-    void setDefaultUser(String defaultUsername) {
+    void setDefaultDisplayName(String defaultUsername) {
         SharedPreferences sharedpreferences;
-        sharedpreferences = this.context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString("defaultUsername", defaultUsername);
+        editor.putString(context.getString(R.string.shared_pref_arg_default_display_name), defaultUsername);
         editor.apply();
     }
 
-    public void setAutoPost(boolean checked) {
+    void setAutoPost(boolean checked) {
         SharedPreferences sharedpreferences;
-        sharedpreferences = this.context.getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+        sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putBoolean("autoPost", checked);
+        editor.putBoolean(context.getString(R.string.shared_pref_arg_auto_post), checked);
         editor.apply();
     }
 
-    public int[] getMaterialColor() {
+    int[] getMaterialColor() {
         int my_colors[] = {ContextCompat.getColor(context, R.color.red),
                 ContextCompat.getColor(context, R.color.pink),
                 ContextCompat.getColor(context, R.color.purple),
@@ -334,13 +331,18 @@ class Helper implements ImageListener{
         return my_colors;
     }
 
-    public Bitmap resizeProfileSize(Drawable image) {
+    private Bitmap resizeProfileSize(Drawable image) {
         Bitmap b = ((BitmapDrawable)image).getBitmap();
-        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 120, 120, false);
-        return bitmapResized;
+        return Bitmap.createScaledBitmap(b, 120, 120, false);
     }
 
-    public void storeImage(Bitmap image, User user) {
+    public Drawable resizeDrawble(Drawable image, int x, int y) {
+        Bitmap b = ((BitmapDrawable)image).getBitmap();
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, x, y, false);
+        return new BitmapDrawable(context.getResources(), bitmapResized);
+    }
+
+    private void storeImage(Bitmap image, User user) {
         File pictureFile = getOutputMediaFile(user);
         if (pictureFile == null) {
             return;
@@ -356,15 +358,13 @@ class Helper implements ImageListener{
         }
     }
 
-
-    /** Create a File for saving an image or video */
     private  File getOutputMediaFile(User user){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Android/data/"
+                + context.getString(R.string.helper_image_path_start)
                 + context.getApplicationContext().getPackageName()
-                + "/ProfileImage");
+                + context.getString(R.string.helper_image_path_end));
 
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
@@ -377,7 +377,9 @@ class Helper implements ImageListener{
         }
         // Create a media file name
         File mediaFile;
-        String mImageName="PI_"+ user.getUsername() +".jpg";
+        String mImageName = context.getString(R.string.helper_image_name_start)
+                            + user.getUsername()
+                            + context.getString(R.string.helper_image_name_end);
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
         return mediaFile;
     }
@@ -386,7 +388,7 @@ class Helper implements ImageListener{
 
         private ImageListener listener;
         private User user;
-        public DownloadImageTask(ImageListener listener, User user) {
+        DownloadImageTask(ImageListener listener, User user) {
             this.listener = listener;
             this.user = user;
         }
@@ -412,11 +414,11 @@ class Helper implements ImageListener{
         }
     }
 
-    public void runDownloadImageTask(User user) {
+    void runDownloadImageTask(User user) {
         if (user.getProfileImage() == -1) {
             new DownloadImageTask(this, user).execute(user.getProfileImageUrl());
         } else {
-            storeImage(new Helper(context).resizeProfileSize(ContextCompat.getDrawable(context, R.drawable.ic_label_outline_white_big)), user);
+            storeImage(new Helper(context).resizeProfileSize(ContextCompat.getDrawable(context, R.drawable.ic_account_box_white_24dp)), user);
         }
     }
 
@@ -425,15 +427,17 @@ class Helper implements ImageListener{
         storeImage(b, user);
     }
 
-    public Bitmap loadImageFromStorage(User user) {
+    Bitmap loadImageFromStorage(User user) {
 
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Android/data/"
+                + context.getString(R.string.helper_image_path_start)
                 + context.getApplicationContext().getPackageName()
-                + "/ProfileImage");
+                + context.getString(R.string.helper_image_path_end));
 
         File mediaFile;
-        String mImageName="PI_"+ user.getUsername() +".jpg";
+        String mImageName = context.getString(R.string.helper_image_name_start)
+                            + user.getUsername()
+                            + context.getString(R.string.helper_image_name_end);
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
         Bitmap b = null;
         try {
@@ -445,12 +449,12 @@ class Helper implements ImageListener{
 
     }
 
-    public void deleteTrans(long id, String username) {
+    void deleteTrans(long id, String username) {
         TransactionDBHelper transDB = new TransactionDBHelper(context.getApplicationContext());
-        SharedPreferences sharedpreferences = context.getSharedPreferences("USER", Context.MODE_PRIVATE);
+        SharedPreferences sharedpreferences = context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
         User user = new User(context,
-                sharedpreferences.getString("defaultUsername", context.getResources().getString(R.string.default_user)),
-                context.getResources().getString(R.string.default_user));
+                sharedpreferences.getString(context.getString(R.string.shared_pref_arg_default_display_name), context.getResources().getString(R.string.user_default)),
+                context.getResources().getString(R.string.user_default));
 
         Helper helper = new Helper(context);
         List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, username).getMessage(), username);
@@ -467,31 +471,31 @@ class Helper implements ImageListener{
         tagDB.close();
     }
 
-    public void displayTransList(View v, Activity activity) {
+    void displayTransList(View v, Activity activity) {
 
         TransactionDBHelper transDB = new TransactionDBHelper(context);
-        SharedPreferences sharedpreferences = context.getSharedPreferences("USER", Context.MODE_PRIVATE);
-        String username = sharedpreferences.getString("username", null);
+        SharedPreferences sharedpreferences = context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
+        String username = sharedpreferences.getString(context.getString(R.string.shared_pref_arg_username), null);
         ArrayList<Transaction> transList = new ArrayList<>(transDB.getAllData(username));
         Collections.sort(transList);
         Collections.reverse(transList);
         if (transList.size() > 0) {
-            SampleExpandableListAdapter listAdapter;
-            ExpandableListView expListView = (ExpandableListView) v.findViewById(R.id.transactionList);
-            listAdapter = new SampleExpandableListAdapter(context, activity, transList, username);
+            MainExpandableListAdapter listAdapter;
+            ExpandableListView lv_transactions = (ExpandableListView) v.findViewById(R.id.transactionList);
+            listAdapter = new MainExpandableListAdapter(context, activity, transList, username);
 
-            expListView.setAdapter(listAdapter);
-            expListView.setGroupIndicator(new ColorDrawable(ContextCompat.getColor(context, R.color.tw__transparent)));
+            lv_transactions.setAdapter(listAdapter);
+            lv_transactions.setGroupIndicator(new ColorDrawable(ContextCompat.getColor(context, R.color.tw__transparent)));
         }
 
         transDB.close();
     }
 
-    public void setTwitterConnected(boolean checked) {
+    void setTwitterConnected(boolean checked) {
         SharedPreferences sharedpreferences;
-        sharedpreferences = this.context.getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+        sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putBoolean("twitterConnected", checked);
+        editor.putBoolean(context.getString(R.string.shared_pref_arg_twitter_connected), checked);
         editor.apply();
     }
 

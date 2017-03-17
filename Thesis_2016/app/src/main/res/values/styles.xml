@@ -26,11 +26,17 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-
-
     <style name="MyDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/accent</item>
         <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
+
+    <style name="TabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+
     </style>
 
 </resources>

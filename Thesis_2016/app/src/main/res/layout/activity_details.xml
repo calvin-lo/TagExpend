@@ -8,15 +8,15 @@
     android:paddingBottom="10dp">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/detail_appbar"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:theme="@style/MyActionBarTheme"
         app:popupTheme="@style/MyActionBarTheme"
-        app:elevation="0dp"
-        android:id="@+id/detailAppBar">
+        app:elevation="0dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/detailToolbar"
+            android:id="@+id/detail_toolbar"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             />
@@ -24,18 +24,18 @@
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
-        android:id="@+id/titleLayout"
+        android:id="@+id/detail_layout_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
-        android:layout_alignBottom="@+id/detailAppBar"
+        android:layout_alignBottom="@+id/detail_appbar"
         android:orientation="horizontal">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_label_outline_white_big"/>
+            android:src="@drawable/ic_account_box_white_24dp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -46,17 +46,17 @@
             android:layout_gravity="center_vertical">
 
             <TextView
+                android:id="@+id/detail_tv_display_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/nameTV"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"/>
 
             <TextView
+                android:id="@+id/detail_tv_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/userTV"
                 android:textColor="@color/white"
                 android:textSize="15sp"/>
 
@@ -67,62 +67,62 @@
 
 
     <RelativeLayout
+        android:id="@+id/detail_layout_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingBottom="10dp"
-        android:id="@+id/textLayout"
-        android:layout_below="@+id/detailAppBar">
+        android:layout_below="@+id/detail_appbar">
 
         <TextView
+            android:id="@+id/detail_tv_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/messageTextView"
             android:textSize="20sp"
             android:textColor="@color/black"
             />
         
         <TextView
+            android:id="@+id/detail_tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/messageTextView"
+            android:layout_below="@id/detail_tv_msg"
             android:paddingTop="5dp"
-            android:textSize="12sp"
-            android:id="@+id/timeTextView"/>
+            android:textSize="12sp" />
     </RelativeLayout>
 
     <View
-        android:layout_below="@+id/textLayout"
-        android:id="@+id/upperView"
+        android:id="@+id/detail_view_upper"
+        android:layout_below="@+id/detail_layout_text"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/line"/>
 
     <LinearLayout
+        android:id="@+id/detail_layout_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/buttonLayout"
         android:weightSum="2"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:layout_below="@+id/upperView">
+        android:layout_below="@+id/detail_view_upper">
 
         <ImageButton
+            android:id="@+id/detail_ib_update"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             app:srcCompat="@drawable/ic_add_black_36dp"
-            android:id="@+id/updateButton"
             android:background="@android:color/transparent"
             android:onClick="update"
             android:layout_weight="1"
             />
 
         <ImageButton
-            android:id="@+id/deleteButton"
+            android:id="@+id/detail_ib_delete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -136,13 +136,13 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/line"
-        android:layout_below="@id/buttonLayout"
+        android:layout_below="@id/detail_layout_button"
         android:id="@+id/bottomView"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_below="@id/bottomView"
         android:padding="10dp"
-        android:id="@+id/recycler_view"
+        android:id="@+id/detail_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical" />

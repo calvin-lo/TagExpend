@@ -6,10 +6,10 @@
 
     <EditText
         android:paddingTop="20dp"
-        android:id="@+id/edit_name"
+        android:id="@+id/dialog_set_name_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/dialog_updateUser"/>
+        android:hint="@string/dialog_title_update_name"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         android:gravity="end"
         >
         <Button
-            android:id="@+id/dialogButtonCancel"
+            android:id="@+id/dialog_set_name_cancel"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:text="@string/dialog_cancel"
@@ -26,7 +26,7 @@
              />
 
         <Button
-            android:id="@+id/dialogButtonOK"
+            android:id="@+id/dialog_set_name_ok"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:text="@string/dialog_okay"

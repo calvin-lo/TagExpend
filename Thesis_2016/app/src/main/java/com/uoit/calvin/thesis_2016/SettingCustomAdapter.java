@@ -11,15 +11,12 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterSession;
-
 class SettingCustomAdapter extends BaseAdapter {
 
     private Context context;
     private String[]  title;
     private int[] icon;
-    boolean connected;
+    private boolean connected;
 
     SettingCustomAdapter(Context context, String[] text1, int[] imageIds, boolean connected) {
         this.context = context;
@@ -47,18 +44,16 @@ class SettingCustomAdapter extends BaseAdapter {
             if (convertView == null) {
                 View row;
                 row = inflater.inflate(R.layout.setting_row, parent, false);
-                TextView tv;
-                ImageView iv;
-                iv = (ImageView) row.findViewById(R.id.imgIcon);
-                tv = (TextView) row.findViewById(R.id.txtTitle);
-                tv.setText(title[position]);
-                iv.setImageResource(icon[position]);
-                SharedPreferences sharedpreferences = context.getSharedPreferences("MAIN", Context.MODE_PRIVATE);
+                TextView tv_title = (TextView) row.findViewById(R.id.setting_row_tv_title);
+                ImageView iv_icon = (ImageView) row.findViewById(R.id.setting_row_iv_icon);
+                tv_title.setText(title[position]);
+                iv_icon.setImageResource(icon[position]);
+                SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
                 if (position == 1) {
-                    CheckBox cb = (CheckBox) row.findViewById(R.id.autoPost);
-                    cb.setVisibility(View.VISIBLE);
-                    cb.setChecked(sharedpreferences.getBoolean("autoPost", false));
-                    cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    CheckBox cb_auto_post = (CheckBox) row.findViewById(R.id.setting_row_cb_auto_post);
+                    cb_auto_post.setVisibility(View.VISIBLE);
+                    cb_auto_post.setChecked(sharedPreferences.getBoolean(context.getString(R.string.shared_pref_arg_twitter_connected), false));
+                    cb_auto_post.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                             Helper helper = new Helper(context);
@@ -67,14 +62,13 @@ class SettingCustomAdapter extends BaseAdapter {
                     });
                 }
                 if (position == 2) {
-                    TextView statusTV = (TextView) row.findViewById(R.id.txtStatus);
-                    if (statusTV != null) {
-                        statusTV.setVisibility(View.VISIBLE);
-                        //boolean connected = sharedpreferences.getBoolean("twitterConnected", false);
+                    TextView tv_status = (TextView) row.findViewById(R.id.setting_row_tv_status);
+                    if (tv_status != null) {
+                        tv_status.setVisibility(View.VISIBLE);
                         if (connected) {
-                            statusTV.setText(context.getString(R.string.twitter_status_connected));
+                            tv_status.setText(context.getString(R.string.twitter_status_connected));
                         } else {
-                            statusTV.setText(context.getString(R.string.twitter_status_disconnected));
+                            tv_status.setText(context.getString(R.string.twitter_status_disconnected));
                         }
                     }
                 }

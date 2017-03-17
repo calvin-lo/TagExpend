@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +25,9 @@ import java.util.List;
 
 public class FragmentTag2 extends Fragment{
 
-    private String username;
     private List<Transaction> transList;
 
     View v;
-
 
     public FragmentTag2() {
         // Required empty public constructor
@@ -40,26 +36,25 @@ public class FragmentTag2 extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v =  inflater.inflate(R.layout.fragment_tag2, container, false);
-        SharedPreferences sharedpreferences = getContext().getSharedPreferences("USER", Context.MODE_PRIVATE);
-        username = sharedpreferences.getString("username", null);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(getString(R.string.shared_pref_arg_username), null);
 
-        String tag = getActivity().getIntent().getStringExtra("tag");
+        String tag = getActivity().getIntent().getStringExtra(getString(R.string.intent_extra_tag));
 
-        TransactionDBHelper transDB = new TransactionDBHelper(getContext());
-        transList = transDB.getTransByTag(tag, username);
+        TransactionDBHelper transactionDBHelper = new TransactionDBHelper(getContext());
+        transList = transactionDBHelper.getTransByTag(tag, username);
 
-        transDB.close();
+        transactionDBHelper.close();
         setYearSpinner();
         setMonthSpinner();
         int currYear = Calendar.getInstance().get(Calendar.YEAR);
-        int currMonth = Calendar.getInstance().get(Calendar.MONTH);
         displayTrend(currYear, -1);
 
 
@@ -68,21 +63,21 @@ public class FragmentTag2 extends Fragment{
 
     public void setMonthSpinner() {
 
-        Spinner monthSpinner = (Spinner) v.findViewById(R.id.monthSpinner);
+        Spinner month_spinner = (Spinner) v.findViewById(R.id.tag_trend_spinner_month);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.months, R.layout.spinner_layout);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.months,  android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (monthSpinner != null) {
-            monthSpinner.setAdapter(adapter);
+        if (month_spinner != null) {
+            month_spinner.setAdapter(adapter);
         }
 
-        if (monthSpinner != null) {
-            monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        if (month_spinner != null) {
+            month_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
-                    int month = new Helper(getContext()).parseMonthtoInt(parentView.getItemAtPosition(position).toString());;
-                    Spinner yearSpinner = (Spinner) v.findViewById(R.id.yearSpinner);
+                    int month = new Helper(getContext()).parseMonthToInt(parentView.getItemAtPosition(position).toString());;
+                    Spinner yearSpinner = (Spinner) v.findViewById(R.id.tag_trend_spinner_year);
                     if (yearSpinner != null) {
                         int year = Integer.parseInt(yearSpinner.getSelectedItem().toString());
                         displayTrend(year, month);
@@ -90,7 +85,7 @@ public class FragmentTag2 extends Fragment{
                 }
                 @Override
                 public void onNothingSelected(AdapterView<?> parentView) {
-                    // your code here
+
                 }
             });
         }
@@ -98,38 +93,37 @@ public class FragmentTag2 extends Fragment{
     }
 
     public void setYearSpinner() {
-        Spinner yearSpinner = (Spinner) v.findViewById(R.id.yearSpinner);
+        Spinner spinner_year = (Spinner) v.findViewById(R.id.tag_trend_spinner_year);
 
         int currYear = Calendar.getInstance().get(Calendar.YEAR);
         List<Integer> years = new ArrayList<>();
-        for (int i = currYear; i >= 2000; i--){
+        for (int i = currYear; i >= 2000; i--) {
             years.add(i);
         }
 
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, years);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (yearSpinner != null) {
-            yearSpinner.setAdapter(adapter);
-        }
+        if (spinner_year != null) {
+            spinner_year.setAdapter(adapter);
+            spinner_year.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
-        yearSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-
-                int year = Integer.parseInt(parentView.getItemAtPosition(position).toString());
-                Spinner monthSpinner = (Spinner) v.findViewById(R.id.yearSpinner);
-                if (monthSpinner != null) {
-                    int month = new Helper(getContext()).parseMonthtoInt(monthSpinner.getSelectedItem().toString());
-                    displayTrend(year, month);
+                    int year = Integer.parseInt(parentView.getItemAtPosition(position).toString());
+                    Spinner monthSpinner = (Spinner) v.findViewById(R.id.tag_trend_spinner_year);
+                    if (monthSpinner != null) {
+                        int month = new Helper(getContext()).parseMonthToInt(monthSpinner.getSelectedItem().toString());
+                        displayTrend(year, month);
+                    }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
+                @Override
+                public void onNothingSelected(AdapterView<?> parentView) {
 
-        });
+                }
+
+            });
+        }
     }
 
     public ArrayList<Float> calculateDateByYear (int year) {
@@ -162,7 +156,7 @@ public class FragmentTag2 extends Fragment{
 
     public void displayTrend(int year, int month) {
 
-        LineChart chart = (LineChart) v.findViewById(R.id.chart);
+        LineChart lineChart = (LineChart) v.findViewById(R.id.tag_trend_chart);
 
         boolean type = month > 0 && month <= 12;
 
@@ -180,16 +174,16 @@ public class FragmentTag2 extends Fragment{
             }
         }
 
-        LineDataSet dataset = new LineDataSet(entries, "Amount");
-        LineData data = new LineData(dataset);
-        if (chart != null) {
-            chart.setData(data);
-            chart.invalidate();
-            chart.getDescription().setEnabled(false);
-            chart.getLegend().setEnabled(false);
-            //chart.setScaleEnabled(false);
+        LineDataSet lineDataSet = new LineDataSet(entries, getString(R.string.tag_frag_trend_label));
+        LineData lineData = new LineData(lineDataSet);
+        if (lineChart != null) {
+            lineChart.setData(lineData);
+            lineChart.invalidate();
+            lineChart.getDescription().setEnabled(false);
+            lineChart.getLegend().setEnabled(false);
+            //lineChart.setScaleEnabled(false);
 
-            XAxis xAxis = chart.getXAxis();
+            XAxis xAxis = lineChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);
             xAxis.setGranularity(1f);
@@ -205,12 +199,12 @@ public class FragmentTag2 extends Fragment{
                 xAxis.setAxisMaximum(11.0f);
                 xAxis.setValueFormatter(new XAxisFormatterMonth());
             }
-            YAxis yAxisLeft = chart.getAxisLeft();
+            YAxis yAxisLeft = lineChart.getAxisLeft();
             yAxisLeft.setAxisMinimum(0.0f);
             yAxisLeft.setDrawGridLines(false);
 
 
-            YAxis yAxisRight = chart.getAxisRight();
+            YAxis yAxisRight = lineChart.getAxisRight();
             yAxisRight.setEnabled(false);
 
         }

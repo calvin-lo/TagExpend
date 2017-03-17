@@ -1,15 +1,6 @@
 package com.uoit.calvin.thesis_2016;
 
-
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.ImageView;
-
-import java.io.InputStream;
 
 public class User {
 
@@ -28,13 +19,14 @@ public class User {
         this.displayName = displayName;
         this.username = username;
         this.context = context;
-        this.profileImage = R.drawable.ic_label_outline_white_big;
+        this.profileImage = R.drawable.ic_account_box_white_24dp;
     }
 
     public User(Context context, String displayName, String username, int profileImage) {
         this.displayName = displayName;
         this.username = username;
         this.profileImage = profileImage;
+        this.context = context;
     }
 
 

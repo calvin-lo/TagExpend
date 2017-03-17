@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -227,7 +226,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         db.close();
 
         SharedPreferences sharedpreferences = context.getSharedPreferences("USER", Context.MODE_PRIVATE);
-        userList.remove(context.getResources().getString(R.string.default_user));
+        userList.remove(context.getResources().getString(R.string.user_default));
         return userList.toArray(new String[userList.size()]);
     }
 
@@ -243,7 +242,7 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         trans.setCategory(cursor.getString(cursor.getColumnIndex(KEY_CATEGORY)));
         trans.setTimestamp(cursor.getString(cursor.getColumnIndex(KEY_TIMESTAMPS)));
         trans.setAmount(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-        User user = new UserDBHelper(context).getUserNyUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+        User user = new UserDBHelper(context).getUserByUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
         trans.setUser(user);
         trans.setColor(cursor.getInt(cursor.getColumnIndex(KEY_COLOR)));
 

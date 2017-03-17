@@ -8,97 +8,13 @@
     android:id="@+id/formLayout">
 
     <android.support.v7.widget.Toolbar
+        android:id="@+id/form_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/formToolbar"
         app:title=" "/>
-<!--
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonLayout"
-        android:background="@color/white"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:weightSum="7"
-        android:elevation="5dp">
-
-        <Button
-            android:text="@string/generalIcon"
-            android:textSize="30sp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/starButton"
-            android:onClick="clickStar"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            />
-        <Button
-            android:text="@string/locationIcon"
-            android:textSize="30sp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/atButton"
-            android:onClick="clickAt"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            />
-        <Button
-            android:text="@string/dollarIcon"
-            android:textSize="30sp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/dollarButton"
-            android:onClick="clickDollar"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            />
-
-        <Button
-            android:text="@string/categoryIcon"
-            android:textSize="28sp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/categoryButton"
-            android:onClick="clickCategory"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            />
-
-        <ImageButton
-            android:contentDescription="@string/twitter"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/twitter_24"
-            android:id="@+id/twitterButton"
-            android:onClick="clickTwitter"
-            android:background="@android:color/transparent"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:contentDescription="@string/save"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_done_black_24dp"
-            android:id="@+id/saveButton"
-            android:onClick="clickSave"
-            android:background="@android:color/transparent"
-            android:layout_weight="2"
-            />
-
-
-    </LinearLayout>
-    -->
 
     <include layout="@layout/button"
-        android:id="@+id/buttonLayout"
+        android:id="@+id/form_layout_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -107,11 +23,11 @@
         />
 
     <MultiAutoCompleteTextView
+        android:id="@+id/form_tv_input"
         android:hint="@string/form_defaultMsg"
         android:inputType="textMultiLine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tagInput"
         android:layout_marginTop="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
@@ -119,7 +35,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="60dp"
         android:background="@android:color/transparent"
-        android:layout_below="@+id/formToolbar"
+        android:layout_below="@+id/form_toolbar"
         android:layout_centerHorizontal="true" />
 
 

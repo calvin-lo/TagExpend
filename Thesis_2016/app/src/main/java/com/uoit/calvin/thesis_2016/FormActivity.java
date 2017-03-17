@@ -4,51 +4,41 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+
 import android.graphics.drawable.ColorDrawable;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.Html;
+
 import android.text.InputType;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
+
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
-import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerPalette;
 import com.android.colorpicker.ColorPickerSwatch;
 import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterApiClient;
+
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
+
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 import io.fabric.sdk.android.Fabric;
@@ -59,19 +49,18 @@ public class FormActivity extends AppCompatActivity{
 
     final int RESULT_OK = 1;
     Helper helper;
-    MultiAutoCompleteTextView input;
+    MultiAutoCompleteTextView tv_input;
 
     int selectedColor;
     int colors[];
 
-    boolean posted;
 
     ActionBar ab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.formToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.form_toolbar);
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
         helper = new Helper(this);
@@ -96,39 +85,87 @@ public class FormActivity extends AppCompatActivity{
         TwitterAuthConfig authConfig =  new TwitterAuthConfig("consumerKey", "consumerSecret");
         Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
 
-        posted = false;
-
         String original = getIntent().getStringExtra("original");
 
-        input = (MultiAutoCompleteTextView) findViewById(R.id.tagInput);
+        tv_input = (MultiAutoCompleteTextView) findViewById(R.id.form_tv_input);
 
-        if (input != null && original != null) {
-            input.setText(original);
-            input.setSelection(input.getText().length());
+        if (tv_input != null && original != null) {
+            tv_input.setText(original);
+            tv_input.setSelection(tv_input.getText().length());
         }
 
 
 
-        input.setTokenizer(new SpaceTokenizer());
+        tv_input.setTokenizer(new SpaceTokenizer());
         TagDBHelper tagDBHelper = new TagDBHelper(this);
         String tagList[] = tagDBHelper.getTagsStringList("*");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, tagList);
-        input.setAdapter(adapter);
-        input.setThreshold(1);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tagList);
+        tv_input.setAdapter(adapter);
+        tv_input.setThreshold(1);
 
         SharedPreferences sharedpreferences = getSharedPreferences("MAIN", Context.MODE_PRIVATE);
         if (sharedpreferences.getBoolean("autoPost", false)) {
-            ImageButton twitterButton = (ImageButton) findViewById(R.id.twitterButton);
-            if (twitterButton != null) {
-                twitterButton.setVisibility(View.GONE);
+            ImageButton ib_twitter = (ImageButton) findViewById(R.id.button_twitter);
+            if (ib_twitter != null) {
+                ib_twitter.setVisibility(View.GONE);
             }
+        }
+    }
+
+    public void clickSymbol(String type) {
+        if (tv_input != null) {
+            String code = "";
+            switch (type) {
+                case "star":
+                    code = getResources().getString(R.string.icon_general);
+                    break;
+                case "at":
+                    code = getResources().getString(R.string.icon_location);
+                    break;
+                case "dollar":
+                    code = getResources().getString(R.string.icon_dollar);
+                    break;
+                case "category":
+                    code = getResources().getString(R.string.icon_category);
+                    break;
+                default:
+                    code = getResources().getString(R.string.icon_general);
+                    break;
+
+            }
+
+            int pos_start = tv_input.getSelectionStart();
+            int pos_end = tv_input.getSelectionEnd();
+            int length = tv_input.getText().toString().length();
+            String oldString = tv_input.getText().toString();
+            String oldString_start = tv_input.getText().toString().substring(0, pos_start);
+            String oldString_end = tv_input.getText().toString().substring(pos_end, length);
+            String newString;
+            if (length == 0) {
+                newString = code;
+                tv_input.setText(newString);
+                tv_input.setSelection(1);
+            } else if (pos_end == 0) {
+                newString = oldString_start + code + oldString_end;
+                tv_input.setText(newString);
+                tv_input.setSelection(pos_end + 1);
+            } else if (oldString.charAt(pos_end-1) != ' '){
+                newString = oldString_start + " " + code + oldString_end;
+                tv_input.setText(newString);
+                tv_input.setSelection(pos_end + 2);
+            } else {
+                newString = oldString_start + code + oldString_end;
+                tv_input.setText(newString);
+                tv_input.setSelection(pos_end + 1);
+            }
+
         }
     }
 
     public void clickSave(View v) {
         Intent returnIntent = new Intent();
-        if (input != null) {
-            String trans = input.getEditableText().toString();
+        if (tv_input != null) {
+            String trans = tv_input.getEditableText().toString();
             returnIntent.putExtra("trans", trans );
             returnIntent.putExtra("color", selectedColor);
             setResult(this.RESULT_OK, returnIntent);
@@ -144,29 +181,29 @@ public class FormActivity extends AppCompatActivity{
     }
 
     public void clickStar(View v) {
-        input.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        tv_input.setRawInputType(InputType.TYPE_CLASS_TEXT);
         clickSymbol("star");
     }
 
     public void clickDollar(View v) {
-        input.setRawInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        tv_input.setRawInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
         clickSymbol("dollar");
     }
 
     public void clickAt(View v) {
-        input.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        tv_input.setRawInputType(InputType.TYPE_CLASS_TEXT);
         clickSymbol("at");
     }
 
     public void clickCategory(View v) {
-        input.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        tv_input.setRawInputType(InputType.TYPE_CLASS_TEXT);
         clickSymbol("category");
     }
 
     public void clickTwitter(View v) {
-        input.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        tv_input.setRawInputType(InputType.TYPE_CLASS_TEXT);
         //tweet();
-        String trans = input.getEditableText().toString();
+        String trans = tv_input.getEditableText().toString();
         trans = trans + " - #MyMoneyTag";
         TweetComposer.Builder builder = new TweetComposer.Builder(this)
                 .text(trans);
@@ -174,58 +211,16 @@ public class FormActivity extends AppCompatActivity{
     }
 
     public void tweet() {
-        String trans = input.getEditableText().toString();
+        String trans = tv_input.getEditableText().toString();
         trans = trans + " - #MyMoneyTag";
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
         if (session != null) {
-            if (!posted) {
-                new updateTweets(session).execute(trans);
-                posted = true;
-            }
+            new updateTweets(session).execute(trans);
         } else {
-            Toast toast = Toast.makeText(this, getString(R.string.twitter_not_login_msg), Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, getString(R.string.twitter_msg_not_login), Toast.LENGTH_SHORT);
             toast.show();
         }
     }
-
-    public void clickSymbol(String type) {
-        if (input != null) {
-            String code = "";
-            switch (type) {
-                case "star":
-                    code = getResources().getString(R.string.generalIcon);
-                    break;
-                case "at":
-                    code = getResources().getString(R.string.locationIcon);
-                    break;
-                case "dollar":
-                    code = getResources().getString(R.string.dollarIcon);
-                    break;
-                case "category":
-                    code = getResources().getString(R.string.categoryIcon);
-                    break;
-                default:
-                    code = getResources().getString(R.string.generalIcon);
-                    break;
-
-            }
-
-
-            String oldString = input.getText().toString();
-            String newString;
-            if (oldString.length() == 0) {
-              newString = code;
-            } else if (oldString.charAt(oldString.length()-1) != ' ') {
-                newString = oldString + " " + code;
-            } else {
-                newString = oldString + code;
-            }
-            input.setText(newString);
-
-            input.setSelection(newString.length());
-        }
-    }
-
 
     public void selectColor(View v) {
         int columns = 5;
@@ -243,7 +238,7 @@ public class FormActivity extends AppCompatActivity{
         colorPickerPalette.drawPalette(colors, selectedColor);
 
         AlertDialog alert = new AlertDialog.Builder(this, R.style.MyDialogTheme)
-                .setTitle(R.string.color_title)
+                .setTitle(R.string.dialog_title_color)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -263,7 +258,6 @@ public class FormActivity extends AppCompatActivity{
                 .create();
         alert.show();
     }
-
 
     private class updateTweets extends AsyncTask<String, Void, Boolean> {
 

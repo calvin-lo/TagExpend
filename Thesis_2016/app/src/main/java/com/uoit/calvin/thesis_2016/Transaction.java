@@ -1,18 +1,14 @@
 package com.uoit.calvin.thesis_2016;
 
 import android.content.Context;
-import android.util.Log;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+
 
 public class Transaction implements Comparable<Transaction>{
 
-    private static DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.CANADA);
     private List<Tag> tagList;
     private long id;
     private String message;
@@ -27,7 +23,6 @@ public class Transaction implements Comparable<Transaction>{
 
     private String GENERAL_ICON;
     private String LOCATION_ICON;
-    private String DOLLAR_ICON;
     private String CATEGORY_ICON;
 
     private Context context;
@@ -36,14 +31,11 @@ public class Transaction implements Comparable<Transaction>{
     private User user;
 
 
-
-
     Transaction(Context context) {
         this.context = context;
-        GENERAL_ICON = context.getResources().getString(R.string.generalIcon);
-        LOCATION_ICON = context.getResources().getString(R.string.locationIcon);
-        DOLLAR_ICON = context.getResources().getString(R.string.dollarIcon);
-        CATEGORY_ICON = context.getResources().getString(R.string.categoryIcon);
+        GENERAL_ICON = context.getResources().getString(R.string.icon_general);
+        LOCATION_ICON = context.getResources().getString(R.string.icon_location);
+        CATEGORY_ICON = context.getResources().getString(R.string.icon_category);
     }
 
 

@@ -5,13 +5,13 @@
         android:id="@+id/group1">
         <item
             android:id="@+id/nav_all"
-            android:icon="@drawable/ic_group_work_black_24dp"
+            android:icon="@drawable/ic_public_black_24dp"
             android:title="@string/nav_all"
             />
         <item
             android:id="@+id/nav_user"
-            android:icon="@drawable/ic_contacts_black_24dp"
-            android:title="@string/nav_1"
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:title="@string/nav_local"
             />
         <item
             android:id="@+id/nav_explore"
@@ -21,27 +21,27 @@
     </group>
     <group android:checkableBehavior="single"
         android:id="@+id/group4">
-        <item android:title="@string/nav_2">
+        <item android:title="@string/nav_following">
         <menu>
             <group android:checkableBehavior="single">
                 <item android:id="@+id/nav_user1"
-                    android:title="@string/nav_2"
+                    android:title="@string/nav_following"
                     android:icon="@drawable/ic_label_outline_black_24dp"
                     android:visible="false"/>
                 <item android:id="@+id/nav_user2"
-                    android:title="@string/nav_2"
+                    android:title="@string/nav_following"
                     android:icon="@drawable/ic_label_outline_black_24dp"
                     android:visible="false"/>
                 <item android:id="@+id/nav_user3"
-                    android:title="@string/nav_2"
+                    android:title="@string/nav_following"
                     android:icon="@drawable/ic_label_outline_black_24dp"
                     android:visible="false"/>
                 <item android:id="@+id/nav_user4"
-                    android:title="@string/nav_2"
+                    android:title="@string/nav_following"
                     android:icon="@drawable/ic_label_outline_black_24dp"
                     android:visible="false"/>
                 <item android:id="@+id/nav_user5"
-                    android:title="@string/nav_2"
+                    android:title="@string/nav_following"
                     android:icon="@drawable/ic_label_outline_black_24dp"
                     android:visible="false"/>
                 <item android:id="@+id/nav_user_more"
@@ -59,12 +59,7 @@
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings_black_36dp"
-            android:title="@string/setting"/>
+            android:title="@string/setting_activity_title"/>
    </group>
-
-    <item android:title="@string/allTags">
-        <menu>
-        </menu>
-    </item>
 
 </menu>

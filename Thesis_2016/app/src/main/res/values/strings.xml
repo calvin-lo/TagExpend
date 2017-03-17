@@ -2,103 +2,145 @@
 
     <!-- Main -->
     <string name="app_name">My Money Tag</string>
-    <string name="fragment1">Home</string>
-    <string name="fragment2">Tag Cloud</string>
-    <string name="fragment3">Chart</string>
-    <string name="fragment4">Following</string>
-    <string name="fragment_tag1">List</string>
-    <string name="fragment_tag2">Trend</string>
-    <string name="tagActivity">Tag</string>
     <string name="action_search">Search</string>
 
+    <!-- Icon -->
+    <string name="icon_location">\u27B4</string>
+    <string name="icon_general">\u2606</string>
+    <string name="icon_dollar">\u0024</string>
+    <string name="icon_category">\u238A</string>
+    <string name="icon_at">\u0040</string>
+    <string name="icon_all">*</string>
 
-    <string name="save">Save</string>
-    <string name="delete">Delete</string>
-    <string name="setting">Setting</string>
-    <string name="transDB">transDB</string>
-    <string name="tagDB">tagCloudDB</string>
-    <string name="errorFormat">Incorrect Format!</string>
-    <string name="total">Total</string>
-    <string name="byDash">By #</string>
-    <string name="byAt">By @</string>
-    <string name="at">at</string>
-    <string name="dollar">dollar</string>
-    <string name="hashtag">hashtag</string>
-    <string name="twitter">twitter</string>
+    <!-- Home Fragment -->
+    <string name="home_frag_title">Home</string>
 
+    <!-- Tag Cloud Fragment -->
+    <string name="tag_cloud_frag_title">Tag Cloud</string>
 
-    <string name="locationIcon">\u27B4</string>
-    <string name="generalIcon">\u2606</string>
-    <string name="dollarIcon">\u0024</string>
-    <string name="categoryIcon">\u238A</string>
+    <!-- Chart Fragment -->
+    <string name="chart_frag_title">Chart</string>
 
-    <string name="tags">Tags</string>
-
-    <!-- Form -->
+    <!-- Main Activity -->
+    <string name="main_subtitle_trans">transactions</string>
+    <string name="main_subtitle_tags">tags</string>
+    <!-- Form Activity -->
     <string name="form_defaultMsg">What\'s your transaction?</string>
     <string name="form_hint">\u2606: general tag \n \u27B4: location tag \n \u0024: amount \n \u238A: category tag</string>
+    <string name="form_error_format">Incorrect Format!</string>
 
+    <!-- Explore Activity -->
+    <string name="explore_activity_title">Explore</string>
+    <string name="explore_frag_title_search">Search</string>
+    <string name="explore_frag_title_following">Following</string>
+    <string name="explore_button_pull">Pull</string>
+    <string name="explore_button_refresh">Refresh</string>
 
-    <!-- Tag Cloud -->
-    <string name="detail"><b>. . .</b></string>
-    <string name="sampleDate">XXX, XXX X, XXXX</string>
-    <string name="sampleTime">XX:XX XX</string>
-    <string name="sampleAmount">X XX.XX</string>
+    <!-- Tag Activity -->
+    <string name="tag_activity_title">Tag</string>
+    <string name="tag_frag_title_list">List</string>
+    <string name="tag_frag_title_trend">Trend</string>
+    <string name="tag_frag_trend_label">Amount</string>
 
-    <!-- Tag Cloud -->
-    <string name="tagCloud">Tag Cloud</string>
+    <!-- Setting Activity -->
+    <string name="setting_activity_title">Setting</string>
 
-    <!-- Chart -->
-    <string name="chartTitle">Chart</string>
-    <string name="trendTitle">Trend</string>
-
-    <!-- Main List View -->
-    <string name="addLabel">Click here to add a new transaction.</string>
+    <!-- Search -->
+    <string name="search_hint_tag">Search tag</string>
 
     <!-- Drawer -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <!-- Drawer -->
-    <string name="nav_1">Your</string>
-    <string name="nav_2">Following</string>
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
+    <string name="nav_local">Local</string>
+    <string name="nav_following">Following</string>
     <string name="nav_more">More</string>
-    <string name="nav_home">Home</string>
-    <string name="nav_tag">Tag Cloud</string>
-    <string name="nav_chart">Chart</string>
     <string name="nav_explore">Explore</string>
     <string name="nav_all">All</string>
 
     <!-- Dialog -->
-    <string name="dialog_message">Follow</string>
-    <string name="dialog_title">Select a name</string>
-    <string name="dialog_updateUser">Enter your name</string>
+    <string name="dialog_title_select_follow">Select a name</string>
+    <string name="dialog_title_update_name">Enter your name</string>
     <string name="dialog_okay">Okay</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_success">Update successfully!</string>
+    <string name="dialog_title_color">Select your color</string>
 
     <!-- Default -->
-    <string name="default_user">local</string>
-
-    <!-- Button -->
-    <string name="pullData">Pull</string>
-
-    <!-- Color -->
-    <string name="color_title">Select your color:</string>
+    <string name="user_default">local</string>
 
     <!-- Twitter -->
-    <string name="twitter_not_login_msg">No twitter account connected!</string>
-    <string name="twitter_disconnected_msg">Twitter disconnected!</string>
-    <string name="twitter_connected_msg">Twitter connected!</string>
-    <string name="twitter_connect_fail_msg">Twitter connect fail!</string>
-    <string name="twitter_no_session_msg">No active twitter session!</string>
+    <string name="twitter_key">PvpXWnRXyy9ggCnhsh26aGOLc</string>
+    <string name="twitter_secret">VX0q8UBgeIiT4UT5fzygdfq49xiwWzTOoL0wKxZaGs0sg7Qjfy</string>
+    <string name="twitter_msg_not_login">No twitter account connected!</string>
+    <string name="twitter_msg_disconnected">Twitter disconnected!</string>
+    <string name="twitter_msg_connected">Twitter connected!</string>
+    <string name="twitter_msg_connect_fail">Twitter connect fail!</string>
+    <string name="twitter_msg_no_session">No active twitter session!</string>
     <string name="twitter_hint_search">Search twitter user</string>
     <string name="twitter_status_connected">Connected</string>
     <string name="twitter_status_disconnected">Disconnected</string>
-
-    <!-- Setting -->
+    <string name="twitter_tail">- #MyMoneyTag</string>
 
     <!-- Follow -->
     <string name="follow_msg_pull_success">Pull successfully!</string>
 
+    <!-- Time Ago -->
+    <string name="time_just_now">just now</string>
+    <string name="time_a_minute_ago">a minute ago</string>
+    <string name="time_minutes_ago">minutes ago</string>
+    <string name="time_an_hour_ago">an hour ago</string>
+    <string name="time_hours_ago">hours ago</string>
+    <string name="time_yesterday">yesterday</string>
+    <string name="time_days_ago">days ago</string>
+
+    <!-- Internal -->
+    <!-- Tag DB -->
+    <string name="db_trans">transDB</string>
+    <string name="db_tag">tagCloudDB</string>
+    <string name="db_user">userDB</string>
+
+    <!-- Button Layout -->
+    <string name="button_save">Save</string>
+    <string name="button_twitter">twitter</string>
+
+    <!-- SharedPreferences -->
+    <string name="shared_pref_name_user">USER</string>
+    <string name="shared_pref_name_main">MAIN</string>
+    <string name="shared_pref_arg_username">username</string>
+    <string name="shared_pref_arg_default_display_name">defaultUsername</string>
+    <string name="shared_pref_arg_follow_user">followUsername</string>
+    <string name="shared_pref_arg_selected_pos">selectedPosition</string>
+    <string name="shared_pref_arg_auto_post">autoPost</string>
+    <string name="shared_pref_arg_twitter_connected">twitterConnected</string>
+
+    <!-- Intent -->
+    <string name="intent_extra_id">ID</string>
+    <string name="intent_extra_original_msg">original</string>
+    <string name="intent_extra_trans">trans</string>
+    <string name="intent_extra_tag">tag</string>
+    <string name="intent_extra_color">color</string>
+    <!-- Pattern -->
+    <string name="pattern_date_twitter">EEE MMM dd HH:mm:ss ZZZZZ yyyy</string>
+    <string name="pattern_date_app">dd/MM/yyyy HH:mm:ss</string>
+
+    <!-- Helper -->
+    <string name="helper_image_path_start">/Android/data/</string>
+    <string name="helper_image_path_end">/ProfileImage</string>
+    <string name="helper_image_name_start">PI_</string>
+    <string name="helper_image_name_end">.jpg</string>
+
+
+    <!-- Month -->
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
 </resources>

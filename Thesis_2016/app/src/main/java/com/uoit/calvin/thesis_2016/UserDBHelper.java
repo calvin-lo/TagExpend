@@ -6,13 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
-
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class UserDBHelper extends SQLiteOpenHelper {
@@ -121,9 +115,9 @@ public class UserDBHelper extends SQLiteOpenHelper {
         return userList;
     }
 
-    User getUserNyUsername(String username) {
+    User getUserByUsername(String username) {
 
-        User user = new User();
+        User user;
 
         String selectQuery = "SELECT  * FROM " + TABLE_NAME;
 
@@ -140,7 +134,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        return user;
+        return null;
     }
 
     private User getUser(Cursor cursor) {

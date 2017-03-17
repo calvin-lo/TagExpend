@@ -26,13 +26,13 @@ public class TimeAgo {
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
 
-    public String getTimeAgo(long time, Context ctx) {
+    public String getTimeAgo(long time, Context context) {
         if (time < 1000000000000L) {
             // if timestamp given in seconds, convert to millis
             time *= 1000;
         }
 
-        Helper helper = new Helper(ctx);
+        Helper helper = new Helper(context);
         long now = helper.parseDate(helper.getCurrentTime());
         if (time > now || time <= 0) {
             return null;
@@ -40,19 +40,19 @@ public class TimeAgo {
 
         final long diff = now - time;
         if (diff < MINUTE_MILLIS) {
-            return "just now";
+            return context.getString(R.string.time_just_now);
         } else if (diff < 2 * MINUTE_MILLIS) {
-            return "a minute ago";
+            return context.getString(R.string.time_a_minute_ago);
         } else if (diff < 50 * MINUTE_MILLIS) {
-            return diff / MINUTE_MILLIS + " minutes ago";
+            return diff / MINUTE_MILLIS + " " + context.getString(R.string.time_minutes_ago);
         } else if (diff < 90 * MINUTE_MILLIS) {
-            return "an hour ago";
+            return context.getString(R.string.time_an_hour_ago);
         } else if (diff < 24 * HOUR_MILLIS) {
-            return diff / HOUR_MILLIS + " hours ago";
+            return diff / HOUR_MILLIS + " " + context.getString(R.string.time_hours_ago);
         } else if (diff < 48 * HOUR_MILLIS) {
-            return "yesterday";
+            return context.getString(R.string.time_yesterday);
         } else {
-            return diff / DAY_MILLIS + " days ago";
+            return diff / DAY_MILLIS + " " + context.getString(R.string.time_days_ago);
         }
     }
 

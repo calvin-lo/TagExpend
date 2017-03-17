@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +28,9 @@ public class FragmentChart extends Fragment{
     private static final int MARGIN = 1080;
     private String GENERAL_ICON;
     private String LOCATION_ICON;
-    private String DOLLAR_ICON;
     private String CATEGORY_ICON;
 
-    private Spinner typeSpinner;
+    private Spinner spinner_type;
     private String username;
 
     public FragmentChart() {
@@ -42,24 +40,23 @@ public class FragmentChart extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v =  inflater.inflate(R.layout.fragment_chart, container, false);
 
-        GENERAL_ICON = v.getResources().getString(R.string.generalIcon);
-        LOCATION_ICON = v.getResources().getString(R.string.locationIcon);
-        DOLLAR_ICON = v.getResources().getString(R.string.dollarIcon);
-        CATEGORY_ICON = v.getResources().getString(R.string.categoryIcon);
+        GENERAL_ICON = v.getResources().getString(R.string.icon_general);
+        LOCATION_ICON = v.getResources().getString(R.string.icon_location);
+        CATEGORY_ICON = v.getResources().getString(R.string.icon_category);
 
 
-        SharedPreferences sharedpreferences = getActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
-        username = sharedpreferences.getString("username", null);
+        SharedPreferences sharedpreferences = getActivity().getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
+        username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), getString(R.string.user_default));
 
-        typeSpinner = (Spinner) v.findViewById(R.id.typeSpinner);
+        spinner_type = (Spinner) v.findViewById(R.id.chart_spinner_type);
         setTypeSpinner();
 
         return v;
@@ -67,11 +64,11 @@ public class FragmentChart extends Fragment{
 
     public void displayChart(String type) {
 
-        LinearLayout linearLayout = (LinearLayout) v.findViewById(R.id.chartLayout);
-        linearLayout.removeAllViews();
+        LinearLayout layout_chart = (LinearLayout) v.findViewById(R.id.chart_layout_chart);
+        layout_chart.removeAllViews();
         TagDBHelper tagDBHelper = new TagDBHelper(v.getContext());
 
-        PieChart chart = new PieChart(v.getContext());
+        PieChart pieChart = new PieChart(v.getContext());
         List<Tag> tagList = tagDBHelper.getTagsList(type, username);
 
         ArrayList<PieEntry> entries = new ArrayList<>();
@@ -82,27 +79,27 @@ public class FragmentChart extends Fragment{
             }
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
+        PieDataSet pieDataSet = new PieDataSet(entries, "");
+        pieDataSet.setColors(ColorTemplate.JOYFUL_COLORS);
 
-        PieData data = new PieData(dataSet);
-        data.setDrawValues(false);
-        chart.setDrawHoleEnabled(false);
-        chart.setData(data);
-        chart.getDescription().setEnabled(false);
-        linearLayout.addView(chart, MARGIN, MARGIN);
+        PieData pieData = new PieData(pieDataSet);
+        pieData.setDrawValues(false);
+        pieChart.setDrawHoleEnabled(false);
+        pieChart.setData(pieData);
+        pieChart.getDescription().setEnabled(false);
+        layout_chart.addView(pieChart, MARGIN, MARGIN);
 
         tagDBHelper.close();
     }
 
     public void setTypeSpinner() {
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_layout, getResources().getStringArray(R.array.type));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.type));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (typeSpinner != null) {
-            typeSpinner.setAdapter(adapter);
+        if (spinner_type != null) {
+            spinner_type.setAdapter(adapter);
 
-            typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            spinner_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                     switch (position) {

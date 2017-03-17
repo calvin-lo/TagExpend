@@ -4,27 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class SolventViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    public TextView textView;
+    public TextView tv_title;
     private Context context;
 
-    public SolventViewHolders(Context context,View itemView) {
-        super(itemView);
-        itemView.setOnClickListener(this);
-        textView = (TextView) itemView.findViewById(R.id.country_name);
+    public SolventViewHolders(Context context,View v) {
+        super(v);
+        v.setOnClickListener(this);
+        tv_title = (TextView) v.findViewById(R.id.solvent_tv_title);
         this.context = context;
     }
 
     @Override
-    public void onClick(View view) {
-        String tag = textView.getText().toString();
+    public void onClick(View v) {
+        String tag = tv_title.getText().toString();
         Intent intent = new Intent(context, TagActivity.class);
-        intent.putExtra("tag", tag);
+        intent.putExtra(context.getString(R.string.intent_extra_tag), tag);
         context.startActivity(intent);
     }
 }

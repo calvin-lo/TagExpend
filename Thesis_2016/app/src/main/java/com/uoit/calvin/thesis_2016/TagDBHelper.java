@@ -16,7 +16,7 @@ class TagDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "tagCloudDB";
     private static final String TABLE_NAME = "tagCloud";
 
-    private static  final String KEY_ID = "id";
+    private static final String KEY_ID = "id";
     private static final String KEY_TAG = "tag";
     private static final String KEY_AMOUNT = "amount";
     private static final String KEY_TYPE = "type";
@@ -202,7 +202,7 @@ class TagDBHelper extends SQLiteOpenHelper {
 
     public Tag getTag(Cursor cursor) {
         Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-        User user = new UserDBHelper(context).getUserNyUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+        User user = new UserDBHelper(context).getUserByUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
         tag.setUser(user);
         return tag;
     }
