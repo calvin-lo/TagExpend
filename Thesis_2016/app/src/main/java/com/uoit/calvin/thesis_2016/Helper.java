@@ -2,17 +2,24 @@ package com.uoit.calvin.thesis_2016;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ListAdapter;
+import android.widget.Toast;
+
+import com.twitter.sdk.android.core.models.Tweet;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,9 +33,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 
 class Helper implements ImageListener{
 
@@ -55,58 +64,24 @@ class Helper implements ImageListener{
         String parsedTags[] =  message.split(format);
         float amount = 0;
 
-        for (int i = 1; i < parsedTags.length; i++) {
-            if (parsedTags[i].substring(0,1).equals(DOLLAR_ICON)) {
-                amount = amount + Float.parseFloat(parsedTags[i].substring(1, parsedTags[i].length()));
+        for (String s : parsedTags) {
+            if (s.trim().length() > 0) {
+                if (s.substring(0, 1).equals(DOLLAR_ICON)) {
+                    amount = amount + Float.parseFloat(s.substring(1, s.length()));
+                }
             }
         }
-
-        for (int i = 1; i < parsedTags.length; i++) {
-            if (parsedTags[i].substring(0,1).equals(GENERAL_ICON) && parsedTags[i].length()>1) {
-                tags.add(new Tag(parsedTags[i].substring(1,parsedTags[i].length()), GENERAL_ICON, amount));
-            }
-            if (parsedTags[i].substring(0,1).equals(LOCATION_ICON) && parsedTags[i].length()>1 ) {
-                tags.add(new Tag(parsedTags[i].substring(1,parsedTags[i].length()), LOCATION_ICON, amount));
-            }
-            if (parsedTags[i].substring(0,1).equals(CATEGORY_ICON) && parsedTags[i].length()>1) {
-                tags.add(new Tag(parsedTags[i].substring(1, parsedTags[i].length()), CATEGORY_ICON, amount));
-            }
-
-        }
-
-        return tags;
-    }
-
-    List<Tag> parseTag(String message, String username) {
-        List<Tag> tags = new ArrayList<>();
-        message = message.replace(" ", "");
-        String parsedTags[] =  message.split(format);
-        float amount = 0;
-
-        for (int i = 1; i < parsedTags.length; i++) {
-            if (parsedTags[i].substring(0,1).equals(DOLLAR_ICON)) {
-                amount = amount + Float.parseFloat(parsedTags[i].substring(1, parsedTags[i].length()));
-            }
-        }
-
-        UserDBHelper userDBHelper = new UserDBHelper(context);
-        User user = userDBHelper.getUserByUsername(username);
-
-        for (int i = 1; i < parsedTags.length; i++) {
-            if (parsedTags[i].substring(0,1).equals(GENERAL_ICON)  && parsedTags[i].length()>1 ) {
-                Tag t = new Tag(parsedTags[i].substring(1,parsedTags[i].length()), GENERAL_ICON, amount);
-                //t.setUser(user);
-                tags.add(t);
-            }
-            if (parsedTags[i].substring(0,1).equals(LOCATION_ICON) && parsedTags[i].length()>1) {
-                Tag t = new Tag(parsedTags[i].substring(1,parsedTags[i].length()), LOCATION_ICON, amount);
-                //t.setUser(user);
-                tags.add(t);
-            }
-            if (parsedTags[i].substring(0,1).equals(CATEGORY_ICON) && parsedTags[i].length()>1) {
-                Tag t = new Tag(parsedTags[i].substring(1, parsedTags[i].length()), CATEGORY_ICON, amount);
-                //t.setUser(user);
-                tags.add(t);
+        for (String s : parsedTags) {
+            if (s.trim().length() > 0) {
+                if (s.substring(0, 1).equals(GENERAL_ICON) && s.length() > 1) {
+                    tags.add(new Tag(s.substring(1,s.length()), GENERAL_ICON, amount));
+                }
+                if (s.substring(0, 1).equals(LOCATION_ICON) && s.length() > 1) {
+                    tags.add(new Tag(s.substring(1, s.length()), LOCATION_ICON, amount));
+                }
+                if (s.substring(0, 1).equals(CATEGORY_ICON) && s.length() > 1) {
+                    tags.add(new Tag(s.substring(1, s.length()), CATEGORY_ICON, amount));
+                }
             }
 
         }
@@ -217,30 +192,55 @@ class Helper implements ImageListener{
     }
 
     int parseMonthToInt(String month) {
+        month = month.toLowerCase();
         switch (month) {
-            case ("January"):
+            case ("january"):
                 return 1;
-            case ("February"):
+            case ("february"):
                 return 2;
-            case ("March"):
+            case ("march"):
                 return 3;
-            case ("April"):
+            case ("april"):
                 return 4;
-            case ("May"):
+            case ("may"):
                 return 5;
-            case ("June"):
+            case ("june"):
                 return 6;
-            case ("July"):
+            case ("july"):
                 return 7;
-            case ("August"):
+            case ("august"):
                 return 8;
-            case ("September"):
+            case ("september"):
                 return 9;
-            case ("October"):
+            case ("october"):
                 return 10;
-            case ("November"):
+            case ("november"):
                 return 11;
-            case ("December"):
+            case ("december"):
+                return 12;
+            case ("jan"):
+                return 1;
+            case ("feb"):
+                return 2;
+            case ("mar"):
+                return 3;
+            case ("apr"):
+                return 4;
+            case ("jun"):
+                return 6;
+            case ("jul"):
+                return 7;
+            case ("aug"):
+                return 8;
+            case ("sept"):
+                return 9;
+            case ("sep"):
+                return 9;
+            case ("oct"):
+                return 10;
+            case ("nov"):
+                return 11;
+            case ("dec"):
                 return 12;
             case ("All"):
                 return -1;
@@ -249,6 +249,40 @@ class Helper implements ImageListener{
         }
     }
 
+    String parseMonthToString(int month) {
+        switch (month) {
+            case 1:
+                return "Jan";
+            case 2:
+                return "Feb";
+            case 3:
+                return "Mar";
+            case 4:
+                return "Apr";
+            case 5:
+                return "May";
+            case 6:
+                return "Jun";
+            case 7:
+                return "Jul";
+            case 8:
+                return "Aug";
+            case 9:
+                return "Sep";
+            case 10:
+                return "Oct";
+            case 11:
+                return "Nov";
+            case 12:
+                return "Dec";
+            default:
+                return "Jan";
+
+
+        }
+    }
+
+    /** Set SharedPreferences **/
     public void setUser(String username) {
         SharedPreferences sharedpreferences;
         sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
@@ -281,6 +315,26 @@ class Helper implements ImageListener{
         editor.apply();
     }
 
+    void setPerfencesYear(int year) {
+        SharedPreferences sharedpreferences;
+        sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt(context.getString(R.string.shared_pref_arg_year), year);
+        editor.apply();
+    }
+
+    void setPerfencesMonth(int month) {
+        SharedPreferences sharedpreferences;
+        sharedpreferences = this.context.getSharedPreferences(context.getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt(context.getString(R.string.shared_pref_arg_month), month);
+        editor.apply();
+    }
+
+
+
+
+    /** Color **/
     int[] getMaterialColor() {
         int my_colors[] = {ContextCompat.getColor(context, R.color.red),
                 ContextCompat.getColor(context, R.color.pink),
@@ -331,6 +385,8 @@ class Helper implements ImageListener{
         return my_colors;
     }
 
+
+    /** Image Process **/
     private Bitmap resizeProfileSize(Drawable image) {
         Bitmap b = ((BitmapDrawable)image).getBitmap();
         return Bitmap.createScaledBitmap(b, 120, 120, false);
@@ -449,6 +505,9 @@ class Helper implements ImageListener{
 
     }
 
+
+
+    /** Transaction **/
     void deleteTrans(long id, String username) {
         TransactionDBHelper transDB = new TransactionDBHelper(context.getApplicationContext());
         SharedPreferences sharedpreferences = context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
@@ -457,7 +516,7 @@ class Helper implements ImageListener{
                 context.getResources().getString(R.string.user_default));
 
         Helper helper = new Helper(context);
-        List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, username).getMessage(), username);
+        List<Tag> tagList = helper.parseTag(transDB.getTransByID(id, username).getMessage());
         transDB.deleteTransactions(id);
 
 
@@ -468,20 +527,21 @@ class Helper implements ImageListener{
             tagDB.updateTag(t);
         }
 
+        transDB.close();
         tagDB.close();
     }
 
-    void displayTransList(View v, Activity activity) {
+    void displayTransList(View v, Activity activity, int year, int month) {
 
         TransactionDBHelper transDB = new TransactionDBHelper(context);
         SharedPreferences sharedpreferences = context.getSharedPreferences(context.getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
         String username = sharedpreferences.getString(context.getString(R.string.shared_pref_arg_username), null);
-        ArrayList<Transaction> transList = new ArrayList<>(transDB.getAllData(username));
+        ArrayList<Transaction> transList = new ArrayList<>(transDB.getTransByTime(year, month, username));
         Collections.sort(transList);
         Collections.reverse(transList);
+        ExpandableListView lv_transactions = (ExpandableListView) v.findViewById(R.id.transactionList);
         if (transList.size() > 0) {
             MainExpandableListAdapter listAdapter;
-            ExpandableListView lv_transactions = (ExpandableListView) v.findViewById(R.id.transactionList);
             listAdapter = new MainExpandableListAdapter(context, activity, transList, username);
 
             lv_transactions.setAdapter(listAdapter);
@@ -499,5 +559,102 @@ class Helper implements ImageListener{
         editor.apply();
     }
 
+    public void pullTweetsData(List<Tweet> tweets, boolean clear) {
+
+        if (tweets != null) {
+            if (tweets.size() > 0) {
+
+
+                Collections.sort(tweets, new Comparator<Tweet>() {
+                    @Override
+                    public int compare(Tweet t1, Tweet t2) {
+                        return t1.getId()<t2.getId()?-1:
+                                t1.getId()>t2.getId()?1:0;
+                    }
+                });
+
+
+                TransactionDBHelper transactionDBHelper = new TransactionDBHelper(context);
+                TagDBHelper tagDBHelper = new TagDBHelper(context);
+                UserDBHelper userDBHelper = new UserDBHelper(context);
+                if (clear) {
+                    transactionDBHelper.clearUser(tweets.get(0).user.screenName);
+                    tagDBHelper.clearUser(tweets.get(0).user.screenName);
+                }
+
+
+                int color[] = this.getMaterialColor();
+                int randomNum = ThreadLocalRandom.current().nextInt(0, color.length);
+                int selectedColor = color[randomNum];
+                for (Tweet t : tweets) {
+
+                    String message = t.text.replace(context.getString(R.string.twitter_tail), "");
+
+                    User user = new User(context, t.user.name, t.user.screenName);
+                    user.setProfileImageUrl(t.user.profileImageUrl);
+                    user.setProfileImage(-1);
+                    user.setSinceID(t.getId());
+
+                    userDBHelper.addUser(user);
+
+                    Transaction trans = new Transaction(context);
+                    trans.setMessage(message);
+                    trans.setTags(this.parseTag(message));
+                    trans.setGeneral(this.parseGeneral(message));
+                    trans.setLocation(this.parseLocation(message));
+                    trans.setCategory(this.parseCategory(message));
+                    String pattern = context.getString(R.string.pattern_date_twitter);
+                    SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CANADA);
+                    String time = this.getCurrentTime();
+                    trans.setColor(selectedColor);
+                    try {
+                        Date date = format.parse(t.createdAt);
+                        DateFormat dateFormat = new SimpleDateFormat(context.getString(R.string.pattern_date_app), Locale.CANADA);
+                        time = dateFormat.format(date);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    trans.setTimestamp(time);
+                    trans.setUser(user);
+                    trans.setAmount(this.getAmount(message));
+                    transactionDBHelper.addTransactions(trans);
+
+                    // add the tag to tag cloud
+                    for (Tag tag : trans.getTagsList()) {
+                        tag.setUser(user);
+                        tag.setColor(ContextCompat.getColor(context, R.color.accent));
+                        tagDBHelper.addTag(tag);
+                    }
+
+                    Toast.makeText(context, context.getString(R.string.follow_msg_pull_success), Toast.LENGTH_SHORT).show();
+                }
+
+                transactionDBHelper.close();
+                tagDBHelper.close();
+                userDBHelper.close();
+            }
+        }
+    }
+
+    public int lighter(int color, float factor) {
+        int red = (int) ((Color.red(color) * (1 - factor) / 255 + factor) * 255);
+        int green = (int) ((Color.green(color) * (1 - factor) / 255 + factor) * 255);
+        int blue = (int) ((Color.blue(color) * (1 - factor) / 255 + factor) * 255);
+        return Color.argb(Color.alpha(color), red, green, blue);
+    }
+
+    public void unfollow(String username) {
+        UserDBHelper userDBHelper = new UserDBHelper(context);
+        TransactionDBHelper transactionDBHelper = new TransactionDBHelper(context);
+        TagDBHelper tagDBHelper = new TagDBHelper(context);
+        if (!(username.equals(context.getString(R.string.user_default))) || !(username.equals(context.getString(R.string.icon_all)))) {
+            userDBHelper.deleteTUser(username);
+            transactionDBHelper.clearUser(username);
+            tagDBHelper.clearUser(username);
+        }
+        Intent intent = new Intent(context,MainActivity.class);
+        context.startActivity(intent);
+        userDBHelper.close();
+    }
 
 }

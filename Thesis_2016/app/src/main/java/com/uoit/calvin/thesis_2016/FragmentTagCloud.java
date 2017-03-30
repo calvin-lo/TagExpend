@@ -41,7 +41,13 @@ public class FragmentTagCloud extends Fragment{
         StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
         recyclerView.setLayoutManager(GridLayoutManager);
 
-        List<Tag> tagList = new TagDBHelper(getContext()).getTagsList(getString(R.string.icon_all), username);
+        //TagDBHelper tagDBHelper = new TagDBHelper(getContext());
+        TransactionDBHelper transactionDBHelper = new TransactionDBHelper(getContext());
+
+        int year = ((MainActivity)getActivity()).getYear();
+        int month = (((MainActivity)getActivity()).getMonth());
+        List<Tag> tagList = transactionDBHelper.getTransTagsByTime(year, month, username);
+        transactionDBHelper.close();
 
         SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(getContext(), tagList);
         recyclerView.setAdapter(rcAdapter);

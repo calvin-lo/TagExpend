@@ -52,7 +52,7 @@ class SettingCustomAdapter extends BaseAdapter {
                 if (position == 1) {
                     CheckBox cb_auto_post = (CheckBox) row.findViewById(R.id.setting_row_cb_auto_post);
                     cb_auto_post.setVisibility(View.VISIBLE);
-                    cb_auto_post.setChecked(sharedPreferences.getBoolean(context.getString(R.string.shared_pref_arg_twitter_connected), false));
+                    cb_auto_post.setChecked(sharedPreferences.getBoolean(context.getString(R.string.shared_pref_arg_auto_post), false));
                     cb_auto_post.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

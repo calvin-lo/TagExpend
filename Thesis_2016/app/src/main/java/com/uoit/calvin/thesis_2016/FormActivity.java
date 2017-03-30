@@ -110,6 +110,8 @@ public class FormActivity extends AppCompatActivity{
                 ib_twitter.setVisibility(View.GONE);
             }
         }
+
+        tagDBHelper.close();
     }
 
     public void clickSymbol(String type) {

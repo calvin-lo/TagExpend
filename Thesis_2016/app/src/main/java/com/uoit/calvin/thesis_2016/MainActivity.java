@@ -1,10 +1,12 @@
 package com.uoit.calvin.thesis_2016;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,6 +20,15 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 
 import android.text.InputType;
@@ -38,13 +49,16 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener, android.widget.PopupMenu.OnMenuItemClickListener{
 
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
     private static final String TWITTER_KEY = "PvpXWnRXyy9ggCnhsh26aGOLc";
@@ -60,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     private Helper helper;
     NavigationView navigationView;
     SharedPreferences sharedpreferences;
+    SharedPreferences mainSharedpreferences;
     private List<MenuItem> items;
 
     private Context context;
@@ -69,16 +84,30 @@ public class MainActivity extends AppCompatActivity
     private static final int RESULT_OK = 1;
     private static final int SAVING_DATA = 1;
 
+    int tag_count;
+    int trans_count;
+
+    private ActionBarDrawerToggle toggle;
+
+    Menu menu;
+
+    int frag_position;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        //deleteDatabase("transDB");
+        //deleteDatabase("tagCloudDB");
+        //deleteDatabase("userDB");
+
         helper = new Helper(this);
         this.context = this;
+        frag_position = 0;
 
         sharedpreferences = getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
-
-        setLocalUser();
+        mainSharedpreferences = getSharedPreferences(getString(R.string.shared_pref_name_main), Context.MODE_PRIVATE);
 
         if (sharedpreferences.getString(getString(R.string.shared_pref_arg_username), null) == null) {
             helper.setUser(getString(R.string.user_default));
@@ -88,24 +117,32 @@ public class MainActivity extends AppCompatActivity
             helper.setDefaultDisplayName(getString(R.string.user_default));
         }
 
+        setLocalUser();
+
 
         int pos = sharedpreferences.getInt(getString(R.string.shared_pref_arg_selected_pos), 0);
         helper.setSelectedPosition(pos);
+
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
 
-
-        //deleteDatabase("transDB");
-        //deleteDatabase("tagCloudDB");
-        //deleteDatabase("userDB");
+        updateCount();
 
         // Set up the action bar
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
-        toolbar.setTitle(getResources().getString(R.string.home_frag_title));
+        if (toolbar != null) {
+            toolbar.setTitle(getResources().getString(R.string.home_frag_title));
+            toolbar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    titleMenu(v);
+                }
+            });
+        }
 
         // Set up the drawer
         setupDrawer();
@@ -159,13 +196,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        tv_search = (MultiAutoCompleteTextView) findViewById(R.id.main_search);
-        setupDrawer();
-        setupViewPager();
-        setLocalUser();
-        navigationView.getMenu().findItem(R.id.nav_setting).setChecked(false);
-        adapter.notifyDataSetChanged();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout_drawer);
+        tv_search = (MultiAutoCompleteTextView) findViewById(R.id.main_search);
         if (drawer != null) {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawer(GravityCompat.START);
@@ -175,14 +207,20 @@ public class MainActivity extends AppCompatActivity
                 super.onBackPressed();
             }
         }
+        setupDrawer();
+        setupViewPager();
+        setLocalUser();
+        navigationView.getMenu().findItem(R.id.nav_setting).setChecked(false);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onResume() {
-        adapter.notifyDataSetChanged();
         setupDrawer();
         setupViewPager();
         setLocalUser();
+        navigationView.getMenu().findItem(R.id.nav_setting).setChecked(false);
+        adapter.notifyDataSetChanged();
         super.onResume();
     }
 
@@ -192,7 +230,6 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
         final int position = items.indexOf(item);
-
         if (id == R.id.nav_all) {
             helper.setUser(getString(R.string.icon_all));
             helper.setSelectedPosition(position);
@@ -223,6 +260,7 @@ public class MainActivity extends AppCompatActivity
                     });
             AlertDialog dialog = builder.create();
             dialog.show();
+            transactionDBHelper.close();
         }
         else if (id == R.id.nav_user1) {
             helper.setUser(item.getTitle().toString());
@@ -265,6 +303,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         setToolbar();
+        updateCount();
+        setToggle();
 
         return true;
     }
@@ -279,49 +319,31 @@ public class MainActivity extends AppCompatActivity
         viewPager.setPagingEnabled(true);
 
         setToolbar();
+        updateCount();
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
 
             @Override
             public void onPageSelected(int position) {
-                String username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), getString(R.string.user_default));
+                frag_position = position;
+                toolbar.setSubtitle(""); //
+                //updateCount();
+                String s = "";
                 switch (position) {
                     case 0:
-                        if (username.equals(getString(R.string.icon_all))) {
-                            toolbar.setTitle(getResources().getString(R.string.home_frag_title));
-                        } else {
-                            setToolbar();
-                            TransactionDBHelper transactionDBHelper = new TransactionDBHelper(getApplicationContext());
-                            int count = transactionDBHelper.getAllData(username).size();
-                            String s = count + " " + getString(R.string.main_subtitle_trans);
-                            toolbar.setSubtitle(s);
-                        }
+                        s = trans_count + " " + getString(R.string.main_subtitle_trans);
                         break;
                     case 1:
-                        if (username.equals(getString(R.string.icon_all))) {
-                            toolbar.setTitle(getResources().getString(R.string.tag_cloud_frag_title));
-                        } else {
-                            setToolbar();
-                            TagDBHelper tagDBHelper = new TagDBHelper(getApplicationContext());
-                            int count = tagDBHelper.getTagsList(getString(R.string.icon_all), username).size();
-                            String s = count + " " + getString(R.string.main_subtitle_tags);
-                            toolbar.setSubtitle(s);
-                        }
+                        s = tag_count + " " + getString(R.string.main_subtitle_tags);
                         break;
                     case 2:
-                        if (username.equals(getString(R.string.icon_all))) {
-                            toolbar.setTitle(getResources().getString(R.string.chart_frag_title));
-                        } else {
-                            setToolbar();
-                            TagDBHelper tagDBHelper = new TagDBHelper(getApplicationContext());
-                            int count = tagDBHelper.getTagsList(getString(R.string.icon_all), username).size();
-                            String s = count + " " + getString(R.string.main_subtitle_tags);
-                            toolbar.setSubtitle(s);
-                        }
+                        s = tag_count + " " + getString(R.string.main_subtitle_tags);
                         break;
                 }
+                toolbar.setSubtitle(s);
             }
 
             @Override
@@ -355,10 +377,11 @@ public class MainActivity extends AppCompatActivity
     /** Set up Drawer */
     public void setupDrawer() {
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout_drawer);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
-        toggle.setDrawerIndicatorEnabled(false);
-        toggle.setHomeAsUpIndicator(helper.resizeDrawble(getDrawable(R.mipmap.ic_launcher),80,80));
+        UserDBHelper userDBHelper =  new UserDBHelper(this);
+        //toggle.setDrawerIndicatorEnabled(false);
+        setToggle();
         toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -388,9 +411,6 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
-
-
-        UserDBHelper userDBHelper = new UserDBHelper(this);
 
         List<User> usersList = userDBHelper.getAllUser();
         List<String> usersStrList = new ArrayList<>();
@@ -422,14 +442,44 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        userDBHelper.close();
+    }
+
+    public void setToggle() {
+        String username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), getString(R.string.user_default));
+        if (username.equals(getString(R.string.icon_all))) {
+            toggle.setDrawerIndicatorEnabled(true);
+            toggle.setHomeAsUpIndicator(helper.resizeDrawble(getDrawable(R.mipmap.ic_launcher), 80,80));
+        } else {
+            toggle.setDrawerIndicatorEnabled(false);
+            UserDBHelper userDBHelper = new UserDBHelper(this);
+            Helper helper = new Helper(this);
+            User toggle_user = userDBHelper.getUserByUsername(username);
+            Bitmap pi = helper.loadImageFromStorage(toggle_user);
+            toggle.setHomeAsUpIndicator(new BitmapDrawable(getResources(), pi));
+        }
     }
 
     /** Setting Menu */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+        this.menu = menu;
+
+        Helper helper = new Helper(this);
+
+        menu.findItem(R.id.action_month).setTitle(helper.parseMonthToString(mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_month), 0)));
+        String s = Integer.toString(mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_year), helper.getYear(helper.timeToDate(helper.getCurrentTime()))));
+        menu.findItem(R.id.action_year).setTitle(s);
+
+        helper.setPerfencesYear(Integer.parseInt(menu.findItem(R.id.action_year).getTitle().toString()));
+        helper.setPerfencesMonth(helper.parseMonthToInt(menu.findItem(R.id.action_month).getTitle().toString()));
+
+        //menu.findItem(R.id.action_month).setTitle("Feb");
         return false;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -460,12 +510,124 @@ public class MainActivity extends AppCompatActivity
                                 return false;
                             }
                     });
+                    tagDBHelper.close();
                 }
+                break;
+            case R.id.action_month:
+                RecyclerView month_picker = (RecyclerView) findViewById(R.id.main_month_picker);
+                LinearLayout year_picker_layout_0 = (LinearLayout) findViewById(R.id.main_year_picker);
+                if (month_picker.getVisibility() == View.GONE) {
+                    month_picker.setHasFixedSize(true);
+                    StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(4, 1);
+                    month_picker.setLayoutManager(GridLayoutManager);
+
+                    MonthsSolventRecyclerViewAdapter rcAdapter = new MonthsSolventRecyclerViewAdapter(this, this, getResources().getStringArray(R.array.months_short));
+                    month_picker.setAdapter(rcAdapter);
+
+                    month_picker.setVisibility(View.VISIBLE);
+                    tabLayout.setVisibility(View.GONE);
+                    year_picker_layout_0.setVisibility(View.GONE);
+                } else {
+                    month_picker.setVisibility(View.GONE);
+                    tabLayout.setVisibility(View.VISIBLE);
+                }
+
+                break;
+            case R.id.action_year:
+                LinearLayout year_picker_layout = (LinearLayout) findViewById(R.id.main_year_picker);
+                RecyclerView month_picker_0 = (RecyclerView) findViewById(R.id.main_month_picker);
+                RecyclerView year_picker = (RecyclerView) findViewById(R.id.main_year_picker_rv);
+                EditText year_et = (EditText) findViewById(R.id.main_year_picker_et);
+                if (year_picker_layout.getVisibility() == View.GONE) {
+
+                    year_picker.setHasFixedSize(true);
+                    StaggeredGridLayoutManager GridLayoutManager = new StaggeredGridLayoutManager(3, 1);
+                    year_picker.setLayoutManager(GridLayoutManager);
+
+                    int currYear = Calendar.getInstance().get(Calendar.YEAR);
+                    List<String> years = new ArrayList<>();
+                    for (int i = currYear; i >= currYear - 5; i--) {
+                        years.add(Integer.toString(i));
+                    }
+
+                    YearsSolventRecyclerViewAdapter yearsSolventRecyclerViewAdapter = new YearsSolventRecyclerViewAdapter(this, this, years);
+                    year_picker.setAdapter(yearsSolventRecyclerViewAdapter);
+
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(year_et, InputMethodManager.SHOW_IMPLICIT);
+
+                    year_et.setGravity(Gravity.CENTER_HORIZONTAL);
+                    year_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                                changeYear(v.getText().toString());
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+
+                    year_picker_layout.setVisibility(View.VISIBLE);
+                    tabLayout.setVisibility(View.GONE);
+                    month_picker_0.setVisibility(View.GONE);
+                } else {
+                    year_picker_layout.setVisibility(View.GONE);
+                    tabLayout.setVisibility(View.VISIBLE);
+                }
+                break;
             default:
                 return super.onOptionsItemSelected(item);
 
         }
+
+        return super.onOptionsItemSelected(item);
     }
+
+    public void changeMonth(String updatedMonth) {
+        helper.setPerfencesMonth(helper.parseMonthToInt(updatedMonth));
+        int month = mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_month), 0);
+        String month_str = helper.parseMonthToString(month);
+        menu.findItem(R.id.action_month).setTitle(month_str);
+        helper.setPerfencesMonth(month);
+
+        adapter.notifyDataSetChanged();
+        String s = "";
+        updateCount();
+        if (frag_position == 0) {
+            s = trans_count + " " + getString(R.string.main_subtitle_trans);
+        } else {
+            s = tag_count + " " + getString(R.string.main_subtitle_tags);
+        }
+        toolbar.setSubtitle(s);
+
+        RecyclerView month_picker = (RecyclerView) findViewById(R.id.main_month_picker);
+        month_picker.setVisibility(View.GONE);
+        tabLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void changeYear(String updatedYear) {
+        helper.setPerfencesYear(Integer.parseInt(updatedYear));
+        int year = mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_year), 0);
+        String year_str = Integer.toString(year);
+        menu.findItem(R.id.action_year).setTitle(year_str);
+        helper.setPerfencesYear(year);
+
+        adapter.notifyDataSetChanged();
+        String s = "";
+        updateCount();
+        if (frag_position == 0) {
+            s = trans_count + " " + getString(R.string.main_subtitle_trans);
+        } else {
+            s = tag_count + " " + getString(R.string.main_subtitle_tags);
+        }
+        toolbar.setSubtitle(s);
+
+        LinearLayout year_picker_layout = (LinearLayout) findViewById(R.id.main_year_picker);
+        year_picker_layout.setVisibility(View.GONE);
+        tabLayout.setVisibility(View.VISIBLE);
+    }
+
 
     /** Handle button */
     public void clickSymbol(String type) {
@@ -533,26 +695,25 @@ public class MainActivity extends AppCompatActivity
 
     public void setToolbar() {
         String username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), getString(R.string.user_default));
-        UserDBHelper userDBHelper = new UserDBHelper(getApplicationContext());
+        UserDBHelper userDBHelper = new UserDBHelper(this);
+        TransactionDBHelper transactionDBHelper = new TransactionDBHelper(getApplicationContext());
         String displayName = userDBHelper.getUserByUsername(username).getDisplayName();
         if (!username.equals(getString(R.string.icon_all))) {
             toolbar.setTitle(displayName);
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.tw__transparent));
-            TransactionDBHelper transactionDBHelper = new TransactionDBHelper(getApplicationContext());
-            int count = transactionDBHelper.getAllData(username).size();
-            String s = count + " " + getString(R.string.main_subtitle_trans);
-            toolbar.setSubtitle(s);
-            if (ab != null) {
-                ab.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.side_toolbar));
-            }
         } else {
             toolbar.setTitle(getString(R.string.home_frag_title));
-            toolbar.setSubtitle("");
-            if (ab != null) {
-                toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.primaryText));
-                ab.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.actionBarColor)));
-            }
         }
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.tw__transparent));
+        int year = mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_year), 0);
+        int month = mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_month), 0);
+        int count = transactionDBHelper.getTransByTime(year, month, username).size();
+        String s = count + " " + getString(R.string.main_subtitle_trans);
+        toolbar.setSubtitle(s);
+        if (ab != null) {
+            ab.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.side_toolbar));
+        }
+        transactionDBHelper.close();
+        userDBHelper.close();
     }
 
     /** Add */
@@ -563,11 +724,15 @@ public class MainActivity extends AppCompatActivity
             switch (requestCode) {
                 case SAVING_DATA:
                     SharedPreferences sharedpreferences = getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
+                    UserDBHelper userDBHelper = new UserDBHelper(this);
+                    TransactionDBHelper transDB = new TransactionDBHelper(this);
+                    TagDBHelper tagDB = new TagDBHelper(this);
+
                     User user = new User(this,
                             sharedpreferences.getString(getString(R.string.shared_pref_arg_default_display_name), getResources().getString(R.string.user_default)),
                             getResources().getString(R.string.user_default));
+                    user.setSinceID(-1);
                     user.setProfileImage(R.drawable.ic_account_box_white_24dp);
-                    UserDBHelper userDBHelper = new UserDBHelper(this);
                     if (userDBHelper.checkDuplicate(user)) {
                         user = userDBHelper.getUserByUsername(getResources().getString(R.string.user_default));
                         user.addCount();
@@ -577,9 +742,6 @@ public class MainActivity extends AppCompatActivity
                         userDBHelper.addUser(user);
                     }
                     // add the transaction
-                    TransactionDBHelper transDB = new TransactionDBHelper(this);
-                    Helper helper = new Helper(this);
-
                     String message = data.getStringExtra(getString(R.string.intent_extra_trans));
 
                     Transaction trans = new Transaction(this);
@@ -595,20 +757,25 @@ public class MainActivity extends AppCompatActivity
                     transDB.addTransactions(trans);
 
                     // add the tag to tag cloud
-                    TagDBHelper tagDB = new TagDBHelper(this);
                     for (Tag t : trans.getTagsList()) {
                         t.setUser(user);
+                        t.setColor(ContextCompat.getColor(this, R.color.box));
                         tagDB.addTag(t);
                     }
 
                     transDB.close();
                     tagDB.close();
+                    userDBHelper.close();
                     break;
             }
         }
 
-        helper.displayTransList(findViewById(android.R.id.content), this);
+        helper.displayTransList(findViewById(android.R.id.content), this,
+                mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_year), 0),
+        mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_month), 0));
+        updateCount();
     }
+
 
     public void setLocalUser() {
         UserDBHelper userDBHelper = new UserDBHelper(this);
@@ -616,9 +783,63 @@ public class MainActivity extends AppCompatActivity
             User user = new User(this,
                     sharedpreferences.getString(getString(R.string.shared_pref_arg_default_display_name), getResources().getString(R.string.user_default)),
                     getResources().getString(R.string.user_default));
+            user.setSinceID(-1);
             userDBHelper.addUser(user);
         }
+        userDBHelper.close();
     }
+
+    public void updateCount() {
+        TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
+        String username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), getString(R.string.user_default));
+        int year = mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_year), 0);
+        int month = mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_month), 0);
+        trans_count = transactionDBHelper.getTransByTime(year, month, username).size();
+        tag_count = transactionDBHelper.getTransTagsByTime(year, month, username).size();
+        transactionDBHelper.close();
+    }
+
+    public void setToolbarSubtitle(String s) {
+        toolbar.setSubtitle(s);
+    }
+
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_popup_unfollow:
+                String username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), getString(R.string.user_default));
+                Helper helper = new Helper(this);
+                helper.unfollow(username);
+                adapter.notifyDataSetChanged();
+                helper.setUser(getString(R.string.icon_all));
+                helper.setSelectedPosition(0);
+                viewPager.setCurrentItem(0, true);
+                finish();
+                return true;
+        }
+        return true;
+    }
+
+    public void titleMenu(View v) {
+        String username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), getString(R.string.user_default));
+        if (username.equals(getString(R.string.user_default))) {
+
+        }
+        else if (!username.equals(getString(R.string.icon_all))) {
+            PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
+            popupMenu.setOnMenuItemClickListener(MainActivity.this);
+            popupMenu.inflate(R.menu.follow_popup);
+            popupMenu.show();
+        }
+    }
+
+    public int getYear() {
+        return mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_year), 0);
+    }
+
+    public int getMonth() {
+        return mainSharedpreferences.getInt(getString(R.string.shared_pref_arg_month), 0);
+    }
+
 
 } // end of class
 

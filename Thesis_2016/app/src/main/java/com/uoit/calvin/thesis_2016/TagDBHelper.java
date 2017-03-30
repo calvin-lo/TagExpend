@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ class TagDBHelper extends SQLiteOpenHelper {
     private static final String KEY_TYPE = "type";
     private static final String KEY_NAME = "displayName";
     private static final String KEY_USER = "username";
+    private static final String KEY_COLOR = "color";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -30,7 +32,8 @@ class TagDBHelper extends SQLiteOpenHelper {
                     KEY_AMOUNT + " REAL," +
                     KEY_USER + " TEXT," +
                     KEY_NAME + " TEXT," +
-                    KEY_TYPE + " TEXT" + " )";
+                    KEY_TYPE + " TEXT," +
+                    KEY_COLOR+ " INTEGER" + ")";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -63,6 +66,7 @@ class TagDBHelper extends SQLiteOpenHelper {
             values.put(KEY_TYPE, tag.getType());
             values.put(KEY_NAME, tag.getUser().getDisplayName());
             values.put(KEY_USER, tag.getUser().getUsername());
+            values.put(KEY_COLOR, tag.getColor());
 
             // Inserting Row
             db.insert(TABLE_NAME, null, values);
@@ -102,6 +106,7 @@ class TagDBHelper extends SQLiteOpenHelper {
 
         float amount = getAmount(tag.getTitle(), tag.getUser().getUsername()) - tag.getAmount();
         values.put(KEY_AMOUNT, amount);
+        values.put(KEY_COLOR, tag.getColor());
         db.update(TABLE_NAME, values, KEY_TAG + " =?", new String[] {tag.getTitle()});
         db.close();
     }
@@ -202,8 +207,10 @@ class TagDBHelper extends SQLiteOpenHelper {
 
     public Tag getTag(Cursor cursor) {
         Tag tag = new Tag(cursor.getString(cursor.getColumnIndex(KEY_TAG)), cursor.getString(cursor.getColumnIndex(KEY_TYPE)), cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
-        User user = new UserDBHelper(context).getUserByUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
+        UserDBHelper userDBHelper = new UserDBHelper(context);
+        User user = userDBHelper.getUserByUsername(cursor.getString(cursor.getColumnIndex(KEY_USER)));
         tag.setUser(user);
+        tag.setColor(cursor.getInt(cursor.getColumnIndex(KEY_COLOR)));
         return tag;
     }
 

@@ -57,7 +57,7 @@ public class MainExpandableListAdapter extends BaseExpandableListAdapter impleme
 
         List<Tag> tagList = t.getTagsList();
 
-        SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(context, tagList, 1);
+        SolventRecyclerViewAdapter rcAdapter = new SolventRecyclerViewAdapter(context, tagList, 1, t.getColor());
         holder.recyclerView.setAdapter(rcAdapter);
 
         if (!transactionsList.get(position).getUser().getUsername().equals(context.getResources().getString(R.string.user_default))) {

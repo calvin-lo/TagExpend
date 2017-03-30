@@ -126,6 +126,7 @@ public class SettingActivity extends AppCompatActivity {
                 UserDBHelper userDBHelper = new UserDBHelper(context);
 
                 User user = new User(context, newUser, getString(R.string.user_default));
+                user.setSinceID(-1);
 
                 userDBHelper.updateUser(user);
                 transactionDBHelper.updateUser(user);
@@ -133,6 +134,10 @@ public class SettingActivity extends AppCompatActivity {
 
                 Toast.makeText(context, getString(R.string.dialog_success), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
+
+                tagDBHelper.close();
+                transactionDBHelper.close();
+                userDBHelper.close();
             }
         });
         button_cancel.setOnClickListener(new View.OnClickListener() {

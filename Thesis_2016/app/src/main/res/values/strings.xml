@@ -3,6 +3,7 @@
     <!-- Main -->
     <string name="app_name">TagExpend</string>
     <string name="action_search">Search</string>
+    <string name="main_popup_unfollow">Unfollow</string>
 
     <!-- Icon -->
     <string name="icon_location">\u27B4</string>
@@ -23,6 +24,7 @@
 
     <!-- Chart Fragment -->
     <string name="chart_frag_title">Chart</string>
+    <string name="chart_frag_unfollow">Unfollow</string>
 
     <!-- Main Activity -->
     <string name="main_subtitle_trans">transactions</string>
@@ -44,6 +46,9 @@
     <string name="tag_frag_title_list">List</string>
     <string name="tag_frag_title_trend">Trend</string>
     <string name="tag_frag_trend_label">Amount</string>
+    <string name="tag_frag_delete_msg">Delete Tag</string>
+    <string name="tag_frag_change_color_msg">Change Color</string>
+
 
     <!-- Setting Activity -->
     <string name="setting_activity_title">Setting</string>
@@ -115,6 +120,8 @@
     <string name="shared_pref_arg_selected_pos">selectedPosition</string>
     <string name="shared_pref_arg_auto_post">autoPost</string>
     <string name="shared_pref_arg_twitter_connected">twitterConnected</string>
+    <string name="shared_pref_arg_year">year</string>
+    <string name="shared_pref_arg_month">month</string>
 
     <!-- Intent -->
     <string name="intent_extra_id">ID</string>
@@ -131,6 +138,7 @@
     <string name="helper_image_path_end">/ProfileImage</string>
     <string name="helper_image_name_start">PI_</string>
     <string name="helper_image_name_end">.jpg</string>
+    <string name="helper_pull_all">pullAll</string>
 
 
     <!-- Month -->
@@ -146,4 +154,16 @@
     <string name="month_october">October</string>
     <string name="month_november">November</string>
     <string name="month_december">December</string>
+
+    <string name="month_jan">Jan</string>
+    <string name="month_feb">Feb</string>
+    <string name="month_mar">Mar</string>
+    <string name="month_apr">Apr</string>
+    <string name="month_jun">Jun</string>
+    <string name="month_jul">Jul</string>
+    <string name="month_aug">Aug</string>
+    <string name="month_sep">Sep</string>
+    <string name="month_oct">Oct</string>
+    <string name="month_nov">Nov</string>
+    <string name="month_dec">Dec</string>
 </resources>

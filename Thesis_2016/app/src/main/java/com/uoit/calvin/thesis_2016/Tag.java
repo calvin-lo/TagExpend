@@ -6,6 +6,7 @@ class Tag {
     private String type;
     private float amount;
     private User user;
+    private int color;
 
     Tag(String name, String type, float amount) {
         setTitle(name);
@@ -50,4 +51,11 @@ class Tag {
     }
 
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
 }

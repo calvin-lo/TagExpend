@@ -57,6 +57,8 @@ public class FragmentTag2 extends Fragment{
         int currYear = Calendar.getInstance().get(Calendar.YEAR);
         displayTrend(currYear, -1);
 
+        transactionDBHelper.close();
+
 
         return v;
     }

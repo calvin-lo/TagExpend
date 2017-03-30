@@ -2,9 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_search"
+    <item android:id="@+id/tag_action_search"
         android:title="@string/action_search"
         android:icon="@drawable/ic_search_black_24dp"
         app:showAsAction="ifRoom|collapseActionView" />
+
+    <item android:id="@+id/tag_delete"
+        android:title="@string/tag_frag_delete_msg"
+        />
+
+    <item android:id="@+id/tag_change_color"
+        android:title="@string/tag_frag_change_color_msg" />
 
 </menu>

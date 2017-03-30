@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,8 +75,8 @@ public class ExploreFragment1 extends Fragment implements TweetsListener{
         sharedPreferences = getContext().getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
         followUsername = sharedPreferences.getString(getString(R.string.shared_pref_arg_follow_user), null);
         if (sharedPreferences.getString(getString(R.string.shared_pref_arg_follow_user), null) != null) {
-            new LoadTweets(this).execute(sharedPreferences.getString(
-                    getString(R.string.shared_pref_arg_follow_user), null));
+            new LoadTweets(this, context).execute(sharedPreferences.getString(
+                    getString(R.string.shared_pref_arg_follow_user), null) , getString(R.string.explore_activity_title));
             ((ExploreActivity)getActivity()).setSearchTabTitle(
                     sharedPreferences.getString(getString(R.string.shared_pref_arg_follow_user), getString(R.string.explore_frag_title_search)));
         }
@@ -89,7 +90,8 @@ public class ExploreFragment1 extends Fragment implements TweetsListener{
             button_pull.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    pullData();
+                    new LoadTweets(tweetsListener, context).execute(followUsername, getString(R.string.explore_activity_title));
+                    helper.pullTweetsData(tweets, true);
                 }
             });
         }
@@ -118,7 +120,7 @@ public class ExploreFragment1 extends Fragment implements TweetsListener{
                 ((ExploreActivity)getActivity()).setSearchTabTitle(
                         sharedPreferences.getString(getString(R.string.shared_pref_arg_follow_user), getString(R.string.explore_frag_title_search)));
 
-                new LoadTweets(tweetsListener).execute(query);
+                new LoadTweets(tweetsListener, context).execute(query, getString(R.string.explore_activity_title));
                 return false;
             }
 
@@ -166,100 +168,5 @@ public class ExploreFragment1 extends Fragment implements TweetsListener{
         }
     }
 
-    public void pullData() {
 
-        if (tweets != null) {
-            if (tweets.size() > 0) {
-
-                transactionDBHelper = new TransactionDBHelper(getContext());
-                transactionDBHelper.clearUser(tweets.get(0).user.screenName);
-                tagDBHelper = new TagDBHelper(getContext());
-                tagDBHelper.clearUser(tweets.get(0).user.screenName);
-
-
-                int color[] = helper.getMaterialColor();
-                int randomNum = ThreadLocalRandom.current().nextInt(0, color.length);
-                int selectedColor = color[randomNum];
-                for (Tweet t : tweets) {
-                    String message = t.text.replace(getString(R.string.twitter_tail), "");
-                    User user = new User(getContext(), t.user.name, t.user.screenName);
-                    user.setProfileImageUrl(t.user.profileImageUrl);
-                    user.setProfileImage(-1);
-                    UserDBHelper userDBHelper = new UserDBHelper(getContext());
-
-
-
-                    userDBHelper.addUser(user);
-
-                    Transaction trans = new Transaction(getContext());
-                    trans.setMessage(message);
-                    trans.setTags(helper.parseTag(message));
-                    trans.setGeneral(helper.parseGeneral(message));
-                    trans.setLocation(helper.parseLocation(message));
-                    trans.setCategory(helper.parseCategory(message));
-                    String pattern = getString(R.string.pattern_date_twitter);
-                    SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CANADA);
-                    String time = helper.getCurrentTime();
-                    trans.setColor(selectedColor);
-                    try {
-                        Date date = format.parse(t.createdAt);
-                        DateFormat dateFormat = new SimpleDateFormat(getString(R.string.pattern_date_app), Locale.CANADA);
-                        time = dateFormat.format(date);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    trans.setTimestamp(time);
-                    trans.setUser(user);
-                    trans.setAmount(helper.getAmount(message));
-                    transactionDBHelper.addTransactions(trans);
-
-                    // add the tag to tag cloud
-                    for (Tag tag : trans.getTagsList()) {
-                        tag.setUser(user);
-                        tagDBHelper.addTag(tag);
-                    }
-
-                    transactionDBHelper.close();
-                    tagDBHelper.close();
-
-                    Toast.makeText(getContext(), getString(R.string.follow_msg_pull_success), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    private class LoadTweets extends AsyncTask<String, Void, List<Tweet>> {
-
-        private final TweetsListener listener;
-        List<Tweet> tweets = new ArrayList<>();
-
-        LoadTweets(TweetsListener listener) {
-            this.listener = listener;
-        }
-        @Override
-        protected List<Tweet> doInBackground(String... params) {
-            Call<List<Tweet>> tweetsCall = TwitterCore.getInstance().getApiClient().getStatusesService()
-                    .userTimeline(null, params[0] , null,null,null,null,null,null,null);
-            Response<List<Tweet>> responses = null;
-            try {
-                responses = tweetsCall.execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (responses != null) {
-                tweets = responses.body();
-            }
-
-            return tweets;
-        }
-
-        @Override
-        protected void onPostExecute(List<Tweet> tweets) {
-            if (listener != null) {
-                listener.tweetsCompleted(tweets);
-            }
-        }
-
-    }
 }

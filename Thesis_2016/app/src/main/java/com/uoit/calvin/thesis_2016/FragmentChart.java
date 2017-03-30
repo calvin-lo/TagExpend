@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,7 +29,7 @@ import java.util.List;
 public class FragmentChart extends Fragment{
 
     View v;
-    private static final int MARGIN = 1080;
+    private static final int MARGIN = 1100;
     private String GENERAL_ICON;
     private String LOCATION_ICON;
     private String CATEGORY_ICON;
@@ -69,7 +73,15 @@ public class FragmentChart extends Fragment{
         TagDBHelper tagDBHelper = new TagDBHelper(v.getContext());
 
         PieChart pieChart = new PieChart(v.getContext());
-        List<Tag> tagList = tagDBHelper.getTagsList(type, username);
+        TransactionDBHelper transactionDBHelper = new TransactionDBHelper(v.getContext());
+        int year = ((MainActivity)getActivity()).getYear();
+        int month = (((MainActivity)getActivity()).getMonth());
+        List<Tag> tagList = transactionDBHelper.getTransTagsByTime(year, month, username);
+        transactionDBHelper.close();
+        //List<Tag> tagList = tagDBHelper.getTagsList(type, username);
+
+        String s = tagList.size() + " " + getString(R.string.main_subtitle_tags);
+        //((MainActivity)getActivity()).setToolbarSubtitle(s);
 
         ArrayList<PieEntry> entries = new ArrayList<>();
 
@@ -127,5 +139,6 @@ public class FragmentChart extends Fragment{
 
         }
     }
+
 
 }

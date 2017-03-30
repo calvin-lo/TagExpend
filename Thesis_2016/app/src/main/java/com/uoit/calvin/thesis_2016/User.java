@@ -11,6 +11,7 @@ public class User {
     private Context context;
     private String profileImageUrl;
     private int count;
+    private long sinceID;
 
     public User() {
     }
@@ -19,7 +20,7 @@ public class User {
         this.displayName = displayName;
         this.username = username;
         this.context = context;
-        this.profileImage = R.drawable.ic_account_box_white_24dp;
+        this.profileImage = R.drawable.ic_account_circle_black_24dp;
     }
 
     public User(Context context, String displayName, String username, int profileImage) {
@@ -81,5 +82,13 @@ public class User {
 
     public void addCount() {
         this.count++;
+    }
+
+    public long getSinceID() {
+        return sinceID;
+    }
+
+    public void setSinceID(long sinceID) {
+        this.sinceID = sinceID;
     }
 }

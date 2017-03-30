@@ -15,7 +15,6 @@ public class UserDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "userDB";
     private static final String TABLE_NAME = "users";
     private Context context;
-    private Bitmap userBitmap;
 
     private static final String KEY_ID = "id";
     private static final String KEY_USERNAME = "username";
@@ -23,6 +22,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
     private static final String KEY_ProfilePicture = "profilePicture";
     private static final String KEY_ProfileImageUrl = "profileImageUrl";
     private static final String KEY_COUNT = "count";
+    private static final String KEY_SINCE = "since";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME+ " (" +
@@ -31,7 +31,8 @@ public class UserDBHelper extends SQLiteOpenHelper {
                     KEY_DISPLAYNAME + " TEXT," +
                     KEY_ProfilePicture+ " REAL," +
                     KEY_ProfileImageUrl + " TEXT," +
-                    KEY_COUNT + " REAL" + ")";
+                    KEY_COUNT + " INTEGER," +
+                    KEY_SINCE + " INTEGER" + ")";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -62,6 +63,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
             values.put(KEY_ProfilePicture, user.getProfileImage());
             values.put(KEY_ProfileImageUrl, user.getProfileImageUrl());
             values.put(KEY_COUNT, user.getCount());
+            values.put(KEY_SINCE, user.getSinceID());
 
             saveImage(user);
 
@@ -74,9 +76,9 @@ public class UserDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    void deleteTUser(long id) {
+    void deleteTUser(String username) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAME, KEY_ID + " = " + id, null);
+        db.delete(TABLE_NAME, KEY_USERNAME + " = '" + username +"'", null);
         db.close();
     }
 
@@ -89,6 +91,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
         values.put(KEY_ProfilePicture, user.getProfileImage());
         values.put(KEY_ProfileImageUrl, user.getProfileImageUrl());
         values.put(KEY_COUNT, user.getCount());
+        values.put(KEY_SINCE, user.getSinceID());
 
         saveImage(user);
 
@@ -146,6 +149,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
         user.setCount(cursor.getInt(cursor.getColumnIndex(KEY_COUNT)));
         user.setProfileImage(cursor.getInt(cursor.getColumnIndex(KEY_ProfilePicture)));
         user.setProfileImageUrl(cursor.getString(cursor.getColumnIndex(KEY_ProfileImageUrl)));
+        user.setSinceID(cursor.getLong(cursor.getColumnIndex(KEY_SINCE)));
         return user;
     }
 
@@ -170,12 +174,12 @@ public class UserDBHelper extends SQLiteOpenHelper {
     }
 
 
-
-
     private void saveImage(User user) {
         Helper helper = new Helper(context);
         helper.runDownloadImageTask(user);
     }
+
+
 
 
 

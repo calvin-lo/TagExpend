@@ -33,6 +33,42 @@
                 android:inputType="text"
                 />
         </android.support.v7.widget.Toolbar>
+        <android.support.v7.widget.RecyclerView
+            android:padding="10dp"
+            android:id="@+id/main_month_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/main_year_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:visibility="gone">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/main_year_picker_rv"
+                android:padding="10dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3.8"/>
+            <EditText
+                android:id="@+id/main_year_picker_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:inputType="number"
+                android:imeOptions="actionSearch"
+                android:layout_weight="1"
+                />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"/>
+
+        </LinearLayout>
         <android.support.design.widget.TabLayout
             android:id="@+id/main_tabs"
             app:tabGravity="fill"

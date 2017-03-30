@@ -48,6 +48,8 @@ public class  DetailsActivity extends AppCompatActivity {
         }
 
         display();
+
+        transactionDBHelper.close();
     }
 
     public void display() {
@@ -107,6 +109,7 @@ public class  DetailsActivity extends AppCompatActivity {
             recyclerView.setAdapter(rcAdapter);
         }
 
+        transactionDBHelper.close();
     }
 
     public void update(View v) {
@@ -126,7 +129,7 @@ public class  DetailsActivity extends AppCompatActivity {
                 Helper helper = new Helper(this);
                 String time = transaction.getTimestamp();
 
-                List<Tag> tagList = helper.parseTag(transactionDBHelper.getTransByID(id, username).getMessage(), username);
+                List<Tag> tagList = helper.parseTag(transactionDBHelper.getTransByID(id, username).getMessage());
 
                 SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_pref_name_user), Context.MODE_PRIVATE);
                 User user = new User(this,

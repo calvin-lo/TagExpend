@@ -2,6 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_month"
+        android:title="@string/month_jan"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item android:id="@+id/action_year"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+
     <item android:id="@+id/action_search"
         android:title="@string/action_search"
         android:icon="@drawable/ic_search_black_24dp"

@@ -3,6 +3,7 @@ package com.uoit.calvin.thesis_2016;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.ActionBar;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TagActivity extends AppCompatActivity {
@@ -50,21 +52,22 @@ public class TagActivity extends AppCompatActivity {
         toolBar = (Toolbar) findViewById(R.id.tag_toolbar);
         setSupportActionBar(toolBar);
         String username = sharedpreferences.getString(getString(R.string.shared_pref_arg_username), null);
+
+        TagDBHelper tagDBHelper = new TagDBHelper(this);
+        //tagDBHelper.getTagByTitle(tag, username);
+
         if (toolBar != null) {
             toolBar.setTitle(tag);
-            TagDBHelper tagDBHelper = new TagDBHelper(this.getApplicationContext());
-            List<Tag> tagList = tagDBHelper.getTagsList(getString(R.string.icon_all), username);
-            for (Tag t : tagList) {
-                if (t.toString().equals(tag)) {
-                    String title = tag;
-                    toolBar.setTitle(title);
-                    tagDBHelper.close();
-                }
-            }
+            TransactionDBHelper transactionDBHelper = new TransactionDBHelper(this);
+            ArrayList<Transaction> transList = new ArrayList<>(transactionDBHelper.getTransByTag(tag, username));
+            String subTitle = transList.size() + " " + getString(R.string.main_subtitle_trans);
+            toolBar.setSubtitle(subTitle);
+           transactionDBHelper.close();
         }
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+            ab.setBackgroundDrawable(new ColorDrawable());
         }
 
         viewPager = (CustomViewPager) findViewById(R.id.tag_viewpager);
@@ -142,18 +145,18 @@ public class TagActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.tag_activity_actions, menu);
-        return false;
+        return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        TagDBHelper tagDBHelper = new TagDBHelper(this);
         switch (item.getItemId()) {
-            case R.id.action_search:
+            case R.id.tag_action_search:
                 tv_search = (MultiAutoCompleteTextView) findViewById(R.id.tag_search);
                 if (tv_search != null) {
                     tv_search.setVisibility(View.VISIBLE);
                     tv_search.requestFocus();
                     tv_search.setTokenizer(new SpaceTokenizer());
-                    TagDBHelper tagDBHelper = new TagDBHelper(this);
                     String tagList[] = tagDBHelper.getTagsStringList("*");
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tagList);
                     tv_search.setAdapter(adapter);
@@ -175,10 +178,20 @@ public class TagActivity extends AppCompatActivity {
                         }
                     });
                 }
+                break;
+            case R.id.tag_delete:
+                tagDBHelper.deleteTag(tag);
+                finish();
+                break;
+            case R.id.tag_change_color:
+                break;
             default:
                 return super.onOptionsItemSelected(item);
 
         }
+
+        tagDBHelper.close();
+        return super.onOptionsItemSelected(item);
     }
 
     /** Handle button */
@@ -244,6 +257,8 @@ public class TagActivity extends AppCompatActivity {
         tv_search.setInputType(InputType.TYPE_CLASS_TEXT);
         clickSymbol("category");
     }
+
+
 
 
 }

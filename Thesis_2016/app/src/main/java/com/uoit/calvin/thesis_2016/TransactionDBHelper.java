@@ -42,10 +42,10 @@ class TransactionDBHelper extends SQLiteOpenHelper {
                     KEY_AMOUNT + " REAL, " +
                     KEY_USER + " TEXT," +
                     KEY_NAME + " TEXT, " +
-                    KEY_YEAR + " REAL," +
-                    KEY_MONTH + " REAL," +
-                    KEY_DAY + " REAL," +
-                    KEY_COLOR + " REAL" + ")";
+                    KEY_YEAR + " INTEGER," +
+                    KEY_MONTH + " INTEGER," +
+                    KEY_DAY + " INTEGER," +
+                    KEY_COLOR + " INTEGER" + ")";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -123,7 +123,6 @@ class TransactionDBHelper extends SQLiteOpenHelper {
 
     }
 
-
     void deleteTransactions(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAME, KEY_ID + " = " + id, null);
@@ -135,7 +134,6 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         db.delete(TABLE_NAME, KEY_USER+ " = ? ", new String[] {user});
         db.close();
     }
-
 
     List<Transaction> getAllData(String user) {
         List<Transaction> transList = new ArrayList<>();
@@ -206,8 +204,85 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
         return transList;
+    }
+
+    List<Transaction> getTransByTime(int year, int month, String user) {
+        List<Transaction> transList = new ArrayList<>();
+        String selectQuery = selectQuery = "SELECT  * FROM " + TABLE_NAME;;
+        if (user.equals("*") && year == 0 && month == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        } else if (!user.equals("*") && year == 0 && month == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        } else if (user.equals("*") && year != 0 && month != 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME +
+                            " WHERE " + KEY_YEAR + "=" + year +
+                            " AND " + KEY_MONTH + "=" + month;
+        } else if (!user.equals("*") && year != 0 && month != 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME +
+                    " WHERE " + KEY_YEAR + "=" + year +
+                    " AND " + KEY_MONTH + "=" + month +
+                    " AND " + KEY_USER + "='" + user + "'";
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            Transaction trans = getTransaction(cursor);
+            transList.add(trans);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return transList;
+    }
+
+
+    List<Tag> getTransTagsByTime(int year, int month, String user) {
+        List<Tag> tagList = new ArrayList<>();
+        List<String> tagStrList = new ArrayList<>();
+        String selectQuery = selectQuery = "SELECT  * FROM " + TABLE_NAME;;
+        if (user.equals("*") && year == 0 && month == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        } else if (!user.equals("*") && year == 0 && month == 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME + " WHERE " + KEY_USER + "='" + user + "'";
+        } else if (user.equals("*") && year != 0 && month != 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME +
+                    " WHERE " + KEY_YEAR + "=" + year +
+                    " AND " + KEY_MONTH + "=" + month;
+        } else if (!user.equals("*") && year != 0 && month != 0) {
+            selectQuery = "SELECT  * FROM " + TABLE_NAME +
+                    " WHERE " + KEY_YEAR + "=" + year +
+                    " AND " + KEY_MONTH + "=" + month +
+                    " AND " + KEY_USER + "='" + user + "'";
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            //List<Tag> temp = new ArrayList<>();
+            //temp.addAll(tagList);
+            //temp.addAll(new Helper(context).parseTag(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE))));
+            //tagList = temp;
+
+            List<Tag> temp = new Helper(context).parseTag(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE)));
+            for (Tag t : temp) {
+                if(!tagStrList.contains(t.toString())) {
+                    t.setAmount(cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+                    tagList.add(t);
+                    tagStrList.add(t.toString());
+                } else {
+                    int index = tagStrList.indexOf(t.toString());
+                    tagList.get(index).setAmount(t.getAmount() + cursor.getFloat(cursor.getColumnIndex(KEY_AMOUNT)));
+                }
+            }
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return tagList;
     }
 
     String[] getUser() {
@@ -229,7 +304,6 @@ class TransactionDBHelper extends SQLiteOpenHelper {
         userList.remove(context.getResources().getString(R.string.user_default));
         return userList.toArray(new String[userList.size()]);
     }
-
 
     private Transaction getTransaction(Cursor cursor) {
         Transaction trans = new Transaction(context);
